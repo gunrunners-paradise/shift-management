@@ -109,9 +109,9 @@
 
     <p class="calendar-footer-note">הלוח מציג משמרות מתוכננות. תאריכי עבר ותאריכים שמעבר לטווח ההרשמה זמינים לקריאה בלבד.</p>
 
-    {{-- The latest approved layout keeps all additional information below the calendar. --}}
-    @include('worker.today')
+    {{-- Receipts come first below the calendar, before notices and team information. --}}
     @include('worker.receipts')
+    @include('worker.today')
 
     <dialog id="shift-dialog" class="shift-dialog" aria-labelledby="shift-dialog-heading" aria-describedby="shift-dialog-description">
         <h2 id="shift-dialog-heading">בחירת משמרת</h2>
