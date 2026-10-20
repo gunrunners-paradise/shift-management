@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מערכת נוכחות</title>
+<style>
+
+html {
+    overflow-y: scroll;
+}
+
+:root{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#262c3b;background:#f4f6fb;--indigo:#453bcc;--blue:#4b81dc;--pink:#d52d78;--line:#dfe5ef;--shadow:0 7px 23px #202c5a16}
+*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #f29f38;outline-offset:2px}
+.topbar{background:linear-gradient(110deg,#3457be,#4636bf);color:white;box-shadow:var(--shadow)}.top-inner{max-width:1400px;margin:auto;min-height:76px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.header-actions{display:flex;align-items:center;gap:12px}.brand{font-size:23px;font-weight:800}.brand-logo{width:49px;height:49px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #ffffffc9}.header-action{border:1px solid #ffffff65;color:white;background:#ffffff12;border-radius:12px;height:47px;min-width:48px;padding:7px 12px;font-size:25px}.avatar{width:41px;height:41px;border-radius:50%;object-fit:cover;background:#d7dff8;border:2px solid #fff}.profile-trigger{display:flex;align-items:center;gap:8px;font-size:14px}.profile-trigger span{max-width:140px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.menu-wrap{position:relative}.dropdown{position:absolute;top:calc(100% + 9px);right:0;min-width:215px;background:#fff;color:#252d3c;border:1px solid #e1e5ee;box-shadow:var(--shadow);border-radius:12px;overflow:hidden;z-index:15;padding:6px}.dropdown[hidden]{display:none}.dropdown button{width:100%;text-align:right;display:block;border:0;background:transparent;padding:12px;border-radius:8px;color:#242b37}.dropdown button:hover{background:#eff2ff}.dropdown .signout{color:#b32264}.menu-caption{font-size:12px;color:#647089;padding:9px 12px 5px}
+main{max-width:1400px;margin:auto;padding:23px 16px 60px}.page-title{background:#fff;padding:19px 22px;border-radius:16px;box-shadow:var(--shadow);margin-bottom:20px}.page-title h1{font-size:25px;margin:0 0 6px}.page-title p{margin:0;color:#616c81;font-size:14px;line-height:1.6}.quick-actions{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 22px}.primary{border:0;background:linear-gradient(110deg,#4563d8,#598ee1);color:#fff;border-radius:12px;font-size:16px;padding:12px 20px;box-shadow:0 3px 9px #1d28752a}.primary:hover{filter:brightness(1.07)}.muted-btn{border:1px solid #d8e0ef;background:#f0f3ff;color:#3647a1;border-radius:12px;padding:11px 18px;font-weight:700}.danger-btn{background:#fce1ea;border:1px solid #efb1c7;color:#a92a61;border-radius:12px;padding:11px 18px;font-weight:700}.small{font-size:13px;padding:8px 11px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:21px}.stat,.panel{background:#fff;border-radius:16px;box-shadow:var(--shadow)}.stat{padding:19px}.stat .label{color:#687489;font-size:14px}.stat .value{font-size:30px;font-weight:800;margin-top:6px;color:#3d45b6}.sections{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{padding:22px;min-width:0}.panel h2{font-size:20px;margin:0 0 6px}.hint{font-size:13px;color:#647089;line-height:1.5;margin:0 0 18px}.field{display:grid;gap:7px;font-size:14px;font-weight:bold;margin:0 0 13px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border-radius:9px;border:1px solid #bfc8d8;background:white;color:#262c3b}.field textarea{min-height:73px;resize:vertical}.field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.list{display:grid;gap:9px;margin-top:16px}.item{border:1px solid var(--line);border-radius:11px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.item strong{display:block;margin-bottom:4px}.item small{font-size:12px;color:#687489}.chip{font-size:12px;padding:6px 9px;border-radius:999px;background:#edf1fe;color:#3d4db0;white-space:nowrap}.chip.blocked{background:#fce1ea;color:#ab2562}.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}.full{grid-column:1/-1}.report{display:flex;gap:12px;flex-wrap:wrap;align-items:end}.report .field{margin:0;flex:1;min-width:150px}.report-note{margin:13px 0 0;color:#657085;font-size:13px}.table-wrap{overflow-x:auto;margin-top:15px}table{width:100%;border-collapse:collapse;text-align:right;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:11px 10px;vertical-align:top}th{background:#f0f3fc;color:#36418a}.footer-note{font-size:13px;color:#687489;text-align:center;margin-top:23px}.feedback{font-size:13px;color:#236b46;min-height:18px;margin-top:10px}.empty{color:#768198;font-size:13px}.mini-action{border:0;border-radius:8px;background:#fff0f5;color:#aa2860;padding:7px 10px}
+@media(max-width:700px){.top-inner{min-height:68px;padding:9px 12px}.header-actions{gap:8px}.brand{font-size:17px}.brand-logo{width:42px;height:42px}.header-action{height:43px;min-width:43px}.profile-trigger span{display:none}.dropdown.account-menu{right:auto;left:0}main{padding:17px 9px 40px}.page-title{padding:16px}.page-title h1{font-size:21px}.stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:14px}.stat .value{font-size:24px}.sections{grid-template-columns:1fr;gap:14px}.panel{padding:17px}.field-row{grid-template-columns:1fr}.quick-actions>*{flex:1}.report .field{min-width:100%}}
+@media(max-width:370px){.brand{font-size:15px}.stats{grid-template-columns:1fr}.brand-logo{width:38px;height:38px}}
+
+.receipts-month-picker{max-width:230px}.receipts-summary{margin:12px 0;color:#647089;font-size:13px}
+.receipts-positive{color:#285b9a;font-weight:700}.receipts-negative{color:#6c7586}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="top-inner">
+  <!-- In RTL, the FIRST element is furthest right: logo, then hamburger to its LEFT. -->
+<!-- The hamburger menu is for the pages in the site -->
+  <div class="header-actions">
+    <img class="brand-logo" src="enter_digital_studio.svg" alt="לוגו Enter Digital Studio">
+    <div class="menu-wrap">
+      <button id="menuButton" class="header-action" type="button" aria-label="פתח תפריט אתר" aria-expanded="false" aria-controls="siteMenu">☰</button>
+      <nav id="siteMenu" class="dropdown" aria-label="תפריט אתר" hidden>
+        <div class="menu-caption">דפי המערכת</div>
+        <button type="button">⚙️ ניהול ✓</button>
+        <button type="button" >📅 לוח נוכחות</button>
+        <div class="menu-caption">דף משמרות העובדים יתווסף בניווט של האתר האמיתי</div>
+      </nav>
+    </div>
+    <strong class="brand">מערכת נוכחות</strong>
+  </div>
+  <div class="menu-wrap">
+    <button id="profileButton" class="header-action profile-trigger" type="button" aria-expanded="false" aria-controls="profileMenu"><img class="avatar" alt="תמונת מנהל" id="avatar"><span>רחל לוי</span>⌄</button>
+    <div id="profileMenu" class="dropdown account-menu" hidden>
+      <div class="menu-caption">רחל לוי · מנהלת</div>
+      <button id="profileDemo" type="button">👤 הפרופיל שלי</button>
+      <button id="logoutDemo" type="button" class="signout">↪ התנתקות</button>
+    </div>
+  </div>
+</div></header>
+<main id="top">
+  <section class="page-title"><h1>ניהול מערכת הנוכחות</h1><p>הוספת עובדים, ניהול אירועים, חסימת ימים והפקת דוח נוכחות. מסך מנהל בלבד.</p></section>
+  <div class="quick-actions"><button type="button" data-scroll="users" class="primary">＋ משתמש חדש</button><button type="button" data-scroll="events" class="muted-btn">＋ אירוע חדש</button><button type="button" data-scroll="blocks" class="danger-btn">🚫 חסימת יום</button><button type="button" data-scroll="reports" class="muted-btn">↓ הורדת CSV</button><button type="button" data-scroll="desks" class="muted-btn">🖥️ ניהול עמדות</button><button type="button" data-scroll="receipts" class="muted-btn">🧾 מעקב קבלות</button></div>
+  <div class="stats"><div class="stat"><div class="label">אירועים בלוח</div><div id="eventCount" class="value">0</div></div><div class="stat"><div class="label">ימים חסומים</div><div id="blockedCount" class="value">0</div></div></div>
+  <div class="sections">
+    <section class="panel" id="users"><h2>👥 הוספת משתמשים</h2><p class="hint">הוספת עובד חדש עם תמונת פרופיל, מגדר, תאריך לידה ותפקיד.</p>
+      <form id="userForm">
+        <div class="field-row"><label class="field">שם פרטי<input name="first" required maxlength="60" placeholder="דנה"></label><label class="field">שם משפחה<input name="last" required maxlength="60" placeholder="כהן"></label></div>
+        <div class="field-row"><label class="field">שם משתמש<input name="username" required maxlength="60" autocomplete="off"></label><label class="field">סיסמה<input name="password" type="password" minlength="8" required autocomplete="new-password"></label></div>
+        <div class="field-row"><label class="field">מגדר<select name="gender"><option value="female">אישה</option><option value="male">גבר</option><option value="other">אחר / לא צוין</option></select></label><label class="field">תפקיד<select name="role"><option value="worker">עובד/ת</option><option value="manager">מנהל/ת</option></select></label></div>
+        <div class="field-row"><label class="field">תאריך לידה<input name="birthday" type="date"></label><label class="field">תמונת פרופיל<input name="photo" type="file" accept="image/png,image/jpeg,image/webp"></label></div>
+        <button class="primary" type="submit">שמירת משתמש (הדגמה)</button>
+      </form><div id="userFeedback" class="feedback" aria-live="polite"></div><div id="userList" class="list"></div>
+    </section>
+    <section class="panel" id="events"><h2>📅 אירועים בלוח השנה</h2><p class="hint">אירועים הם הודעות לצוות. הוספת אירוע אינה חוסמת באופן אוטומטי משמרות.</p>
+      <form id="eventForm"><label class="field">שם האירוע<input name="title" required maxlength="100" placeholder="יום גיבוש"></label><label class="field">תאריך האירוע<input name="date" type="date" required></label><label class="field">תיאור (לא חובה)<textarea name="description" maxlength="500" placeholder="פרטים שיוצגו לעובדים"></textarea></label><button class="primary" type="submit">הוספת אירוע</button></form><div id="eventFeedback" class="feedback" aria-live="polite"></div><div id="eventList" class="list"></div>
+    </section>
+    <section class="panel" id="blocks"><h2>🚫 חסימת יום למשמרות</h2><p class="hint">ביום חסום כל שלוש אפשרויות המשמרת אדומות, והעובדים אינם יכולים לבחור אותן.</p>
+      <form id="blockForm"><label class="field">תאריך לחסימה<input name="date" type="date" required></label><label class="field">סיבה (לא חובה)<input name="reason" maxlength="150" placeholder="המשרד סגור"></label><button type="submit" class="danger-btn">חסימת היום</button></form><div id="blockFeedback" class="feedback" aria-live="polite"></div><div id="blockList" class="list"></div>
+    </section>
+    <section class="panel" id="reports"><h2>📥 דוח ימי עבודה — CSV</h2><p class="hint">הורדת קובץ שנפתח ב-Excel. בכל שורה: שם העובד, מספר ימי העבודה, ורשימת תאריכים מופרדת בפסיקים.</p>
+      <div class="report"><label class="field">מתאריך<input type="date" id="fromDate"></label><label class="field">עד תאריך<input type="date" id="toDate"></label><button type="button" class="primary" id="exportCsv">↓ הורדת CSV</button></div>
+      <div id="reportFeedback" class="feedback" aria-live="polite"></div>
+      <div class="table-wrap"><table><thead><tr><th>שם העובד</th><th>מספר ימי עבודה</th><th>תאריכי עבודה</th></tr></thead><tbody id="reportRows"></tbody></table></div>
+      <p class="report-note">הדוח מציג כרגע נתוני הדגמה בלבד. במערכת Laravel יופקו הנתונים מטבלת המשמרות במסד הנתונים.</p>
+    </section>
+    <section class="panel full" id="desks">
+      <h2>🪑 ניהול עמדות עבודה</h2>
+      <p class="hint">הוספה והסרה של עמדות עבודה הזמינות לעובדים להזמנה. במערכת הראשונית יש 9 עמדות. שעות ההתחלה והסיום ייבחרו בדף העמדות של העובדים.</p>
+      <form id="deskForm">
+        <div class="report">
+          <label class="field">שם העמדה<input id="deskName" name="name" required maxlength="60" placeholder="למשל: עמדה 10"></label>
+          <button type="submit" class="primary">＋ הוספת עמדה</button>
+        </div>
+      </form>
+      <div id="deskFeedback" class="feedback" aria-live="polite"></div>
+      <p class="hint" style="margin:8px 0 12px">מספר עמדות זמינות: <strong id="deskCount">9</strong></p>
+      <div id="deskList" class="desk-grid"></div>
+      <p class="report-note">העמדות נשמרות לצורך הדגמה בדפדפן בלבד. בעתיד הסרת עמדה עם הזמנות קיימות תחייב טיפול מתאים בהזמנות דרך השרת.</p>
+    </section>
+    <section class="panel full" id="receipts">
+      <h2>🧾 מעקב קבלות חודשי</h2>
+      <p class="hint">צפייה בעובדים שסימנו שיש להם קבלות להעביר. עובד שלא סימן יופיע כ"אין קבלות" (ברירת המחדל).</p>
+      <label class="field receipts-month-picker">חודש לבדיקה<input type="month" id="receiptsAdminMonth"></label>
+      <p id="receiptsSummary" class="receipts-summary"></p>
+      <div class="table-wrap"><table><thead><tr><th>שם העובד/ת</th><th>סטטוס קבלות</th></tr></thead><tbody id="receiptsAdminRows"></tbody></table></div>
+      <p class="report-note">להדגמה: הסימון של דנה כהן בדף העובדים משותף לדף זה כאשר פותחים את שני הקבצים מאותו מקור בדפדפן. במערכת האמיתית כל עובד מזוהה דרך חשבון Laravel והנתונים נשמרים במסד הנתונים.</p>
+    </section>
+  </div>
+  <p class="footer-note">אב־טיפוס בלבד — נתוני הדגמה נשמרים בדפדפן הזה; אין כאן אימות משתמשים או שרת.</p>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const storageKey = "shift_admin_prototype_v1";
+const initial = {
+  users:[{id:1,first:"דנה",last:"כהן",username:"dana",gender:"female",role:"worker",birthday:"1998-04-12",dates:["2026-10-11","2026-10-13","2026-10-15"]},{id:2,first:"יוסי",last:"אברהם",username:"yossi",gender:"male",role:"worker",birthday:"1995-07-22",dates:["2026-10-12","2026-10-14"]}],
+  events:[{id:1,title:"יום גיבוש",date:"2026-10-22",description:"פעילות צוותית"}],
+  blocks:[{date:"2026-10-29",reason:"המשרד סגור"}]
+};
+let data;
+try {data=JSON.parse(localStorage.getItem(storageKey)) || structuredClone(initial);}catch{data=structuredClone(initial);}
+if(!Array.isArray(data.users)||!Array.isArray(data.events)||!Array.isArray(data.blocks)) data=structuredClone(initial);
+function save(){localStorage.setItem(storageKey,JSON.stringify(data));}
+function displayDate(value){if(!value)return "";const [y,m,d]=value.split("-");return `${d}/${m}/${y}`;}
+function item(parent,title,detail,action){const row=document.createElement("div");row.className="item";const info=document.createElement("div");const strong=document.createElement("strong");strong.textContent=title;const small=document.createElement("small");small.textContent=detail;info.append(strong,small);row.append(info);if(action)row.append(action);parent.append(row);}
+function removeButton(callback){const b=document.createElement("button");b.type="button";b.className="mini-action";b.textContent="הסרה";b.addEventListener("click",callback);return b;}
+function render(){
+ $("eventCount").textContent=data.events.length;$("blockedCount").textContent=data.blocks.length;
+ $("userList").replaceChildren();data.users.forEach(u=>item($("userList"),`${u.first} ${u.last}`,`${u.role==="manager"?"מנהל/ת":"עובד/ת"} · @${u.username}`,removeButton(()=>{data.users=data.users.filter(x=>x.id!==u.id);save();render();})));
+ $("eventList").replaceChildren();data.events.sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>item($("eventList"),e.title,`${displayDate(e.date)}${e.description?" · "+e.description:""}`,removeButton(()=>{data.events=data.events.filter(x=>x.id!==e.id);save();render();})));
+ $("blockList").replaceChildren();data.blocks.sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>item($("blockList"),displayDate(b.date),b.reason||"יום חסום",removeButton(()=>{data.blocks=data.blocks.filter(x=>x.date!==b.date);save();render();})));
+ renderReport();renderReceipts();
+}
+function reportData(){const from=$("fromDate").value,to=$("toDate").value;return data.users.filter(u=>u.role==="worker").map(u=>{const dates=[...new Set(u.dates||[])].filter(d=>(!from||d>=from)&&(!to||d<=to)&&!data.blocks.some(b=>b.date===d)).sort();return {name:`${u.first} ${u.last}`,count:dates.length,dates:dates.map(displayDate).join(", ")};});}
+function renderReport(){const body=$("reportRows");body.replaceChildren();reportData().forEach(r=>{const tr=document.createElement("tr");[r.name,String(r.count),r.dates||"—"].forEach(t=>{const td=document.createElement("td");td.textContent=t;tr.append(td);});body.append(tr);});}
+function csvCell(v){return '"'+String(v).replace(/"/g,'""')+'"';}
+$("exportCsv").addEventListener("click",()=>{const from=$("fromDate").value,to=$("toDate").value;if(from&&to&&from>to){$("reportFeedback").textContent="טווח התאריכים שגוי";return;}const rows=[["שם העובד","מספר ימי עבודה","תאריכי עבודה"],...reportData().map(r=>[r.name,r.count,r.dates])];const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(",")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="worker-shifts.csv";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);$("reportFeedback").textContent="קובץ CSV נוצר מנתוני ההדגמה.";});
+$("fromDate").addEventListener("change",renderReport);$("toDate").addEventListener("change",renderReport);
+$("userForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget);const username=String(f.get("username")).trim();if(data.users.some(u=>u.username===username)){$("userFeedback").textContent="שם המשתמש כבר קיים";return;}data.users.push({id:Date.now(),first:String(f.get("first")).trim(),last:String(f.get("last")).trim(),username,role:f.get("role"),gender:f.get("gender"),birthday:f.get("birthday"),dates:[]});save();e.currentTarget.reset();$("userFeedback").textContent="המשתמש נוסף להדגמה בלבד (אין שמירה של סיסמה או תמונה).";render();});
+$("eventForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget);data.events.push({id:Date.now(),title:String(f.get("title")).trim(),date:f.get("date"),description:String(f.get("description")).trim()});save();e.currentTarget.reset();$("eventFeedback").textContent="האירוע נוסף";render();});
+$("blockForm").addEventListener("submit",e=>{e.preventDefault();const f=new FormData(e.currentTarget);const date=f.get("date");if(data.blocks.some(b=>b.date===date)){$("blockFeedback").textContent="יום זה כבר חסום";return;}data.blocks.push({date,reason:String(f.get("reason")).trim()});save();e.currentTarget.reset();$("blockFeedback").textContent="היום נחסם בהדגמה";render();});
+function hideMenus(){$("siteMenu").hidden=true;$("profileMenu").hidden=true;$("menuButton").setAttribute("aria-expanded","false");$("profileButton").setAttribute("aria-expanded","false");}
+function toggle(buttonId,menuId){const open=$(menuId).hidden;hideMenus();$(menuId).hidden=!open;$(buttonId).setAttribute("aria-expanded",String(open));}
+$("menuButton").addEventListener("click",()=>toggle("menuButton","siteMenu"));$("profileButton").addEventListener("click",()=>toggle("profileButton","profileMenu"));document.addEventListener("click",e=>{if(!e.target.closest(".menu-wrap"))hideMenus();});document.addEventListener("keydown",e=>{if(e.key==="Escape")hideMenus();});
+document.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>{const id=b.dataset.scroll;document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});hideMenus();}));
+$("profileDemo").addEventListener("click",()=>{hideMenus();alert("עריכת פרופיל תתחבר למערכת Laravel בהמשך.");});$("logoutDemo").addEventListener("click",()=>{hideMenus();alert("התנתקות תתווסף עם אימות Laravel.");});
+const avatarSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" fill="#d5dcfb"/><circle cx="48" cy="37" r="17" fill="#6775c8"/><path d="M16 92c1-26 16-39 32-39s31 13 32 39" fill="#6775c8"/></svg>';
+$("avatar").src="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(avatarSvg);
+// Desks are stored separately so existing prototype data remains unchanged.
+const deskStorageKey = "shift_admin_desks_v1";
+let desks;
+try {
+  const savedDesks = JSON.parse(localStorage.getItem(deskStorageKey));
+  desks = Array.isArray(savedDesks) ? savedDesks : Array.from({length:9}, (_,i)=>({id:i+1,name:`עמדה ${i+1}`}));
+} catch {
+  desks = Array.from({length:9}, (_,i)=>({id:i+1,name:`עמדה ${i+1}`}));
+}
+function saveDesks(){localStorage.setItem(deskStorageKey,JSON.stringify(desks));}
+function renderDesks(){
+  $("deskList").replaceChildren();
+  $("deskCount").textContent=desks.length;
+  desks.forEach(desk=>{
+    const tile=document.createElement("div");tile.className="desk-tile";
+    const info=document.createElement("div");
+    const name=document.createElement("strong");name.textContent=desk.name;
+    const detail=document.createElement("small");detail.textContent="עמדת עבודה";
+    info.append(name,detail);
+    const remove=removeButton(()=>{
+      if(!confirm(`להסיר את ${desk.name}?`))return;
+      desks=desks.filter(d=>d.id!==desk.id);
+      saveDesks();renderDesks();
+      $("deskFeedback").textContent=`${desk.name} הוסרה מהדגמה.`;
+    });
+    remove.setAttribute("aria-label",`הסרת ${desk.name}`);
+    tile.append(info,remove);$("deskList").append(tile);
+  });
+  if(!desks.length){$("deskList").textContent="אין כרגע עמדות. ניתן להוסיף עמדה באמצעות הטופס.";}
+}
+$("deskForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("deskName").value.trim();
+  if(!name)return;
+  if(desks.some(d=>d.name===name)){$("deskFeedback").textContent="כבר קיימת עמדה בשם זה.";return;}
+  desks.push({id:Math.max(0,...desks.map(d=>d.id))+1,name});
+  saveDesks();renderDesks();e.currentTarget.reset();
+  $("deskFeedback").textContent=`${name} נוספה בהצלחה.`;
+});
+const receiptsStorageKey="shift_monthly_receipts_demo_v1";
+function renderReceipts(){
+  let records={};
+  try{records=JSON.parse(localStorage.getItem(receiptsStorageKey)||"{}");}catch{}
+  const month=$("receiptsAdminMonth").value;
+  const workers=data.users.filter(u=>u.role==="worker");
+  const body=$("receiptsAdminRows");body.replaceChildren();
+  let checked=0;
+  workers.forEach(u=>{
+    const has=!!records[u.username]?.[month];if(has)checked++;
+    const row=document.createElement("tr");
+    const name=document.createElement("td");name.textContent=`${u.first} ${u.last}`;
+    const status=document.createElement("td");status.textContent=has?"יש קבלות":"אין קבלות";
+    status.className=has?"receipts-positive":"receipts-negative";
+    row.append(name,status);body.append(row);
+  });
+  $("receiptsSummary").textContent=`${checked} מתוך ${workers.length} עובדים סימנו שיש להם קבלות בחודש שנבחר.`;
+}
+$("receiptsAdminMonth").value=`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,"0")}`;
+$("receiptsAdminMonth").addEventListener("change",renderReceipts);
+render();
+renderDesks();
+window.addEventListener("storage",e=>{if(e.key===receiptsStorageKey)renderReceipts();});
+</script>
+</body>
+</html>

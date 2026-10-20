@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הפרופיל שלי | מערכת נוכחות</title>
+<style>
+:root{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#262c3b;background:#f4f6fb;--indigo:#453bcc;--blue:#4b81dc;--line:#dfe5ef;--shadow:0 7px 23px #202c5a16}
+*{box-sizing:border-box}html{scrollbar-gutter:stable}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f29f38;outline-offset:2px}
+.topbar{background:linear-gradient(110deg,#3457be,#4636bf);color:#fff;box-shadow:var(--shadow)}.top-inner{max-width:1400px;margin:auto;min-height:76px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{font-size:23px;font-weight:800}.header-actions{display:flex;align-items:center;gap:12px}.header-action{border:1px solid #ffffff65;color:#fff;background:#ffffff12;border-radius:12px;height:47px;min-width:48px;padding:7px 12px;font-size:25px}.brand-logo{width:49px;height:49px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #ffffffc9}.avatar{width:41px;height:41px;border-radius:50%;object-fit:cover;background:#d7dff8;border:2px solid #fff}.profile-trigger{display:flex;align-items:center;gap:8px;font-size:14px}.profile-trigger span{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.menu-wrap{position:relative}.dropdown{position:absolute;top:calc(100% + 9px);right:0;min-width:215px;background:#fff;color:#252d3c;border:1px solid #e1e5ee;box-shadow:var(--shadow);border-radius:12px;overflow:hidden;z-index:15;padding:6px}.dropdown[hidden]{display:none}.dropdown a,.dropdown button{width:100%;text-align:right;display:block;border:0;background:transparent;padding:12px;border-radius:8px;color:#242b37;text-decoration:none;font-size:14px}.dropdown a:hover,.dropdown button:hover{background:#eff2ff}.dropdown .signout{color:#b32264}.menu-caption{font-size:12px;color:#647089;padding:9px 12px 5px}
+main{max-width:1150px;margin:auto;padding:23px 16px 55px}.page-title,.panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid #e8ebf3}.page-title{padding:20px 24px;margin-bottom:20px}.page-title h1{margin:0 0 7px;font-size:25px}.page-title p{margin:0;font-size:14px;color:#647089;line-height:1.6}.profile-layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}.panel{padding:23px;margin-bottom:20px}.panel h2{margin:0 0 8px;font-size:21px}.hint{font-size:13px;color:#647089;line-height:1.6;margin:0 0 19px}.identity{text-align:center}.identity-photo{width:126px;height:126px;border-radius:50%;object-fit:cover;border:4px solid #f2f4ff;box-shadow:0 4px 14px #262c3b20;margin:0 auto 13px;background:#d7dff8}.identity h2{margin:0 0 5px}.identity-role{display:inline-block;margin:3px auto 16px;background:#f0f3ff;color:#384aa7;border-radius:999px;font-size:13px;font-weight:bold;padding:7px 13px}.identity-summary{border-top:1px solid var(--line);padding-top:16px;text-align:right;color:#647089;font-size:13px;display:grid;gap:11px}.identity-summary div{display:flex;justify-content:space-between;gap:10px}.identity-summary strong{color:#262c3b}.content-column{min-width:0}.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:grid;gap:8px;font-size:14px;font-weight:700;margin-bottom:15px}.field input,.field select{width:100%;height:46px;border:1px solid #c5cddd;border-radius:10px;padding:10px 12px;color:#262c3b;background:#fff}.field input[readonly]{background:#f3f5f9;color:#687489;cursor:default}.wide{grid-column:1/-1}.photo-input{margin-top:16px}.photo-hint{font-size:12px;color:#647089;font-weight:400;line-height:1.5}.primary{border:0;background:linear-gradient(110deg,#4563d8,#598ee1);color:#fff;border-radius:12px;font-size:16px;padding:12px 20px;box-shadow:0 3px 9px #1d28752a;font-weight:700}.primary:hover{filter:brightness(1.07)}.muted-btn{border:1px solid #d8e0ef;background:#f0f3ff;color:#3647a1;border-radius:12px;padding:11px 18px;font-weight:700}.form-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:5px}.message{font-size:13px;min-height:18px;color:#236b46;margin-top:10px}.message.error{color:#b32264}.password-note{background:#f6f8ff;border:1px solid var(--line);padding:12px 15px;border-radius:12px;color:#5c6680;font-size:13px;line-height:1.6;margin-bottom:17px}.password-wrap{position:relative}.password-wrap input{padding-left:61px}.reveal{position:absolute;left:7px;top:6px;border:0;border-radius:7px;background:#eef2ff;color:#384aa7;padding:7px 10px;font-size:13px}.footer-note{text-align:center;font-size:13px;color:#687489;margin-top:8px}
+@media(max-width:700px){html{scrollbar-gutter:auto}.top-inner{min-height:68px;padding:9px 12px}.brand{font-size:17px}.header-actions{gap:8px}.brand-logo{height:42px;width:42px}.header-action{height:43px;min-width:43px}.profile-trigger span{display:none}.dropdown.account-menu{right:auto;left:0}main{padding:17px 9px 40px}.page-title{padding:17px}.page-title h1{font-size:21px}.profile-layout{grid-template-columns:1fr;gap:0}.panel{padding:18px}.identity-photo{width:105px;height:105px}.fields{grid-template-columns:1fr;gap:0}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="top-inner">
+  <div class="header-actions">
+    <img class="brand-logo" src="enter_digital_studio.svg" alt="לוגו Enter Digital Studio">
+    <div class="menu-wrap"><button id="menuButton" class="header-action" type="button" aria-label="פתח תפריט אתר" aria-expanded="false" aria-controls="siteMenu">☰</button>
+      <nav id="siteMenu" class="dropdown" aria-label="תפריט אתר" hidden><div class="menu-caption">דפי המערכת</div><a href="shift-calendar-with-coworkers.html">📅 לוח נוכחות</a><a href="worker-desks-prototype.html">🖥️ עמדות</a><a href="worker-profile-prototype.html" aria-current="page">👤 הפרופיל שלי ✓</a></nav>
+    </div><strong class="brand">מערכת נוכחות</strong>
+  </div>
+  <div class="menu-wrap"><button id="profileButton" class="header-action profile-trigger" type="button" aria-expanded="false" aria-controls="profileMenu"><img id="headerAvatar" class="avatar" alt="תמונת משתמש"><span id="headerName">דנה כהן</span>⌄</button>
+    <div id="profileMenu" class="dropdown account-menu" hidden><div id="profileCaption" class="menu-caption"></div><a href="worker-profile-prototype.html" aria-current="page">👤 הפרופיל שלי ✓</a><button id="logout" type="button" class="signout">↪ התנתקות</button></div>
+  </div>
+</div></header>
+<main>
+  <section class="page-title"><h1>👤 הפרופיל שלי</h1><p>כאן אפשר לעדכן פרטים אישיים, לבחור תמונת פרופיל ולשנות את הסיסמה.</p></section>
+  <div class="profile-layout">
+    <aside class="panel identity" aria-label="סיכום פרופיל">
+      <img id="profileAvatar" class="identity-photo" alt="תמונת הפרופיל">
+      <h2 id="displayName">דנה כהן</h2><span class="identity-role" id="roleLabel">עובד/ת</span>
+      <div class="identity-summary"><div><span>שם משתמש</span><strong id="summaryUsername">dana</strong></div><div><span>תפקיד</span><strong id="summaryRole">עובד/ת</strong></div><div><span>תאריך לידה</span><strong id="summaryBirthday">לא הוגדר</strong></div></div>
+    </aside>
+    <div class="content-column">
+      <section class="panel"><h2>פרטים אישיים</h2><p class="hint">השם ותמונת הפרופיל שלך ישמשו גם ברשימת העובדים שנמצאים במשמרת.</p>
+        <form id="detailsForm">
+          <div class="fields"><label class="field">שם פרטי<input name="firstName" required maxlength="60" autocomplete="given-name"></label><label class="field">שם משפחה<input name="lastName" required maxlength="60" autocomplete="family-name"></label>
+          <label class="field">שם משתמש<input name="username" readonly title="שינוי שם משתמש יתבצע בעתיד דרך ניהול החשבונות"></label><label class="field">מגדר<select name="gender"><option value="female">אישה</option><option value="male">גבר</option><option value="other">אחר / לא מעוניין לציין</option></select></label>
+          <label class="field">תאריך לידה<input name="birthday" type="date" autocomplete="bday"></label><label class="field">תמונת פרופיל<input name="image" type="file" accept="image/jpeg,image/png,image/webp"><span class="photo-hint">JPG, PNG או WebP. עד 350KB בהדגמה המקומית.</span></label></div>
+          <div class="form-actions"><button type="submit" class="primary">שמירת פרטים</button><button id="resetDetails" type="button" class="muted-btn">ביטול שינויים</button></div><div class="message" id="detailsMessage" role="status"></div>
+        </form>
+      </section>
+      <section class="panel"><h2>🔒 שינוי סיסמה</h2><p class="hint">מומלץ לבחור סיסמה ייחודית שלא משמשת אותך באתר אחר.</p>
+        <div class="password-note">זהו אב־טיפוס. הסיסמה לא נשמרת כאן ולא מתבצע שינוי אמיתי. בגרסת Laravel המערכת תבדוק את הסיסמה הנוכחית ותשמור רק סיסמה מגובבת.</div>
+        <form id="passwordForm"><label class="field">סיסמה נוכחית<div class="password-wrap"><input name="currentPassword" type="password" autocomplete="current-password" required><button class="reveal" type="button">הצג</button></div></label>
+          <div class="fields"><label class="field">סיסמה חדשה<div class="password-wrap"><input name="newPassword" type="password" minlength="8" autocomplete="new-password" required><button class="reveal" type="button">הצג</button></div></label><label class="field">אימות סיסמה חדשה<div class="password-wrap"><input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required><button class="reveal" type="button">הצג</button></div></label></div>
+          <button type="submit" class="primary">עדכון סיסמה</button><div class="message" id="passwordMessage" role="status"></div>
+        </form>
+      </section>
+    </div>
+  </div>
+  <p class="footer-note">אב־טיפוס בלבד — פרטי הפרופיל נשמרים בדפדפן הזה, ללא חיבור לשרת.</p>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const storageKey="shift_demo_profile_v2";
+const defaultAvatar="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="48" fill="#d5dcfb"/><circle cx="48" cy="37" r="17" fill="#6775c8"/><path d="M16 92c1-26 16-39 32-39s31 13 32 39" fill="#6775c8"/></svg>');
+let profile;try{profile=JSON.parse(localStorage.getItem(storageKey))||{};}catch{profile={};}
+profile={firstName:"דנה",lastName:"כהן",username:"dana",gender:"female",birthday:"",role:"worker",image:"",...profile};
+let previewImage=profile.image||"";
+function roleName(){return profile.role==="manager"?(profile.gender==="female"?"מנהלת":"מנהל"):"עובד/ת";}
+function dateDisplay(s){if(!s)return "לא הוגדר";const [y,m,d]=s.split("-");return `${d}/${m}/${y}`;}
+function render(){const name=[profile.firstName,profile.lastName].filter(Boolean).join(" ");$("headerName").textContent=name;$("displayName").textContent=name;$("profileCaption").textContent=`${name} · ${roleName()}`;$("roleLabel").textContent=roleName();$("summaryRole").textContent=roleName();$("summaryUsername").textContent=profile.username;$("summaryBirthday").textContent=dateDisplay(profile.birthday);$("headerAvatar").src=profile.image||defaultAvatar;$("profileAvatar").src=previewImage||profile.image||defaultAvatar;}
+function fillForm(){const f=$("detailsForm");f.elements.firstName.value=profile.firstName;f.elements.lastName.value=profile.lastName;f.elements.username.value=profile.username;f.elements.gender.value=profile.gender;f.elements.birthday.value=profile.birthday||"";f.elements.image.value="";previewImage=profile.image||"";render();}
+function hideMenus(){$("siteMenu").hidden=true;$("profileMenu").hidden=true;$("menuButton").setAttribute("aria-expanded","false");$("profileButton").setAttribute("aria-expanded","false");}
+function toggle(buttonId,menuId){const open=$(menuId).hidden;hideMenus();$(menuId).hidden=!open;$(buttonId).setAttribute("aria-expanded",String(open));}
+$("menuButton").addEventListener("click",()=>toggle("menuButton","siteMenu"));$("profileButton").addEventListener("click",()=>toggle("profileButton","profileMenu"));document.addEventListener("click",e=>{if(!e.target.closest(".menu-wrap"))hideMenus();});document.addEventListener("keydown",e=>{if(e.key==="Escape")hideMenus();});
+$("logout").addEventListener("click",()=>{hideMenus();alert("התנתקות אמיתית תתווסף ב-Laravel.");});
+$("detailsForm").elements.image.addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;const msg=$("detailsMessage");if(!["image/jpeg","image/png","image/webp"].includes(file.type)||file.size>350000){msg.className="message error";msg.textContent="יש לבחור תמונת JPG, PNG או WebP עד 350KB.";e.target.value="";return;}const reader=new FileReader();reader.onload=()=>{previewImage=reader.result;$("profileAvatar").src=previewImage;};reader.readAsDataURL(file);msg.textContent="";});
+$("detailsForm").addEventListener("submit",e=>{e.preventDefault();const f=e.currentTarget;const first=f.elements.firstName.value.trim(),last=f.elements.lastName.value.trim();if(!first||!last)return;const updated={...profile,firstName:first,lastName:last,gender:f.elements.gender.value,birthday:f.elements.birthday.value,image:previewImage};try{localStorage.setItem(storageKey,JSON.stringify(updated));profile=updated;render();$("detailsMessage").className="message";$("detailsMessage").textContent="הפרטים נשמרו בהדגמה המקומית.";}catch{$("detailsMessage").className="message error";$("detailsMessage").textContent="לא ניתן לשמור את התמונה בדפדפן. נסו תמונה קטנה יותר.";}});
+$("resetDetails").addEventListener("click",()=>{$("detailsMessage").textContent="";fillForm();});
+document.querySelectorAll(".reveal").forEach(button=>button.addEventListener("click",()=>{const input=button.parentElement.querySelector("input");const visible=input.type==="password";input.type=visible?"text":"password";button.textContent=visible?"הסתר":"הצג";}));
+$("passwordForm").addEventListener("submit",e=>{e.preventDefault();const f=e.currentTarget,pass=f.elements.newPassword.value,confirm=f.elements.confirmPassword.value,msg=$("passwordMessage");if(pass!==confirm){msg.className="message error";msg.textContent="הסיסמאות החדשות אינן תואמות.";return;}msg.className="message";msg.textContent="הטופס תקין להדגמה בלבד. הסיסמה לא שונתה או נשמרה.";f.reset();});
+fillForm();
+</script>
+</body>
+</html>

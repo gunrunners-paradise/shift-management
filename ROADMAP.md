@@ -1,0 +1,176 @@
+# ROADMAP.md — Staged delivery of מערכת נוכחות
+
+> Companion to `AGENTS.md`. **Build one approved feature stage at a time.** The five HTML files are references for the *eventual* website; they are not instructions to implement the entire UI in the first stage.
+
+## 0. Stage authorization and review protocol
+
+**Current status at creation:** no implementation stage has been authorized in this document. **Stage 1 is the next proposed stage**. Wait for an explicit user instruction such as **“Implement Stage 1”** before coding.
+
+Current authorization and review notes are maintained at the end of this document; the creation-time statement above is historical.
+
+For every stage:
+
+1. Read `AGENTS.md`, this roadmap, the **five reference HTML prototypes**, and the relevant existing Laravel code and tests.
+2. State a small plan limited to the stage, including migrations, controllers, Blade, CSS/JS and tests likely to change.
+3. Implement only that scope; reuse working components and keep future feature controls hidden/inactive **without creating fake data or placeholder buttons that appear functional**. Do not create future DB tables or routes ahead of the stage.
+4. Execute relevant automated tests and manual checks (including mobile RTL where appropriate); report exactly what was actually tested.
+5. Summarize changed files, implementation choices, test results, known limitations, a **brief code-reading guide** (the route/controller/model/view path for an example request), and the shortest practical way for the user to verify the feature on their machine or Raspberry Pi.
+6. **STOP AND WAIT** for the user's explicit acceptance and approval to begin the next stage. Do not infer approval from silence or from a successful test run.
+
+Stage checkboxes may be marked complete **only after user approval**. The agent may update progress notes, but must never mark an unfinished/unauthorized stage complete or move itself forward.
+
+### Feature stages
+
+| Stage | Goal | Status |
+|---|---|---|
+| 1 | Laravel foundation, login, accounts and role-specific layouts | [ ] Delivered; progression to Stage 2 authorized on 2026-10-20 |
+| 2 | **Five-period** worker shift calendar and manager blocked dates | [ ] Delivered; progression to Stage 3 authorized on 2026-10-20 |
+| 3 | Personal profiles, birthdays and today's coworkers | [ ] Delivered; progression to Stage 4 authorized on 2026-10-20 |
+| 4 | Calendar events, holidays and monthly receipts | [ ] Delivered for review; user approval pending |
+| 5 | Desk selection, reservations and manager desk administration | [ ] Locked |
+| 6 | On-demand CSV download (scheduled workdays) | [ ] Locked |
+| 7 | End-to-end review, security and Raspberry Pi deployment | [ ] Locked |
+
+Security, validation, test coverage and simple Raspberry Pi compatibility are **ongoing obligations**, not tasks to postpone to Stage 7. The final deployment/hardening stage is not a substitute for testing earlier stages.
+
+### Source filenames in the repository root
+
+`AGENTS.md`, `ROADMAP.md`, `admin-management.html`, `login-prototype.html`, `shift-calendar.html`, `worker-desks-prototype.html`, and `worker-profile-prototype.html` are peers in the project root. Read the **exact** names. `shift-calendar.html` should be the updated five-row visual reference; if it is a stale three-row version, follow the latest five-period business rules and ask the user to replace the prototype when practical.
+
+At each stage, write straightforward, **human-readable, professionally commented code**. In the completion report, trace at least one key request through route → controller → service/model → DB → Blade view → optional JavaScript so the owner can **study** the code. Prefer clear simple Laravel conventions; no unnecessary abstractions.
+
+## Stage 1 — Foundation, authentication and minimal account management
+
+**Goal:** a real Laravel MVC web app with a working login and role-specific navigation, usable against MariaDB. No calendar, receipt, event, desk, or CSV feature is implemented yet.
+
+**Scope:**
+
+- Initialize or adapt the supported Laravel version; configure MVC, Eloquent, Blade, MariaDB/InnoDB, Hebrew/RTL, `Asia/Jerusalem`, Apache `public/` compatibility, `.env.example` and `.gitignore`.
+- Establish common typography/colors/buttons/cards/form/dropdown CSS and **two** Blade layouts: guest login (minimal bar; logo in login card) and authenticated layout (circular logo at RTL right, hamburger immediately left, user menu at opposite side).
+- Implement username/password login, secure session logout, invalid-credentials handling, rate limiting, active-account checks, CSRF and guest/auth/role middleware. **Workers and managers cannot enter one another's role-exclusive pages.**
+- Bootstrap the first manager **securely via a documented one-time interactive CLI/setup command**: ask the operator to choose a username and a hidden, confirmed password; do not use default `admin/admin` credentials. After account creation, **show the username and configured login URL** and explain how to log in; the operator knows their own chosen password, which must never appear in terminal output, logs, or source files. If a generated temporary password is used, reveal it securely once and force change at first login. Re-running the command must not duplicate the account or overwrite existing credentials. Manager dashboard starts with the **account-management section only**; create worker and manager accounts, list them, support safe deactivation (and protect against losing last active manager). Use first/last name, username, password, gender, birthday, role; photo uploads can be completed in Stage 3.
+- Provide basic profile-menu navigation only for features that already exist. Profile editing is Stage 3; don't link to a dead route. Initial worker landing route can display a simple truthful "shift calendar coming in Stage 2" page, **not** a mock working calendar. Manager lands on admin management. Manager cannot use worker scheduling features.
+- Keep the five HTML files untouched; incorporate their design language into the new layouts rather than shipping prototype JS/localStorage as authentication.
+
+**Acceptance and tests:** login/logout, role-based redirects, disabled-user login refusal, username uniqueness, worker self-signup forbidden, manager can create manager, worker cannot call manager actions, CSRF, password hashes, mobile header. Verify that first-manager bootstrap requires no known default credentials, prompts securely for a chosen password, displays the username and login URL, supports successful login, and does not create duplicate managers or reset the password if re-run. Document the CLI setup command, local MariaDB setup and the RPi's `.env` configuration.
+
+**Stop gate:** user has the initial manager username and login URL, knows the password chosen during setup, can sign in as that manager, create a worker, and verify role behavior; user approves Stage 1 before Stage 2.
+
+## Stage 2 — Worker shift calendar and blocked dates
+
+**Goal:** workers schedule their own shifts; managers can block/reopen days safely.
+
+**Scope:**
+
+- `shifts`, `blocked_dates`, and required cancellation-history/audit mechanism. Preserve history without defeating the **one active shift per worker/date** rule.
+- Replace the Stage 1 worker placeholder with the real **Blade-rendered** Sunday–Thursday weekly calendar. Previous/next/current-week navigation, date labels, today's indicator, selection dialog and mobile layout. **Exactly five period rows** as specified by `AGENTS.md`: `09_13`, `10_14`, `11_15`, `12_16` and `full`. Use the layout and theme from **`shift-calendar.html`**; if an old copy has only three rows, the **approved five-row rule overrides it**. Keep a compact, readable grid across desktop/mobile.
+- Fixed shift categories: `09_13` (09:00–13:00), `10_14` (10:00–14:00), `11_15` (11:00–15:00), `12_16` (12:00–16:00), `full` (09:00–16:30). **No old morning/afternoon category.** Define the five code/label/start/end/duration records **once** in a readable config or enum, referenced by validation, server-rendered calendar and coworker labels. Prefer normal string-backed codes, so future schedule changes do not require altering a DB enum.
+- Select office shift (`משמרת חממה`) or no shift (`בלי משמרת`); switching periods **replaces** the one active selection per day. White/selected purple/other four pale pink/blocked **all five strong red** states; other available period boxes remain selectable. Past/too-far dates are read-only. Preserve cancellation history.
+- Worker date validation: **today through today+28 calendar days**, Sunday–Thursday; changing today's shifts is permitted all day even after shift start. No cap on worker capacity. Show only logged-in worker's shifts in main calendar.
+- Add actual manager **blocked-date** section and quick action to admin page. Managers can block **today or future**, optional reason; confirm existing shifts will be canceled and log cancellations. Block prevents new selections. On unblock, canceled shifts remain canceled and workers must rebook. Blocked dates may be beyond the worker's 28-day window.
+- Structure closure logic so Stage 5 can add desk cancellation, without creating unused desk tables now.
+- Apply worker deactivation to future shifts and today's upcoming or in-progress shift. The user confirmed cancellation of in-progress shifts on 2026-10-20. Preserve earlier dates and completed shifts, including today's shift at or after its configured end time.
+
+**Acceptance and tests:** only the five approved codes accepted; all five time labels render correctly in Blade on desktop/mobile; obsolete `morning`/`afternoon` inputs rejected; worker cannot view/modify another worker's shifts; manager cannot self-schedule; one active selection per day even though four-hour periods overlap; replacing/clearing works and is recorded in history; user cannot book Fri/Sat/past/+29 days; today's shift editable even after start; blocked-day mutations rejected; cancellation records retained; reopen does not resurrect bookings; manager cannot block past days; concurrently blocking a date and creating a shift cannot leave an active booking on a blocked date. Test against MariaDB where DB-specific integrity is involved.
+
+**Stop gate:** worker and manager exercise this scheduling/closure workflow, review mobile display, and approve Stage 2.
+
+## Stage 3 — Profile page, birthdays and coworkers
+
+**Goal:** users can maintain their own profiles; the worker calendar displays accurate today's-person information.
+
+**Scope:**
+
+- Adapt `worker-profile-prototype.html`: own profile view, name, gender, birthday, uploaded image, read-only username, distinct current/new/confirm password form with current-password verification. Display manager title based on gender; managers access **profile**, not worker bookings. Secure storage/validation of uploaded files.
+- Keep one shared profile dropdown in authenticated pages, with a working `הפרופיל שלי` route and logout. The profile link appears only in the avatar/account dropdown, never in the hamburger menu.
+- Birthday notice **below** the worker calendar, as confirmed by the user on 2026-10-20. Show only real active worker birthdays matching today's day/month, with multiple names possible and no birth year/age. February 29 birthdays appear on **February 28 in non-leap years**, and February 29 in leap years, as confirmed by the user. Never show permanently hardcoded birthdays.
+- Separate **`מי עובד איתי היום?`** list **beneath** calendar. Initial Blade list of workers scheduled for **actual today** (including viewer when registered), with name/photo/**one of the five approved shift period labels**; exclude managers and canceled shifts. A small authenticated JSON route can be polled ~30 seconds, paused in background and immediately refreshed on focus or one's own scheduling change. No WebSockets, no full calendar DOM re-generation.
+- All extra calendar information belongs **below the grid**, including later-stage notices and receipts once those features are authorized. Keep the five existing period rows and scheduling behavior intact.
+
+**Acceptance and tests:** worker cannot edit others' accounts, manager cannot edit via worker self-service, password updated only with correct current password, safe photo upload, shared header consistency; birthday appears only on matching day; multiple birthdays; roster reflects concurrent workers correctly and excludes canceled shifts/managers; local initial render works without JS.
+
+**Stop gate:** user checks profile forms and roster/birthday layout on desktop/mobile, then approves Stage 3.
+
+## Stage 4 — Manager events, holidays and monthly receipts
+
+**Goal:** informative calendar announcements and a simple two-state receipts report.
+
+**Scope:**
+
+- Manager's **calendar events** section (title/date/optional description, list/edit/remove as needed); managers **manually create and label holidays**. Initially single-day events as shown by prototype; ask before multi-day behavior. Event or holiday **does not** block a workday; manager date blocking remains an independent action.
+- Worker calendar **holiday/event announcement** below the calendar, only when today's recorded event/holiday matches; preserve the separate birthday banner below the calendar. No permanently-on sample `חג לדוגמה היום!`.
+- Monthly worker boolean **`יש לי קבלות החודש`**, placed below the calendar per the user's latest layout decision. Checked=yes, unchecked=no, missing DB row=no; exactly one worker/month record, month tied to actual calendar month (not the selected week). Managers cannot tick it as workers.
+- Manager `מעקב קבלות חודשי` section: month picker, worker list, true/false states and count of workers with receipts; admin quick action scrolls there. Confirmed on 2026-10-20: workers may update **the actual current month only**. Reject past/future writes and stale forms crossing a month boundary; managers may view selected months.
+
+**Acceptance and tests:** event/holiday alone never blocks shifts/desks; only today's events displayed in worker announcement; receipt defaults false with no third state; one worker cannot write another's month, previous months remain separate; manager can view chosen month; only authorized manager can maintain events/holidays.
+
+**Stop gate:** user reviews announcements and receipts across two simulated months; approves Stage 4.
+
+## Stage 5 — Workstation reservations and desk administration
+
+**Goal:** a fully functional worker desk booking page and manager desk controls, with correct multi-user concurrency.
+
+**Scope:**
+
+- Implement `desks` and `desk_reservations` and canceled-history/status tracking; create **nine initial active desks** with stable IDs; do not reseed duplicates.
+- Worker page from `worker-desks-prototype.html`: date navigation, grid of available/partly occupied desks, selected desk/booking panel, busy intervals, worker's own bookings, and cancellation confirmation. Match desktop/mobile RTL layout and existing shared header.
+- Reservations are **independent of shifts**. Sunday–Thursday; dates today through +28 days; office window **09:00–16:30**. Both endpoints `:00`/`:30`, **minimum 60 minutes**, positive same-day interval, no overnight. Today's new reservation must start **strictly in the future**. A worker may have **only one active reservation on any date**. Workers can edit/cancel only **before** the booking starts.
+- Validate no overlap for any same desk/day. Lock consistently in MariaDB transaction to prevent (a) two users racing for same desk/time and (b) one user racing to get two desks. Permit back-to-back times. Distinguish canceled bookings from active.
+- Add manager desk management section and quick action: add and safely **deactivate** desks; warn/confirm and cancel **future** reservations while preserving history. Ask what to do with **in-progress** bookings if a desk is deactivated before writing that path.
+- Extend manager blocked dates so they cancel/reject desk reservations **as well as shifts**, with one consistent action. Deactivation of a worker now also cancels their future and **in-progress** desk reservations immediately. Unblocking never revives canceled desk bookings.
+
+**Acceptance and tests:** office hours and 30-minute grid enforced server-side; 30-minute reservation rejected (minimum one hour); 09:00–10:00/15:30–16:30 accepted as applicable; 16:00–17:00 rejected; new booking starting before current time rejected; disjoint second booking on same date rejected; overlaps rejected; back-to-back different workers accepted; concurrent booking stress against MariaDB, including a block-date race; user cannot cancel after start; closure/deactivation/desk removal preserve history and prevent new reservations; manager cannot book desks.
+
+**Stop gate:** demonstrate two worker accounts attempting the same slot; show manager blocking/deactivation scenarios and history; user approves Stage 5.
+
+## Stage 6 — On-demand workday CSV download
+
+**Goal:** managers can **manually request** an Excel-friendly Hebrew CSV of scheduled workdays for a selected date range. Reports are **never automatically or periodically generated or delivered**.
+
+**Scope:**
+
+- Admin dashboard report section and quick action. An authorized manager chooses start/end dates and **clicks the Download CSV button**. That action alone triggers the MariaDB-backed query and a safe download/stream (not prototype-localStorage).
+- **No scheduled or recurring exports, cron tasks, background jobs, emails, automatic generation, or precomputed reports.** Merely opening the admin page never generates a CSV.
+- **Scheduled shifts, not verified attendance**. One day per worker/date, whether their selected period is a **4-hour shift or the 7h30m full shift**; only non-canceled records; chronological date list, comma+space separated within a single quoted cell.
+- Column order/names: `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`. Correct UTF-8 BOM for Excel, cell escaping, spreadsheet formula-injection mitigation for user names, and stable handling of Hebrew/dates.
+- Keep records for deactivated workers available for historical export. Before finalizing, confirm any unresolved inclusion preferences (zero-day workers, future-dated scheduled shifts within the requested range).
+
+**Acceptance and tests:** a CSV is generated only after an authorized manager explicitly requests it; dashboard visits generate nothing, and there are no automatic/scheduled reports. A full shift and a 09:00–13:00 shift on different dates count two days, not hours; all five categories count one day each; cancellation never counts; range inclusive; dates are sorted; commas in date cell do not create extra columns; Hebrew readable in Excel; unauthorized worker denied CSV access; historical data preserved.
+
+**Stop gate:** user downloads and inspects a CSV in preferred spreadsheet software; approves Stage 6.
+
+## Stage 7 — Cross-feature audit and Raspberry Pi 4 deployment
+
+**Goal:** review the finished site end-to-end and document a safe, repeatable deployment path for the office pilot and later server migration.
+
+**Scope:**
+
+- Cross-feature tests: role separation, managers creating managers, account deactivation canceling reservations, reopening blocked dates not restoring data, false receipts default, holidays not closing office, concurrent desk booking protection, CSV excluding cancellations.
+- Visually compare all five pages against their **exactly named** references; verify that the worker calendar has the **five latest shift choices even if a stale prototype still shows three**. Correct shared header/buttons/colors/spacing/RTL/mobile behavior without introducing conflicting CSS or losing any approved features. Remove leftover mock data/stub buttons/localStorage demo pathways.
+- Raspberry Pi setup guide: supported PHP/Laravel requirements, Composer, Apache vhost and `public/` document root, MariaDB InnoDB/database permissions, `.env` secrets, migrations, storage/public files, folder permissions, prod config/cache, session/auth hardening, secure HTTPS plan and backup/restore verification.
+- Test on realistic resources (Pi 4 / 8 GB RAM / 32 GB disk) and document storage usage, photo size limits, DB backups to external/off-device media, log rotation, and simple recovery steps. Demonstrate migration to another server via environment config + DB/storage backups, not embedded local paths.
+
+**Acceptance and tests:** end-to-end functionality on deployment environment; `APP_DEBUG=false`; authenticated-only data; no plaintext credentials or seeded default passwords; successful backup **and restore** rehearsal; valid Apache `public/` setup; clear deploy/runbook with real commands validated in the available environment (mark unverified steps honestly).
+
+**Final approval gate:** user signs off on office pilot readiness. Do not claim production-ready merely because local tests pass.
+
+## Decisions deliberately left for their relevant stages
+
+Do **not** let these open topics block Stage 1; do **not** invent answers when implementing them:
+
+- Stage 2: cancellation of an in-progress shift on worker deactivation was confirmed on 2026-10-20. Manager editing an individual worker's shift remains unauthorized.
+- Stage 3: February 29 birthdays use February 28 in non-leap years (confirmed). Manager editing of other users' profiles remains unauthorized.
+- Stage 4: current-month-only worker receipt editing is confirmed. Events remain single-date; multi-day support requires separate approval.
+- Stage 5: already-started desk reservation when a desk itself is deactivated; additional manual manager reservation overrides are not authorized.
+- Stage 6: include/exclude zero-day workers and future planned shifts in a selected export range if user expectations require a specific choice.
+- No email/SMS notifications, worker attendance check-in/out, paid-hours computation, automatic national holiday imports, recurring event engine, or other unrequested features.
+
+## Stage completion notes (maintained as development progresses)
+
+- **Stage 1:** Implemented and verified. On 2026-10-20, the user's explicit request to start Stage 2 authorized progression from Stage 1. The automated authentication/account checks passed; this note does not claim the user independently completed every manual acceptance step.
+- **Stage 2:** Delivered and tested; the user's explicit request to start Stage 3 on 2026-10-20 authorizes progression. See `docs/STAGE2-REPORT.md` for the delivery checks; this note does not claim every manual check was independently completed by the user.
+- **Stage 3:** Delivered and tested; the user's explicit request to start Stage 4 on 2026-10-20 authorizes progression. See `docs/STAGE3-REPORT.md` for the delivery checks; this note does not claim every manual check was independently completed by the user.
+- **Stage 4:** Delivered for review on 2026-10-20; user approval pending. Implemented manager single-date events/manual holidays, actual-today below-grid announcements, current-month-only worker receipts and selectable-month manager yes/no reporting. The local migration is applied; the MariaDB suite passed 227 tests and 1348 assertions with no failures/skips. Desktop/mobile and polling checks passed. See `docs/STAGE4-REPORT.md` for the file inventory, code-reading guide, actual verification and manual review steps. Stage 5 remains locked.
+- **Stage 5–7:** Locked until the preceding stage is explicitly reviewed and the next stage authorized.
+
+When a stage is approved by the user, record the confirmation date and brief tested deliverables here before starting the next authorized stage. Keep the human-approved stage gates intact.

@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>מערכת נוכחות</title>
+  <style>
+
+html {
+    overflow-y: scroll;
+}
+    :root{font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#262c3b;background:#f4f6fb;--indigo:#453bcc;--blue:#4b81dc;--pink:#d52d78;--purple:#86239d;--line:#dfe5ef;--shadow:0 7px 23px #202c5a16}
+    *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f29f38;outline-offset:2px}
+    .topbar{background:linear-gradient(110deg,#3457be,#4636bf);color:#fff;box-shadow:var(--shadow)}.top-inner{max-width:1400px;margin:auto;min-height:76px;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{font-size:23px;font-weight:800}.header-actions{display:flex;align-items:center;gap:12px}.header-action{border:1px solid #ffffff65;color:#fff;background:#ffffff12;border-radius:12px;height:47px;min-width:48px;padding:7px 12px;font-size:25px}.brand-logo{width:49px;height:49px;border-radius:50%;object-fit:cover;background:#fff;border:2px solid #ffffffc9}.avatar{width:41px;height:41px;border-radius:50%;object-fit:cover;background:#d7dff8;border:2px solid #fff}.profile-trigger{display:flex;align-items:center;gap:8px;font-size:14px}.profile-trigger span{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.menu-wrap{position:relative}.dropdown{position:absolute;top:calc(100% + 9px);right:0;min-width:215px;background:#fff;color:#252d3c;border:1px solid #e1e5ee;box-shadow:var(--shadow);border-radius:12px;overflow:hidden;z-index:15;padding:6px}.dropdown[hidden]{display:none}.dropdown button{width:100%;text-align:right;display:block;border:0;background:transparent;padding:12px;border-radius:8px;color:#242b37}.dropdown button:hover{background:#eff2ff}.dropdown .inactive{opacity:.55;cursor:not-allowed}.dropdown .signout{color:#b32264}.menu-caption{font-size:12px;color:#647089;padding:9px 12px 5px}
+    main{max-width:1400px;margin:auto;padding:22px 16px 55px}.week-title{background:#fff;padding:16px 10px;border-radius:16px;box-shadow:var(--shadow);font-size:24px;font-weight:800;text-align:center;margin-bottom:20px}.toolbar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin-bottom:19px}.primary{border:0;background:linear-gradient(110deg,#4563d8,#598ee1);color:#fff;border-radius:12px;font-size:18px;padding:12px 22px;box-shadow:0 3px 9px #1d28752a}.primary:hover{filter:brightness(1.07)}.legend{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:21px}.legend-chip{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:bold}.swatch{width:21px;height:21px;border-radius:6px;border:2px solid #8b2b9a;background:#e6c7e9}.swatch.conflict{background:#f4bbcd;border-color:var(--pink)}.swatch.empty{background:white;border-color:#d0d7e2}.swatch.blocked{background:var(--pink);border-color:#bd2165}.birthdays{max-width:770px;margin:0 auto 20px;background:#fff0f7;border:1px solid #f6b9d4;color:#862551;padding:13px 20px;text-align:center;border-radius:14px;line-height:1.8}.birthdays[hidden]{display:none}
+    .schedule-scroll{overflow-x:auto;border-radius:15px;box-shadow:var(--shadow);background:#fff}.calendar{display:grid;grid-template-columns:135px repeat(5,minmax(100px,1fr));min-width:620px}.cell{border-bottom:1px solid var(--line);border-left:1px solid var(--line);display:flex;justify-content:center;align-items:center;text-align:center}.cell:nth-child(6n){border-left:0}.head{background:linear-gradient(120deg,#465ee0,#4035be);color:white;font-weight:bold;min-height:53px;font-size:18px}.date-cell{position:relative;background:#fff;min-height:58px;font-size:18px}.date-cell.today{background:#fff8cb;font-weight:bold}.today-pill{position:absolute;top:-9px;right:50%;transform:translateX(50%);background:var(--pink);color:white;padding:3px 12px;border-radius:15px;font-size:12px}.row-label{background:#f5f9fc;font-size:17px;font-weight:bold;min-height:116px;padding:10px}.slot{background:#f9fbfd;min-height:116px;padding:12px}.shift{width:100%;max-width:190px;height:85px;border-radius:11px;border:2px solid #d9e0e9;background:white;transition:filter .15s,transform .15s}.shift:hover:not(:disabled){filter:brightness(.96);transform:translateY(-1px)}.shift.selected{border-color:var(--purple);background:#e6c7e9;box-shadow:0 0 0 4px #7536ae18}.shift.conflict{background:#f4bbcd;border-color:#dc4b84}.shift.blocked{background:var(--pink);border-color:#b91e62;cursor:not-allowed}.shift:disabled{opacity:1}.status{font-size:13px;text-align:center;color:#5d687c;margin:14px 0 0}
+    .overlay{position:fixed;inset:0;background:#1013298c;display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}.overlay[hidden]{display:none}.dialog{width:100%;max-width:420px;background:#fff;border-radius:20px;padding:24px;box-shadow:0 22px 65px #0004}.dialog h2{font-size:22px;margin:0 0 10px}.dialog p{margin:0 0 18px;color:#5e6472;line-height:1.5}.dialog-buttons{display:grid;gap:11px}.choice{width:100%;text-align:center;border-radius:10px;padding:13px 10px;border:2px solid #942da4;background:#edd7ef;color:#61216e;font-weight:800}.choice.none{background:#f2f3f6;border-color:#d3dae6;color:#25314a}.secondary{border:0;background:#eff1f5;border-radius:10px;padding:12px 18px;margin-top:14px;width:100%}.field{display:grid;gap:7px;margin:13px 0}.field input,.field select{width:100%;padding:11px;border-radius:9px;border:1px solid #bfc8d8;background:white}.profile-preview{width:82px;height:82px;border-radius:50%;object-fit:cover;background:#e0e5f6}.profile-center{text-align:center}.inline-note{font-size:12px;color:#697083}.admin-preview{display:flex;gap:8px;align-items:center;margin-top:13px;font-size:13px;color:#647089}.admin-preview input{accent-color:var(--indigo)}
+    @media(max-width:700px){.top-inner{min-height:68px;padding:9px 12px}.brand{font-size:18px}.profile-trigger span{display:none}.header-action{height:43px;min-width:43px}.week-title{font-size:18px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar .current{grid-column:1/-1;grid-row:2}.primary{padding:13px 5px;font-size:18px}.calendar{grid-template-columns:86px repeat(5,minmax(57px,1fr));min-width:0}.head{font-size:12px;min-height:54px}.date-cell{font-size:14px;min-height:62px}.row-label{font-size:12px;min-height:102px;padding:5px;overflow-wrap:anywhere}.slot{min-height:102px;padding:5px}.shift{height:76px;border-radius:10px}.legend-chip{font-size:12px}.swatch{width:15px;height:15px}.week-title{margin-bottom:17px}main{padding:17px 8px 40px}.dropdown{right:auto;left:0}.nav-dropdown{right:0;left:auto}}
+    @media(max-width:390px){.brand{font-size:16px}.calendar{grid-template-columns:72px repeat(5,minmax(50px,1fr))}.head{font-size:11px}.shift{height:69px}.slot,.row-label{min-height:90px}.primary{font-size:16px}}
+
+    .receipts-panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--line);padding:18px 22px;margin:0 0 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px}
+    .receipts-panel h2{font-size:19px;margin:0 0 5px}.receipts-panel p{margin:0;color:#647089;font-size:13px;line-height:1.6}
+    .receipts-check{display:flex;align-items:center;gap:11px;background:#f0f3ff;border:1px solid #d8e0ef;border-radius:12px;padding:13px 16px;font-weight:bold;cursor:pointer}
+    .receipts-check input{accent-color:var(--indigo);width:20px;height:20px;cursor:pointer}
+    .receipts-feedback{color:#3d4db0;font-size:12px;min-width:155px;text-align:center}
+    @media(max-width:700px){.receipts-panel{padding:16px}.receipts-check{width:100%}}
+
+  /* Today's coworkers: separate from the server-rendered calendar in the future. */
+  .coworkers-panel{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px;margin-top:22px}
+  .coworkers-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .coworkers-heading h2{margin:0 0 5px;font-size:21px}.coworkers-heading p{margin:0;color:#647089;font-size:13px}
+  .coworkers-count{border-radius:999px;background:#f0f3ff;color:#3c49aa;font-weight:bold;padding:8px 13px;font-size:13px}
+  .coworkers-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .coworker{border:1px solid var(--line);border-radius:12px;padding:13px;display:flex;align-items:center;gap:11px;background:#fafbff}
+  .coworker-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#e0e6fa;color:#384b9e;display:grid;place-items:center;flex-shrink:0;font-size:15px;font-weight:bold}
+  .coworker-details{min-width:0}.coworker-details strong{display:block;font-size:15px;margin-bottom:5px}.coworker-details small{display:block;color:#657086;font-size:13px}
+  .coworkers-empty{color:#647089;background:#f8faff;border-radius:12px;padding:18px;text-align:center;grid-column:1/-1}
+  .coworkers-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:15px;color:#647089;font-size:12px}
+  .coworkers-demo{border:1px solid #d8e0ef;background:#f0f3ff;color:#3647a1;border-radius:10px;padding:9px 12px;font-weight:bold}
+  @media(max-width:700px){.coworkers-panel{padding:16px}.coworkers-list{grid-template-columns:1fr}}
+
+  /* Birthday banner: matches the existing pink/purple accent palette. */
+  .birthdays{max-width:none;margin:0 0 20px;padding:22px 24px;background:linear-gradient(115deg,#fff2f8,#f2edff);border:1px solid #efbfd8;border-radius:16px;box-shadow:var(--shadow);text-align:right;color:#6c295f}
+  .birthday-heading{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .birthday-heading h2{font-size:22px;margin:0;color:#752a79}
+  .birthday-description{margin:0 0 16px;color:#815278;font-size:14px}
+  .birthday-people{display:flex;gap:12px;flex-wrap:wrap}
+  .birthday-person{display:flex;align-items:center;gap:11px;padding:11px 16px;border:1px solid #efd0e6;background:#ffffffde;border-radius:13px;min-width:210px}
+  .birthday-avatar{width:44px;height:44px;flex-shrink:0;border-radius:50%;background:#efd5f3;border:2px solid #dba6de;color:#87368b;display:grid;place-items:center;font-size:20px}
+  .birthday-person strong{display:block;font-size:16px;color:#632364}
+  .birthday-person small{display:block;font-size:13px;color:#98658a;margin-top:4px}
+  @media(max-width:700px){.birthdays{padding:17px 15px}.birthday-heading h2{font-size:19px}.birthday-people{display:grid;grid-template-columns:1fr}.birthday-person{min-width:0}}
+
+  /* Holiday notice is informational; only a manager can block work dates. */
+  .holiday-notice{background:linear-gradient(115deg,#eef4ff,#f0ecff);border:1px solid #bfcef3;border-radius:16px;box-shadow:var(--shadow);padding:20px 24px;margin:0 0 20px;color:#293f8e}
+  .holiday-notice h2{font-size:21px;margin:0 0 8px}.holiday-notice p{margin:0;color:#546385;font-size:14px;line-height:1.7}
+  .holiday-notice .holiday-note{margin-top:10px;padding:10px 12px;border-radius:10px;background:#ffffffb3;color:#3d5285;font-size:13px}
+  @media(max-width:700px){.holiday-notice{padding:17px 15px}.holiday-notice h2{font-size:19px}}
+
+
+  /* Five-shift variant of the calendar: retain the shared visual language but
+     use compact rows so the expanded schedule is usable on desktop and mobile. */
+  .calendar-help{
+    margin:0 0 12px;
+    color:#5c6680;
+    font-size:13px;
+    line-height:1.65;
+    text-align:center;
+  }
+  .calendar .row-label,
+  .calendar .slot{min-height:73px}
+  .calendar .row-label{padding:8px 5px}
+  .calendar .slot{padding:9px}
+  .shift-row-heading{flex-direction:column;gap:5px}
+  .shift-row-time{font-size:15px;direction:ltr;unicode-bidi:isolate}
+  .shift-row-duration{font-size:11px;color:#758096}
+  .calendar .shift{
+    display:flex;align-items:center;justify-content:center;
+    height:55px;max-width:195px;
+    font-weight:700;font-size:13px;line-height:1.1;
+  }
+  .calendar .shift.selected{color:#642174}
+  .calendar .shift.conflict{color:#8a2351}
+  .calendar .shift.blocked{color:#fff}
+  .calendar .shift.readonly{background:#f1f4f8;color:#8791a3;border-color:#dfe5ef}
+  .calendar .shift:disabled:not(.blocked){cursor:not-allowed}
+  .calendar .date-unavailable{color:#8c94a4;background:#f5f7fa}
+  .calendar .date-cell.today{background:#fff8cb}
+  @media(max-width:700px){
+    .calendar{grid-template-columns:82px repeat(5,minmax(49px,1fr))}
+    .calendar .row-label,.calendar .slot{min-height:62px}
+    .calendar .slot{padding:4px}
+    .calendar .row-label{padding:5px 3px}
+    .shift-row-time{font-size:11px}
+    .shift-row-duration{font-size:10px}
+    .calendar .shift{height:51px;font-size:10px;border-radius:8px;padding:2px}
+    .calendar-help{text-align:right;padding:0 5px}
+  }
+  @media(max-width:390px){
+    .calendar{grid-template-columns:68px repeat(5,minmax(48px,1fr))}
+    .shift-row-time{font-size:10px}
+    .shift-row-duration{font-size:9px}
+    .calendar .shift{font-size:9px}
+  }
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="top-inner">
+  <div class="header-actions">
+    <img class="brand-logo" src="enter_digital_studio.svg" alt="לוגו Enter Digital Studio">
+    <div class="menu-wrap">
+<button id="menuButton" class="header-action" type="button" aria-label="פתח תפריט אתר" aria-expanded="false">☰</button><nav id="siteMenu" class="dropdown nav-dropdown" aria-label="תפריט אתר" hidden>
+    <button type="button" aria-current="page">⚙️ ניהול</button>
+<button type="button" aria-current="page">📅 לוח נוכחות ✓</button><div class="menu-caption">עמודים נוספים יתווספו בהמשך</div></nav></div>
+    <strong class="brand">מערכת נוכחות</strong>
+  </div>
+  <div class="menu-wrap"><button id="profileButton" class="header-action profile-trigger" type="button" aria-expanded="false"><img id="avatar" class="avatar" alt="תמונת משתמש"><span id="headerName">משתמש לדוגמה</span>⌄</button><div id="profileMenu" class="dropdown" hidden><div id="profileCaption" class="menu-caption"></div><button id="editProfile" type="button">👤 הפרופיל שלי</button><button id="logout" type="button" class="signout">↪ התנתקות</button></div></div>
+</div></header>
+<main>
+  <div id="weekTitle" class="week-title"></div>
+  <div class="legend"><span class="legend-chip"><span class="swatch"></span>משמרת נבחרה</span><span class="legend-chip"><span class="swatch empty"></span>בלי משמרת</span><span class="legend-chip"><span class="swatch conflict"></span>משמרת אחרת נבחרה</span><span class="legend-chip"><span class="swatch blocked"></span>יום חסום</span></div>
+  <div class="toolbar"><button type="button" class="primary" id="previous">❮ שבוע קודם</button><button type="button" class="primary" id="next">שבוע הבא ❯</button><button type="button" class="primary current" id="current">⇄ השבוע הנוכחי</button></div>
+  <div id="birthdays" class="birthdays" hidden></div>
+  <!-- Example holiday announcement, independent of shift availability. -->
+  <section class="holiday-notice" aria-labelledby="holidayTitle">
+    <h2 id="holidayTitle">✨ חג שמח — חג לדוגמה היום!</h2>
+    <p>היום מציינים חג! מאחלים לכולם יום נעים וחג שמח. 🎊</p>
+    <p class="holiday-note">ℹ️ הודעת החג היא לידיעה בלבד. החג אינו חוסם הרשמה למשמרות; רק המנהל/ת יכול/ה לחסום יום בלוח.</p>
+  </section>
+  <section class="receipts-panel" aria-labelledby="receiptsTitle">
+    <div><h2 id="receiptsTitle">🧾 קבלות — <span id="receiptsMonth"></span></h2><p>סמנו אם יש לכם קבלות להעביר למנהל/ת החודש.</p></div>
+    <div><label class="receipts-check"><input id="hasReceipts" type="checkbox"> יש לי קבלות החודש</label><div id="receiptsFeedback" class="receipts-feedback" role="status"></div></div>
+  </section>
+  <p class="calendar-help">בחרו משמרת אחת לכל יום: ארבע אפשרויות של 4 שעות או משמרת מלאה. אפשר לשנות בחירה לאורך היום, ועד 4 שבועות קדימה.</p>
+  <div class="schedule-scroll"><div id="calendar" class="calendar" role="group" aria-label="לוח משמרות שבועי עם חמש אפשרויות לכל יום"></div></div>
+  <section class="coworkers-panel" aria-labelledby="coworkersTitle">
+    <div class="coworkers-heading">
+      <div><h2 id="coworkersTitle">👥 מי עובד איתי היום?</h2><p id="coworkersDate"></p></div>
+      <span id="coworkersCount" class="coworkers-count">0 עובדים</span>
+    </div>
+    <div id="coworkersList" class="coworkers-list" aria-live="polite"></div>
+    <div class="coworkers-footer">
+      <span id="coworkersUpdated">מתעדכן אוטומטית כל 30 שניות (הדגמה)</span>
+      <button type="button" id="demoCoworker" class="coworkers-demo">הדגמה: הוספת/הסרת עובד</button>
+    </div>
+  </section>
+  <p class="status">לצורך הדגמה בלבד: המשמרות ופרטי הפרופיל נשמרים בדפדפן הנוכחי, ללא שרת.</p>
+  <label class="admin-preview"><input type="checkbox" id="demoBlock"> הדגמת חסימת יום למנהל (לחיצה על תאריך כדי לחסום או לבטל חסימה)</label>
+</main>
+<div id="shiftOverlay" class="overlay" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="shiftDialogTitle"><h2 id="shiftDialogTitle">בחירת משמרת</h2><p id="shiftDescription"></p><div class="dialog-buttons"><button type="button" id="chooseOffice" class="choice">משמרת חממה</button><button type="button" id="chooseNone" class="choice none">בלי משמרת</button></div><button type="button" id="cancelShift" class="secondary">ביטול</button></div></div>
+<div id="profileOverlay" class="overlay" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="profileTitle"><h2 id="profileTitle">הפרופיל שלי</h2><div class="profile-center"><img id="profilePreview" class="profile-preview" alt="תמונה נוכחית"></div><label class="field">תמונת פרופיל <input type="file" id="imageFile" accept="image/png,image/jpeg,image/webp"></label><div class="inline-note">הדגמה מקומית בלבד. מומלץ לבחור תמונה קטנה.</div><label class="field">שם פרטי <input id="firstName" maxlength="60"></label><label class="field">שם משפחה <input id="lastName" maxlength="60"></label><label class="field">מגדר <select id="gender"><option value="female">אישה</option><option value="male">גבר</option><option value="other">אחר / לא מעוניין לציין</option></select></label><label class="field">תאריך לידה <input id="birthday" type="date"></label><p id="roleHint" class="inline-note"></p><button type="button" id="saveProfile" class="primary" style="width:100%">שמירת שינויים</button><button type="button" id="cancelProfile" class="secondary">ביטול</button></div></div>
+<script>
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const days = ["ראשון","שני","שלישי","רביעי","חמישי"];
+  // Exactly five shift categories. These replace the former morning/afternoon categories.
+  const periods = [
+    {id:"09_13", name:"משמרת 09:00–13:00", label:"09:00–13:00", short:"09–13", duration:"4 שעות"},
+    {id:"10_14", name:"משמרת 10:00–14:00", label:"10:00–14:00", short:"10–14", duration:"4 שעות"},
+    {id:"11_15", name:"משמרת 11:00–15:00", label:"11:00–15:00", short:"11–15", duration:"4 שעות"},
+    {id:"12_16", name:"משמרת 12:00–16:00", label:"12:00–16:00", short:"12–16", duration:"4 שעות"},
+    {id:"full", name:"משמרת מלאה", label:"09:00–16:30", short:"מלאה", duration:"7.5 שעות"}
+  ];
+  function load(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
+  const profile = load("shift_demo_profile_v2", {firstName:"דנה",lastName:"כהן",gender:"female",birthday:"",role:"worker",image:""});
+  // Separate demo key: old 3-category selections should not leak into this prototype.
+  const selectionKey = "shift_demo_selections_five_v1";
+  const selections = load(selectionKey, {}); // YYYY-MM-DD -> { period }
+  // Seed two visible choices for a fresh demo; they can be changed or removed.
+  if (localStorage.getItem(selectionKey) === null) {
+    const firstSunday = new Date();
+    firstSunday.setHours(0,0,0,0);
+    firstSunday.setDate(firstSunday.getDate()-firstSunday.getDay());
+    let sampleCount = 0;
+    for (const [dayIndex, period] of [[1,"09_13"],[3,"full"],[4,"11_15"]]) {
+      const date = new Date(firstSunday);
+      date.setDate(firstSunday.getDate()+dayIndex);
+      if (date >= firstSunday && date >= new Date(new Date().setHours(0,0,0,0))) {
+        selections[`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`] = {period};
+        sampleCount++;
+      }
+    }
+    if (sampleCount === 0) {
+      const date = new Date(firstSunday);
+      date.setDate(firstSunday.getDate()+7);
+      selections[`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`] = {period:"10_14"};
+    }
+    localStorage.setItem(selectionKey, JSON.stringify(selections));
+  }
+  const blockedDates = load("shift_demo_blocked_v2", {}); // date -> true
+  const now = new Date();now.setHours(0,0,0,0);
+  function shiftDate(date, offset){const x = new Date(date);x.setDate(x.getDate()+offset);return x;}
+  function sunday(date){return shiftDate(date,-date.getDay());}
+  function key(date){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;}
+  function nice(date){return new Intl.DateTimeFormat("he-IL",{day:"numeric",month:"long",year:"numeric"}).format(date);}
+  let week = sunday(now), pending = null;
+  const save = (k,v) => localStorage.setItem(k,JSON.stringify(v));
+  function element(tag,cls,text){const e=document.createElement(tag);e.className=cls;if(text!==undefined)e.textContent=text;return e;}
+  function render(){
+    const calendar=$("calendar");
+    calendar.replaceChildren();
+    $("weekTitle").textContent=`${nice(week)} – ${nice(shiftDate(week,4))}`;
+    calendar.append(element("div","cell head","📅"));
+    days.forEach(day=>calendar.append(element("div","cell head","☼ "+day)));
+    calendar.append(element("div","cell row-label date-label","תאריך"));
+
+    // A worker may change today's shift, or a date up to 28 calendar days ahead.
+    const lastAllowed = shiftDate(now,28);
+    days.forEach((day,i)=>{
+      const date=shiftDate(week,i),dateId=key(date);
+      const cell=element("div","cell date-cell",String(date.getDate()));
+      if(dateId===key(now)){
+        cell.classList.add("today");
+        cell.append(element("span","today-pill","היום"));
+      }
+      if(date<now || date>lastAllowed){
+        cell.classList.add("date-unavailable");
+        cell.title=date<now?"תאריך עבר — לקריאה בלבד":"מחוץ לטווח ההרשמה של 4 שבועות";
+      }
+      if($("demoBlock").checked && date>=now){
+        cell.style.cursor="pointer";
+        cell.title="לחץ לחסימה או פתיחה של היום (הדגמה)";
+        cell.addEventListener("click",()=>{
+          if(blockedDates[dateId])delete blockedDates[dateId];
+          else {
+            blockedDates[dateId]=true;
+            delete selections[dateId];
+            save(selectionKey,selections);
+          }
+          save("shift_demo_blocked_v2",blockedDates);
+          render();
+          refreshCoworkers();
+        });
+      }
+      calendar.append(cell);
+    });
+
+    periods.forEach(p=>{
+      const label=element("div","cell row-label shift-row-heading");
+      label.append(
+        element("strong","shift-row-time",p.label),
+        element("small","shift-row-duration",p.duration)
+      );
+      calendar.append(label);
+
+      days.forEach((day,i)=>{
+        const date=shiftDate(week,i);
+        const dateId=key(date);
+        const chosen=selections[dateId]?.period;
+        const blocked=!!blockedDates[dateId];
+        const isEditable=date>=now && date<=lastAllowed;
+        const cell=element("div","cell slot");
+        const btn=element("button","shift");
+        btn.type="button";
+        let status="בחירה";
+        let note="ללא משמרת";
+
+        if(blocked){
+          btn.classList.add("blocked");
+          btn.disabled=true;
+          status="חסום";
+          note="יום חסום על ידי המנהל";
+        }else if(chosen===p.id){
+          btn.classList.add("selected");
+          status="✓ נבחרה";
+          note="המשמרת שנבחרה";
+        }else if(chosen){
+          btn.classList.add("conflict");
+          status="החלפה";
+          note="החלפת המשמרת שנבחרה";
+        }
+
+        if(!blocked && !isEditable){
+          btn.disabled=true;
+          if(chosen!==p.id){
+            btn.classList.remove("conflict");
+            btn.classList.add("readonly");
+            status="לא זמין";
+          }
+          note=date<now?"תאריך עבר — לקריאה בלבד":"מחוץ לטווח ארבעת השבועות";
+        }
+
+        btn.textContent=status;
+        btn.setAttribute("aria-label",`${day}, ${nice(date)}, ${p.name}: ${note}`);
+        btn.setAttribute("aria-pressed",String(chosen===p.id));
+        btn.title=note;
+
+        if(isEditable && !blocked){
+          btn.addEventListener("click",()=>{
+            pending={dateId,period:p.id};
+            $("shiftDescription").textContent=`${p.name} בתאריך ${nice(date)}. ניתן לבחור משמרת אחת בלבד לכל יום; בחירה זו תחליף כל משמרת אחרת באותו יום.`;
+            $("shiftOverlay").hidden=false;
+            $("chooseOffice").focus();
+          });
+        }
+        cell.append(btn);
+        calendar.append(cell);
+      });
+    });
+  }
+  const defaultAvatar = 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="48" fill="#d5dcfb"/><circle cx="48" cy="37" r="17" fill="#6775c8"/><path d="M16 92c1-26 16-39 32-39s31 13 32 39" fill="#6775c8"/></svg>');
+  function roleName(){return profile.role==="manager"?(profile.gender==="female"?"מנהלת":"מנהל"):"עובד/ת";}
+  function updateProfileUI(){const name=[profile.firstName,profile.lastName].filter(Boolean).join(" ");$("headerName").textContent=name;$("profileCaption").textContent=`${name} · ${roleName()}`;$("avatar").src=profile.image||defaultAvatar;$("profilePreview").src=profile.image||defaultAvatar;$("roleHint").textContent=`תפקיד: ${roleName()}. תפקיד המנהל יוגדר בעתיד על ידי המערכת.`;renderBirthdays();}
+  function renderBirthdays(){
+    const banner=$("birthdays");
+    banner.replaceChildren();
+    // Two example birthdays are deliberately shown today to demonstrate the design.
+    // In Laravel these people will come from the workers database.
+    const celebrating=[
+      {name:"יוסי אברהם",initials:"יא"},
+      {name:"שירה כהן",initials:"שכ"}
+    ];
+    const parts=(profile.birthday||"").split("-");
+    if(parts.length===3 && Number(parts[1])===now.getMonth()+1 && Number(parts[2])===now.getDate()){
+      celebrating.unshift({name:`${profile.firstName} ${profile.lastName} (אני)`,initials:"🎉"});
+    }
+    if(!celebrating.length){banner.hidden=true;return;}
+    const heading=element("div","birthday-heading");
+    heading.append(element("h2","","🎂 ימי הולדת היום! 🎉"));
+    const description=element("p","birthday-description","היום חוגגים יום הולדת לחברי הצוות שלנו. מזל טוב והרבה אושר!");
+    const people=element("div","birthday-people");
+    for(const person of celebrating){
+      const card=element("div","birthday-person");
+      const avatar=element("span","birthday-avatar",person.initials);
+      const details=element("div","");
+      details.append(element("strong","",person.name),element("small","","🥳 מזל טוב ליום ההולדת!"));
+      card.append(avatar,details);people.append(card);
+    }
+    banner.append(heading,description,people);
+    banner.hidden=false;
+  }
+  function hideMenus(){$("siteMenu").hidden=true;$("profileMenu").hidden=true;$("menuButton").setAttribute("aria-expanded","false");$("profileButton").setAttribute("aria-expanded","false");}
+  function toggleMenu(buttonId,menuId){const shouldOpen=$(menuId).hidden;hideMenus();$(menuId).hidden=!shouldOpen;$(buttonId).setAttribute("aria-expanded",String(shouldOpen));}
+  $("menuButton").addEventListener("click",()=>toggleMenu("menuButton","siteMenu"));$("profileButton").addEventListener("click",()=>toggleMenu("profileButton","profileMenu"));
+  document.addEventListener("click",e=>{if(!e.target.closest(".menu-wrap"))hideMenus();});
+  $("previous").addEventListener("click",()=>{week=shiftDate(week,-7);render();});$("next").addEventListener("click",()=>{week=shiftDate(week,7);render();});$("current").addEventListener("click",()=>{week=sunday(now);render();});
+  $("demoBlock").addEventListener("change",render);
+  function closeShift(){$("shiftOverlay").hidden=true;pending=null;}
+  $("chooseOffice").addEventListener("click",()=>{if(!pending)return;selections[pending.dateId]={period:pending.period};save(selectionKey,selections);closeShift();render();});
+  $("chooseNone").addEventListener("click",()=>{if(!pending)return;delete selections[pending.dateId];save(selectionKey,selections);closeShift();render();});
+  $("cancelShift").addEventListener("click",closeShift);$("shiftOverlay").addEventListener("click",e=>{if(e.target===$("shiftOverlay"))closeShift();});
+  $("editProfile").addEventListener("click",()=>{hideMenus();$("firstName").value=profile.firstName;$("lastName").value=profile.lastName;$("gender").value=profile.gender;$("birthday").value=profile.birthday||"";$("imageFile").value="";$("profileOverlay").hidden=false;});
+  function closeProfile(){$("profileOverlay").hidden=true;$("profilePreview").src=profile.image||defaultAvatar;}
+  $("cancelProfile").addEventListener("click",closeProfile);$("profileOverlay").addEventListener("click",e=>{if(e.target===$("profileOverlay"))closeProfile();});
+  $("imageFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;if(!["image/jpeg","image/png","image/webp"].includes(f.type)||f.size>350000){alert("יש לבחור תמונת JPG, PNG או WebP שגודלה עד 350KB לצורך ההדגמה.");e.target.value="";return;}const reader=new FileReader();reader.onload=()=>{$("profilePreview").src=reader.result;};reader.readAsDataURL(f);});
+  $("saveProfile").addEventListener("click",()=>{const first=$("firstName").value.trim(),last=$("lastName").value.trim();if(!first||!last){alert("יש להזין שם פרטי ושם משפחה.");return;}profile.firstName=first;profile.lastName=last;profile.gender=$("gender").value;profile.birthday=$("birthday").value;profile.image=$("profilePreview").src===defaultAvatar?"":$("profilePreview").src;try{save("shift_demo_profile_v2",profile);}catch{alert("לא ניתן לשמור את התמונה בדפדפן. נסו תמונה קטנה יותר.");return;}closeProfile();updateProfileUI();});
+  $("logout").addEventListener("click",()=>{hideMenus();alert("זו הדגמת ממשק בלבד. התנתקות אמיתית תהיה זמינה לאחר הוספת התחברות Laravel.");});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeShift();closeProfile();hideMenus();}});
+  // Local demo only: Dana's worker profile corresponds to the admin demo user "dana".
+  // In Laravel, this association will use the authenticated user's database ID.
+  const receiptsKey="shift_monthly_receipts_demo_v1";
+  const receiptsUser="dana";
+  const receiptsMonth=new Intl.DateTimeFormat("he-IL",{month:"long",year:"numeric"}).format(now);
+  const receiptsMonthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  function receiptRecords(){return load(receiptsKey,{});}
+  $("receiptsMonth").textContent=receiptsMonth;
+  $("hasReceipts").checked=!!receiptRecords()[receiptsUser]?.[receiptsMonthKey];
+  $("hasReceipts").addEventListener("change",e=>{
+    const records=receiptRecords();
+    records[receiptsUser]??={};
+    records[receiptsUser][receiptsMonthKey]=e.target.checked;
+    try {save(receiptsKey,records);$("receiptsFeedback").textContent="הבחירה נשמרה בדפדפן (הדגמה).";}
+    catch {$("receiptsFeedback").textContent="לא ניתן לשמור את הבחירה.";}
+  });
+
+  // Demo-only roster. Laravel will provide the initial list and a JSON refresh endpoint.
+  const coworkerDemoKey="shift_coworkers_demo_v1";
+  const coworkerNames=Object.fromEntries(periods.map(p=>[p.id,p.name]));
+  const coworkerSamples=[
+    {id:"yossi",name:"יוסי אברהם",period:"09_13",initials:"יא"},
+    {id:"shira",name:"שירה כהן",period:"full",initials:"שכ"},
+    {id:"michal",name:"מיכל לוי",period:"11_15",initials:"מל"}
+  ];
+  function getTodaysCoworkers(){
+    const external=load(coworkerDemoKey,{extra:false});
+    const people=[...coworkerSamples];
+    if(external.extra)people.push({id:"noa",name:"נועה לוי",period:"12_16",initials:"נל"});
+    const mySelection=selections[key(now)];
+    if(mySelection && !blockedDates[key(now)])people.unshift({id:"me",name:`${profile.firstName} ${profile.lastName} (אני)`,period:mySelection.period,initials:"",image:profile.image||defaultAvatar});
+    return blockedDates[key(now)]?[]:people;
+  }
+  function refreshCoworkers(){
+    const list=$("coworkersList");list.replaceChildren();
+    $("coworkersDate").textContent=nice(now);
+    const people=getTodaysCoworkers();
+    $("coworkersCount").textContent=`${people.length} עובדים`;
+    if(!people.length){list.append(element("div","coworkers-empty","אין עובדים רשומים למשמרת היום."));}
+    for(const person of people){
+      const card=element("div","coworker");
+      let avatar;
+      if(person.image){avatar=document.createElement("img");avatar.src=person.image;avatar.alt="";avatar.className="coworker-avatar";}
+      else avatar=element("span","coworker-avatar",person.initials);
+      const details=element("div","coworker-details");
+      details.append(element("strong","",person.name),element("small","",coworkerNames[person.period]||"משמרת"));
+      card.append(avatar,details);list.append(card);
+    }
+    $("coworkersUpdated").textContent=`עודכן ב-${new Intl.DateTimeFormat("he-IL",{hour:"2-digit",minute:"2-digit"}).format(new Date())} · עדכון אוטומטי כל 30 שניות (הדגמה)`;
+  }
+  $("demoCoworker").addEventListener("click",()=>{
+    const current=load(coworkerDemoKey,{extra:false});
+    save(coworkerDemoKey,{extra:!current.extra});refreshCoworkers();
+  });
+  window.addEventListener("storage",e=>{if(e.key===coworkerDemoKey)refreshCoworkers();});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshCoworkers();});
+  setInterval(()=>{if(!document.hidden)refreshCoworkers();},30000);
+  $("chooseOffice").addEventListener("click",refreshCoworkers);
+  $("chooseNone").addEventListener("click",refreshCoworkers);
+  $("demoBlock").addEventListener("change",refreshCoworkers);
+  $("saveProfile").addEventListener("click",refreshCoworkers);
+  refreshCoworkers();
+  updateProfileUI();render();
+</script>
+</body>
+</html>
