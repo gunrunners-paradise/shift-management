@@ -219,7 +219,7 @@ class CsrfProtectionTest extends TestCase
         $this->assertDatabaseCount('desk_reservations', 1);
     }
 
-    public function test_manager_desk_add_rename_and_deactivation_require_csrf_tokens(): void
+    public function test_manager_desk_add_rename_and_permanent_deletion_require_csrf_tokens(): void
     {
         $manager = User::factory()->manager()->create();
         $desk = Desk::query()->firstOrFail();
@@ -227,11 +227,20 @@ class CsrfProtectionTest extends TestCase
 
         $this->post(route('admin.desks.store'), ['name' => 'עמדה חדשה'])->assertStatus(419);
         $this->patch(route('admin.desks.update', $desk), ['name' => 'שם חדש'])->assertStatus(419);
-        $this->patch(route('admin.desks.deactivate', $desk), ['confirm_deactivation' => '1'])->assertStatus(419);
+        $this->delete(route('admin.desks.destroy', $desk), ['confirm_deletion' => '1'])->assertStatus(419);
+        $this->delete(route('admin.desks.destroy', $desk), [
+            'confirm_deletion' => '1', '_token' => 'incorrect-token',
+        ])->assertStatus(419);
 
         $this->assertTrue($desk->fresh()->is_active);
         $this->assertSame('עמדה 1', $desk->fresh()->name);
         $this->assertDatabaseCount('desks', 9);
+
+        $this->delete(route('admin.desks.destroy', $desk), [
+            'confirm_deletion' => '1', '_token' => 'correct-session-token',
+        ])->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertDatabaseMissing('desks', ['id' => $desk->id]);
     }
 
     public function test_workday_csv_download_requires_a_valid_csrf_token(): void

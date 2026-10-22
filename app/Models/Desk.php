@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Desk extends Model
 {
+    // Retain legacy deactivation fields for existing databases and old history.
+    // Current manager removal deletes the desk; no action sets these fields.
     protected $fillable = ['name', 'is_active', 'deactivated_at', 'deactivated_by'];
 
     protected function casts(): array

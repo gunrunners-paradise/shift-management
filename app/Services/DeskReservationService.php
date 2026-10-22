@@ -136,7 +136,7 @@ class DeskReservationService
     /**
      * Own account -> permanent date -> ascending desk locks until commit.
      * Every worker mutation, including cancellation, follows this order. The
-     * desk lock also serializes against desk deactivation on first-ever dates.
+     * desk lock also serializes against desk deletion on first-ever dates.
      * The callback locks reservation rows last, then checks the current clock.
      *
      * @template T

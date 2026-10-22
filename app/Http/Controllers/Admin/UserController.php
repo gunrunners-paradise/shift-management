@@ -95,6 +95,6 @@ class UserController extends Controller
         $accounts->delete($request->user(), $user);
 
         return redirect()->to(route('admin.users.index').'#account-list')
-            ->with('status', 'החשבון, המשמרות, הזמנות העמדות והקבלות שלו נמחקו לצמיתות.');
+            ->with('status', 'החשבון, המשמרות, הזמנות העמדות והקבלות שלו נמחקו.');
     }
 }

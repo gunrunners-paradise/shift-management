@@ -125,8 +125,8 @@ class DeskConcurrencyTest extends TestCase
         ];
     }
 
-    #[DataProvider('deskDeactivationOrders')]
-    public function test_desk_deactivation_racing_its_first_booking_leaves_no_future_active_reservation(bool $bookingStartsFirst): void
+    #[DataProvider('deskDeletionOrders')]
+    public function test_desk_deletion_racing_its_first_booking_removes_the_desk_and_all_of_its_reservations(bool $bookingStartsFirst): void
     {
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create();
@@ -134,10 +134,10 @@ class DeskConcurrencyTest extends TestCase
         $this->assertDatabaseMissing('calendar_dates', ['date' => '2026-10-21']);
         $this->assertDatabaseMissing('desk_reservations', ['desk_id' => $desk->id]);
         $operations = [
-            'deactivate' => function () use ($manager, $desk): string {
-                app(DeskManagementService::class)->deactivate($manager, $desk);
+            'delete' => function () use ($manager, $desk): string {
+                app(DeskManagementService::class)->delete($manager, $desk);
 
-                return 'deactivated';
+                return 'deleted';
             },
             'book' => fn (): string => $this->attemptBooking($worker, $desk, '2026-10-21', '09:00', '10:00'),
         ];
@@ -148,16 +148,20 @@ class DeskConcurrencyTest extends TestCase
 
         $results = ConcurrentProcesses::run($operations);
 
-        $this->assertSame('deactivated', $results['deactivate']);
+        $this->assertSame('deleted', $results['delete']);
         $this->assertContains($results['book'], ['booked', 'rejected']);
-        $this->assertFalse($desk->fresh()->is_active);
+        $this->assertDatabaseMissing('desks', ['id' => $desk->id]);
         $this->assertSame(0, DeskReservation::active()->count());
-        $this->assertCancelledIfBooked($results['book'], $manager, 'desk_deactivated');
+        $this->assertDatabaseCount('desk_reservations', 0);
+
+        if ($results['book'] === 'booked') {
+            $this->assertDatabaseHas('calendar_dates', ['date' => '2026-10-21']);
+        }
     }
 
-    public static function deskDeactivationOrders(): array
+    public static function deskDeletionOrders(): array
     {
-        return ['deactivate first' => [false], 'book first' => [true]];
+        return ['delete process first' => [false], 'book process first' => [true]];
     }
 
     public function test_worker_deactivation_racing_a_booking_cancels_or_rejects_it_without_erasing_history(): void
@@ -209,7 +213,7 @@ class DeskConcurrencyTest extends TestCase
         $this->assertSame($results['edit'] === 'booked', $original->fresh()->cancelled_at !== null);
     }
 
-    public function test_blocking_worker_deactivation_and_desk_deactivation_finish_without_lock_order_deadlocks(): void
+    public function test_blocking_worker_deactivation_and_desk_deletion_finish_without_lock_order_deadlocks(): void
     {
         $firstManager = User::factory()->manager()->create();
         $secondManager = User::factory()->manager()->create();
@@ -235,18 +239,18 @@ class DeskConcurrencyTest extends TestCase
                 return 'deactivated';
             },
             'desk' => function () use ($thirdManager, $desks): string {
-                app(DeskManagementService::class)->deactivate($thirdManager, $desks[1]);
+                app(DeskManagementService::class)->delete($thirdManager, $desks[1]);
 
-                return 'deactivated';
+                return 'deleted';
             },
         ]);
 
-        $this->assertSame(['block' => 'blocked', 'worker' => 'deactivated', 'desk' => 'deactivated'], $results);
+        $this->assertSame(['block' => 'blocked', 'worker' => 'deactivated', 'desk' => 'deleted'], $results);
         $this->assertFalse($worker->fresh()->is_active);
-        $this->assertFalse($desks[1]->fresh()->is_active);
+        $this->assertDatabaseMissing('desks', ['id' => $desks[1]->id]);
         $this->assertSame(0, DeskReservation::active()->count());
         $this->assertSame(0, Shift::active()->count());
-        $this->assertDatabaseCount('desk_reservations', 3);
+        $this->assertDatabaseCount('desk_reservations', 2);
         $this->assertDatabaseCount('shifts', 2);
     }
 

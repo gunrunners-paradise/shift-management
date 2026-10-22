@@ -55,7 +55,7 @@ Use a disposable worker rather than an account whose history is needed:
 
 1. Create it as manager, then sign in as that worker and save a shift, desk reservation and receipt state. Optionally upload a profile photo.
 2. As manager, deactivate it. Confirm access is revoked and the existing deactivation/cancellation behavior remains.
-3. Expand `מחיקה לצמיתות` on its inactive account. Check that the warning is clear and that acknowledging deletion and submitting removes the account without typing a username or password. Refresh the list and receipt report to confirm it is gone.
+3. Expand `מחיקה` on its inactive account. Check that the warning is clear and that acknowledging deletion and submitting removes the account without typing a username or password. Refresh the list and receipt report to confirm it is gone.
 4. Check keyboard access, mobile RTL and submitting with JavaScript disabled. Confirm other accounts, shared desk identities, blocks and events remain available.
 
 The automated suite covers the destructive/history and concurrency cases on its separate guarded test database. Browser acceptance of the new confirmation form and Raspberry Pi deployment remain for owner review; no new browser screenshots or target-device claims are made here. No known failing automated check remains.
@@ -66,4 +66,4 @@ The typed username confirmation was an unnecessary addition. Following the user'
 
 Updated deletion and CSRF tests cover successful requests containing only the acknowledgement, missing/declined/malformed acknowledgement, validation feedback and deletion forms without typed credentials. The focused MariaDB command `php artisan test --compact --filter='PermanentAccountDeletion|CsrfProtection'` passed **34 tests and 182 assertions in 14.41 seconds**, including the existing deletion race tests. Scoped Pint, Blade compilation and `git diff --check` passed. The earlier 358-test full run above records the initial delivery; it was not repeated for this form/validation correction.
 
-To review, expand `מחיקה לצמיתות` for a disposable inactive account, acknowledge the deletion and click the delete button. There is no credential field to fill in.
+To review, expand `מחיקה` for a disposable inactive account, acknowledge the deletion and click the delete button. There is no credential field to fill in.

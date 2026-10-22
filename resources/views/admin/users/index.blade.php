@@ -65,7 +65,7 @@
             </form>
         </x-panel>
 
-        <x-panel id="account-list" title="משתמשי המערכת" heading-id="account-list-heading" hint="השבתת חשבון חוסמת כניסה ושומרת את פרטיו. חשבון לא פעיל ניתן להפעיל מחדש או למחוק לצמיתות יחד עם ההיסטוריה שלו.">
+        <x-panel id="account-list" title="משתמשי המערכת" heading-id="account-list-heading" hint="השבתת חשבון חוסמת כניסה ושומרת את פרטיו. חשבון לא פעיל ניתן להפעיל מחדש או למחוק יחד עם ההיסטוריה שלו.">
             <p class="account-summary">{{ $users->total() }} משתמשים · {{ $activeManagerCount }} מנהלים פעילים</p>
 
             <ul class="account-list">
@@ -109,16 +109,16 @@
                                 $isFailedDeletionForm = is_scalar(old('deletion_form_id')) && (string) old('deletion_form_id') === (string) $account->id;
                             @endphp
                             <details class="account-deletion" @if ($isFailedDeletionForm) open @endif>
-                                <summary>מחיקה לצמיתות <span class="screen-reader-only">של {{ $account->fullName() }}</span></summary>
+                                <summary>מחיקה <span class="screen-reader-only">של {{ $account->fullName() }}</span></summary>
                                 <form class="account-deletion-form" method="POST" action="{{ route('admin.users.destroy', $account) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <p id="delete-account-warning-{{ $account->id }}" class="account-deletion-warning">הפעולה תמחק לצמיתות את החשבון, תמונת הפרופיל וכל המשמרות, הזמנות העמדות והקבלות שלו, כולל היסטוריה. לא ניתן לבטל פעולה זו.</p>
+                                    <p id="delete-account-warning-{{ $account->id }}" class="account-deletion-warning">הפעולה תמחק את החשבון, תמונת הפרופיל וכל המשמרות, הזמנות העמדות והקבלות שלו, כולל היסטוריה. לא ניתן לבטל פעולה זו.</p>
                                     <label class="confirmation-label" for="confirm-deletion-{{ $account->id }}">
                                         <input id="confirm-deletion-{{ $account->id }}" type="checkbox" name="confirm_deletion" value="1" aria-describedby="delete-account-warning-{{ $account->id }}" required>
-                                        <span>אני מאשר/ת את מחיקת החשבון וכל ההיסטוריה שלו לצמיתות.</span>
+                                        <span>אני מאשר/ת את מחיקת החשבון וכל ההיסטוריה שלו.</span>
                                     </label>
-                                    <x-button variant="danger" class="button--small">מחיקת החשבון לצמיתות</x-button>
+                                    <x-button variant="danger" class="button--small">מחיקת החשבון</x-button>
                                 </form>
                             </details>
                         @endif

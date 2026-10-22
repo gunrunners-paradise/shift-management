@@ -2,7 +2,7 @@
 
 This report collects the user-approved additions, corrections and local setup work requested between numbered stages. Existing detailed reports are linked below; the session policy and manager-list visibility receive fuller coverage here. The descriptions reflect the latest confirmed behavior.
 
-This is a documentation update. It changes no application behavior, account, database record or stage approval. Stage 6 remains delivered for review; Stage 7 remains locked. Earlier reports describe their delivery dates, including stage restrictions that were subsequently superseded by explicit authorization recorded in [ROADMAP.md](../ROADMAP.md).
+This report records approved work; creating the report itself changes no application behavior, account, database record or stage approval. The later permanent desk-deletion implementation has its own linked report. Stage 6 remains delivered for review; Stage 7 remains locked. Earlier reports describe their delivery dates, including stage restrictions that were subsequently superseded by explicit authorization recorded in [ROADMAP.md](../ROADMAP.md).
 
 ## Coverage and existing reports
 
@@ -10,7 +10,9 @@ This is a documentation update. It changes no application behavior, account, dat
 |---|---|---|
 | Permanent account deletion | Managers can permanently delete inactive accounts and their owned shifts, desk reservations, receipts, sessions and photo. Shared records and other workers' history remain. | [Account deletion report](ACCOUNT-DELETION-REPORT.md), including the one-time authorized local cleanup. |
 | Simpler deletion confirmation | An acknowledgement checkbox and delete button are sufficient; no typed username or password is required. | [Deletion confirmation correction](ACCOUNT-DELETION-REPORT.md#confirmation-simplification--2026-10-22). |
+| Simpler deletion wording | Account/desk controls use `מחיקה`, `מחיקת החשבון` and `מחיקת העמדה`. The affected records and inability to undo deletion remain explicit; deletion behavior is unchanged. | Confirmed wording in [AGENTS.md](../AGENTS.md) and [ROADMAP.md](../ROADMAP.md); current labels also appear in the linked deletion reports. |
 | Account reactivation | Managers can reactivate an inactive worker or manager with the same identity and password. A fresh login is required; canceled bookings remain canceled. | [Account reactivation report](ACCOUNT-REACTIVATION-REPORT.md). |
+| Permanent desk deletion | Replaces desk deactivation. Managers can delete an active or legacy inactive desk and all its reservations, including completed and canceled history. Other desks and worker accounts/shifts/receipts remain. | [Desk deletion report](DESK-DELETION-REPORT.md), including reservation cleanup, transaction locks and stale-request checks. |
 | Manager event/block list visibility | Show the entire current Israel month and every future month/year. Hide only past months, retaining their records. | Detailed below; policy also appears in [AGENTS.md](../AGENTS.md), [ROADMAP.md](../ROADMAP.md) and [README.md](../README.md#manager-events-and-blocked-dates). |
 | Thirty-day login sessions | Sessions allow 43,200 minutes of inactivity, renewed by application requests. Logout and access revocation still apply. | Detailed below; previously summarized in [README.md](../README.md#run-in-this-workspace) and mentioned in the Stage 3/reactivation reports. |
 | Calendar information order | Calendar first, receipts immediately below it, then announcements, birthdays and coworkers on desktop and mobile. | [Stage 3 report](STAGE3-REPORT.md) and [Stage 4 report](STAGE4-REPORT.md), including the receipts placement correction. |
@@ -19,7 +21,7 @@ This is a documentation update. It changes no application behavior, account, dat
 | Manager wording | Manager titles use `מנהל`, `מנהלת`, or neutral `מנהל/ת` according to the stored gender. | Wording correction in the [Stage 1 report](STAGE1-REPORT.md); current [User::roleLabel()](../app/Models/User.php). |
 | Persistent local database recovery | After the temporary database was lost, the user approved a fresh persistent local database, with separate application/test schemas and documented lifecycle commands. | Recovery note in the [Stage 1 report](STAGE1-REPORT.md) and [prepared-workspace deployment guide](DEPLOYMENT.md#prepared-workspace-database). This was setup repair, not an added product page. |
 
-The in-progress cancellation rules, February 29 birthday policy, current-month-only worker receipts, zero-day CSV rows and exclusion of future CSV dates are already documented in their respective stage reports and the confirmed policies. They remain part of those stages rather than additional unreported features.
+The in-progress cancellation rules for blocked dates and worker accounts, February 29 birthday policy, current-month-only worker receipts, zero-day CSV rows and exclusion of future CSV dates are already documented in their respective stage reports and the confirmed policies. The original desk-deactivation policy in the Stage 5 report was superseded by the permanent desk-deletion follow-up linked above.
 
 ## Manager events, holidays and blocked dates
 
@@ -57,7 +59,7 @@ The default/example values and existing login/revocation flows were checked agai
 
 ## Verification record and commands
 
-The latest complete application run was performed for the manager future-month visibility correction, **before this documentation update**:
+The manager future-month visibility correction was verified **before the initial consolidated documentation update**:
 
 | Check | Recorded result |
 |---|---|
@@ -68,9 +70,17 @@ The latest complete application run was performed for the manager future-month v
 | `git diff --check` | Passed. |
 | Five HTML references | Untouched by that follow-up. The earlier wording correction is separately recorded in the historical Stage 1 report. |
 
-Earlier feature-specific test results remain in their linked reports; they are historical snapshots, not additional tests to add to the latest total. The account deletion and reactivation migrations were applied at their delivery; another installation needs `php artisan migrate` to receive them. Creating this consolidated report requires no migration or runtime command.
+Feature-specific test results remain in their linked reports; they are historical snapshots, not additional tests to add to a later total. See [the desk deletion report](DESK-DELETION-REPORT.md) for the subsequent implementation and verification. The account deletion and reactivation migrations were applied at their delivery; another installation needs `php artisan migrate` to receive them. Creating this consolidated report requires no migration or runtime command.
 
-This documentation-only update adds this file and links it from `README.md` and `ROADMAP.md`. Local document links and whitespace are checked. The application suite is not rerun for these Markdown edits. Manual browser/spreadsheet acceptance and Raspberry Pi deployment remain outstanding where the individual reports say so.
+The later permanent desk-deletion follow-up passed the complete MariaDB suite: **464 tests, 2742 assertions, 74.68 seconds, no failures/skips**. Its linked report records the changed files, request flow, initial validation-feedback failure and correction, transaction/race checks and manual review steps. It required no migration or live desk cleanup.
+
+The initial documentation-only update added this file and links from `README.md` and `ROADMAP.md`; its local links and whitespace checks passed without rerunning application tests. Later approved implementations are added to the index above and verified separately in their linked reports. Manual browser/spreadsheet acceptance and Raspberry Pi deployment remain outstanding where the individual reports say so.
+
+## Deletion wording correction — 2026-10-22
+
+The user requested familiar Hebrew wording for account and desk deletion. The two admin Blade panels now use `מחיקה`, `מחיקת החשבון` and `מחיקת העמדה`; `DeleteUserRequest`, `DeleteDeskRequest`, the two admin controllers and `AccountDeletionService` use the same simpler wording in validation and status messages. The warning about affected data and inability to undo deletion remains. The README and both deletion reports quote the updated labels; the deleted-worker CSV fixture uses a neutral sample surname. Routes, authorization, acknowledgement requirements and database workflows are unchanged, with no migration or CSS/JavaScript change.
+
+The existing account/desk deletion tests and deleted-account CSV scenario passed **51 tests and 296 assertions in 14.10 seconds**, with no failures/skips. Pint, Blade compilation and whitespace checks passed. No new tests were added for these text-only edits. For manual review, open the manager account/desk deletion controls and confirm the headings, buttons, acknowledgement and validation messages use the simpler terms.
 
 ## Deferred work
 

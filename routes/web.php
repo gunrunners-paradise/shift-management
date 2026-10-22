@@ -44,7 +44,7 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
         Route::post('/admin/reports/workdays', WorkdayReportController::class)->name('admin.reports.workdays');
         Route::post('/admin/desks', [DeskController::class, 'store'])->name('admin.desks.store');
         Route::patch('/admin/desks/{desk}', [DeskController::class, 'update'])->whereNumber('desk')->name('admin.desks.update');
-        Route::patch('/admin/desks/{desk}/deactivate', [DeskController::class, 'deactivate'])->whereNumber('desk')->name('admin.desks.deactivate');
+        Route::delete('/admin/desks/{desk}', [DeskController::class, 'destroy'])->whereNumber('desk')->name('admin.desks.destroy');
         Route::get('/admin', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
         Route::patch('/admin/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('admin.users.deactivate');

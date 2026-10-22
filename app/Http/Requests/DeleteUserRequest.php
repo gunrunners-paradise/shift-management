@@ -28,7 +28,7 @@ class DeleteUserRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'confirm_deletion' => 'מחיקת החשבון וההיסטוריה שלו לצמיתות',
+            'confirm_deletion' => 'מחיקת החשבון וההיסטוריה שלו',
         ];
     }
 }

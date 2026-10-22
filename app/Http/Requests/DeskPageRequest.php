@@ -15,7 +15,7 @@ class DeskPageRequest extends FormRequest
     {
         return [
             'date' => ['nullable', 'date_format:Y-m-d'],
-            // A saved link may name a desk that was deactivated since the page
+            // A saved link may name a desk that was deleted since the page
             // opened. Let the read model choose another active desk safely.
             'desk_id' => ['nullable', 'integer', 'min:1'],
         ];

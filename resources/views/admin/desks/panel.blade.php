@@ -1,4 +1,4 @@
-<x-panel id="desks" class="managed-desks-panel" title="ניהול עמדות עבודה" heading-id="managed-desks-heading" hint="הוספה, שינוי שם והשבתת עמדות. שינוי שם שומר על מזהה העמדה ועל ההיסטוריה שלה. מנהלים אינם יכולים להזמין עמדות לעצמם.">
+<x-panel id="desks" class="managed-desks-panel" title="ניהול עמדות עבודה" heading-id="managed-desks-heading" hint="הוספה, שינוי שם ומחיקת עמדות. מחיקת עמדה מוחקת גם את כל ההזמנות וההיסטוריה שלה. מנהלים אינם יכולים להזמין עמדות לעצמם.">
     <div class="managed-desks-layout">
         <div>
             <h3>הוספת עמדה</h3>
@@ -12,11 +12,14 @@
 
         <div>
             <h3>עמדות המשרד</h3>
-            <p class="hint">{{ $managedDesks->total() }} עמדות ברשימה, כולל עמדות שהושבתו. עמדות לא פעילות אינן ניתנות להזמנה.</p>
+            <p class="hint">{{ $managedDesks->total() }} עמדות ברשימה. עמדות לא פעילות אינן ניתנות להזמנה.</p>
             <ul class="managed-desks-list">
                 @forelse ($managedDesks as $managedDesk)
                     @php
                         $isFailedDeskForm = is_scalar(old('desk_form_id')) && (string) old('desk_form_id') === (string) $managedDesk->id;
+                        // Several inline forms share this page; reopen only the action that failed.
+                        $isFailedDeskRename = $isFailedDeskForm && $errors->has('name');
+                        $isFailedDeskDeletion = $isFailedDeskForm && $errors->has('confirm_deletion');
                     @endphp
                     <li class="managed-desk-card">
                         <div class="managed-desk-heading">
@@ -26,33 +29,37 @@
                         <p class="managed-desk-summary">מזהה עמדה: {{ $managedDesk->id }} · {{ $managedDesk->upcoming_reservations_count }} הזמנות עתידיות · {{ $managedDesk->in_progress_reservations_count }} הזמנות שמתבצעות כעת</p>
 
                         @if ($managedDesk->is_active)
-                            <details class="managed-desk-action" @if ($isFailedDeskForm) open @endif>
+                            <details class="managed-desk-action" @if ($isFailedDeskRename) open @endif>
                                 <summary>שינוי שם העמדה <span class="screen-reader-only">{{ $managedDesk->name }}</span></summary>
                                 <form method="POST" action="{{ route('admin.desks.update', $managedDesk) }}">
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="desk_form_id" value="{{ $managedDesk->id }}">
-                                    <x-field name="name" :id="'desk-name-'.$managedDesk->id" label="שם העמדה" :value="$isFailedDeskForm ? old('name', $managedDesk->name) : $managedDesk->name" maxlength="60" :show-errors="$isFailedDeskForm" required />
+                                    <x-field name="name" :id="'desk-name-'.$managedDesk->id" label="שם העמדה" :value="$isFailedDeskRename ? old('name', $managedDesk->name) : $managedDesk->name" maxlength="60" :show-errors="$isFailedDeskRename" required />
                                     <x-button class="button--small">שמירת שם העמדה</x-button>
                                 </form>
                             </details>
-
-                            <details class="managed-desk-action managed-desk-action--danger">
-                                <summary>השבתת העמדה <span class="screen-reader-only">{{ $managedDesk->name }}</span></summary>
-                                <form class="managed-desk-deactivation" method="POST" action="{{ route('admin.desks.deactivate', $managedDesk) }}">
-                                    @csrf
-                                    @method('PATCH')
-                                    <p id="desk-deactivation-warning-{{ $managedDesk->id }}" class="managed-desk-warning">כל ההזמנות העתידיות וההזמנות שכבר התחילו וטרם הסתיימו יבוטלו מיד. הזמנות שהסתיימו והיסטוריית הביטולים יישמרו. העמדה תפסיק להופיע ברשימת העמדות להזמנה.</p>
-                                    <label class="confirmation-label" for="confirm-desk-deactivation-{{ $managedDesk->id }}">
-                                        <input id="confirm-desk-deactivation-{{ $managedDesk->id }}" type="checkbox" name="confirm_deactivation" value="1" aria-describedby="desk-deactivation-warning-{{ $managedDesk->id }}" required>
-                                        <span>אני מאשר/ת את השבתת {{ $managedDesk->name }} וביטול ההזמנות.</span>
-                                    </label>
-                                    <x-button variant="danger" class="button--small">השבתת העמדה</x-button>
-                                </form>
-                            </details>
                         @else
-                            <p class="managed-desk-summary">העמדה הושבתה. הרשומות וההזמנות הקודמות נשמרות בהיסטוריה.</p>
+                            <p class="managed-desk-summary">העמדה אינה פעילה ואינה זמינה להזמנה.</p>
                         @endif
+
+                        <details class="managed-desk-action managed-desk-action--danger" @if ($isFailedDeskDeletion) open @endif>
+                            <summary>מחיקת העמדה <span class="screen-reader-only">{{ $managedDesk->name }}</span></summary>
+                            <form class="managed-desk-deletion" method="POST" action="{{ route('admin.desks.destroy', $managedDesk) }}">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="desk_form_id" value="{{ $managedDesk->id }}">
+                                <p id="desk-deletion-warning-{{ $managedDesk->id }}" class="managed-desk-warning">העמדה וכל הזמנותיה יימחקו, כולל הזמנות עתידיות, הזמנות שמתבצעות כעת, הזמנות עבר והזמנות שבוטלו. לא ניתן לבטל את המחיקה.</p>
+                                <label class="confirmation-label" for="confirm-desk-deletion-{{ $managedDesk->id }}">
+                                    <input id="confirm-desk-deletion-{{ $managedDesk->id }}" type="checkbox" name="confirm_deletion" value="1" aria-describedby="desk-deletion-warning-{{ $managedDesk->id }}{{ $isFailedDeskDeletion ? ' desk-deletion-error-'.$managedDesk->id : '' }}" required @if ($isFailedDeskDeletion) aria-invalid="true" @endif>
+                                    <span>אני מאשר/ת את מחיקת {{ $managedDesk->name }} וכל ההזמנות וההיסטוריה שלה.</span>
+                                </label>
+                                @if ($isFailedDeskDeletion)
+                                    <span id="desk-deletion-error-{{ $managedDesk->id }}" class="field-error">{{ $errors->first('confirm_deletion') }}</span>
+                                @endif
+                                <x-button variant="danger" class="button--small">מחיקת העמדה</x-button>
+                            </form>
+                        </details>
                     </li>
                 @empty
                     <li class="empty-state">אין עמדות להצגה.</li>

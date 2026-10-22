@@ -9,7 +9,9 @@ use App\Services\DeskManagementService;
 use Carbon\CarbonImmutable;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\CreatesDeskReservations;
 use Tests\TestCase;
@@ -82,7 +84,7 @@ class DeskPageTest extends TestCase
         $this->assertStringContainsString(route('worker.desks.destroy', $active), $response->getContent());
     }
 
-    public function test_refreshing_a_selected_desk_after_deactivation_falls_back_without_losing_own_history(): void
+    public function test_refreshing_a_deleted_desk_selection_falls_back_and_removes_its_reservation_history(): void
     {
         $worker = User::factory()->create();
         $manager = User::factory()->manager()->create();
@@ -91,18 +93,54 @@ class DeskPageTest extends TestCase
         $selectedDeskUrl = route('worker.desks.index', ['date' => '2026-10-21', 'desk_id' => $desk->id]);
         $this->actingAs($worker)->get($selectedDeskUrl)->assertOk();
 
-        app(DeskManagementService::class)->deactivate($manager, $desk);
+        app(DeskManagementService::class)->delete($manager, $desk);
         $response = $this->get($selectedDeskUrl);
 
         $response->assertOk()
             ->assertViewHas('selectedDesk', fn (Desk $selectedDesk): bool => $selectedDesk->is_active && $selectedDesk->id !== $desk->id)
-            ->assertSee('ההזמנה בוטלה. הרשומה נשמרת בהיסטוריה.');
+            ->assertViewHas('ownReservations', fn ($reservations): bool => $reservations->isEmpty());
+        $this->assertNull($response->viewData('activeReservation'));
         $document = $this->document($response->getContent());
         $grid = $document->query('//*[@id="desks-grid"]')->item(0);
         $this->assertCount(8, $document->query('//*[@id="desks-grid"]/a'));
         $this->assertStringNotContainsString($desk->name, $grid->textContent);
-        $this->assertSame('desk_deactivated', $reservation->fresh()->cancellation_reason);
-        $this->assertDatabaseCount('desk_reservations', 1);
+        $this->assertDatabaseMissing('desk_reservations', ['id' => $reservation->id]);
+        $this->assertDatabaseCount('desk_reservations', 0);
+    }
+
+    public function test_deletion_between_reservation_and_desk_reads_does_not_break_the_worker_page(): void
+    {
+        $worker = User::factory()->create();
+        $manager = User::factory()->manager()->create();
+        $desk = Desk::query()->firstOrFail();
+        $reservation = $this->createDeskReservation($worker, $desk);
+        $deletedDuringHistoryRead = false;
+
+        // Eloquent reads history and its related desks in separate queries.
+        // Delete after the first read to reproduce the otherwise rare gap.
+        DB::listen(function (QueryExecuted $query) use ($manager, $desk, &$deletedDuringHistoryRead): void {
+            $sql = strtolower($query->sql);
+
+            if ($deletedDuringHistoryRead || ! str_starts_with($sql, 'select * from `desk_reservations`')
+                || ! str_contains($sql, '`worker_id` =')) {
+                return;
+            }
+
+            $deletedDuringHistoryRead = true;
+            app(DeskManagementService::class)->delete($manager, $desk);
+        });
+
+        $response = $this->actingAs($worker)->get(route('worker.desks.index', ['date' => '2026-10-21']));
+
+        $response->assertOk()
+            ->assertViewHas('ownReservations', fn ($reservations): bool => $reservations->isEmpty());
+        $this->assertNull($response->viewData('activeReservation'));
+        $this->assertTrue($deletedDuringHistoryRead);
+        $this->assertDatabaseMissing('desks', ['id' => $desk->id]);
+        $this->assertDatabaseMissing('desk_reservations', ['id' => $reservation->id]);
+        $document = $this->document($response->getContent());
+        $this->assertCount(0, $document->query('//*[@id="my-desk-reservations"]//li[contains(@class,"desk-own-card")]'));
+        $this->assertCount(0, $document->query('//form[@id="desk-booking-form"]//input[@name="_method" and @value="PATCH"]'));
     }
 
     #[DataProvider('readOnlyDates')]

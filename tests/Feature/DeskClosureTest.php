@@ -43,7 +43,7 @@ class DeskClosureTest extends TestCase
         ])->assertSessionHasNoErrors();
 
         // Date closure cancels every active booking on that date, even if it
-        // has ended. Desk/worker deactivation separately preserves completed work.
+        // has ended. Worker deactivation separately preserves completed work.
         foreach ([$shift, $completed, $running] as $record) {
             $record->refresh();
             $this->assertNotNull($record->cancelled_at);

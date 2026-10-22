@@ -34,7 +34,7 @@ class AccountDeletionService
 
             if ($account->is_active) {
                 throw ValidationException::withMessages([
-                    'account' => 'ניתן למחוק לצמיתות רק חשבון שאינו פעיל. יש להשבית אותו תחילה.',
+                    'account' => 'ניתן למחוק רק חשבון שאינו פעיל. יש להשבית אותו תחילה.',
                 ]);
             }
 

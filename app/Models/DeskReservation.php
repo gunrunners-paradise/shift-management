@@ -64,8 +64,8 @@ class DeskReservation extends Model
     /**
      * Preserve the original interval and first cancellation's audit details.
      * Caller must hold the date or desk serialization lock in its transaction.
-     * Desk deactivation deliberately holds only the desk lock under the manager
-     * gate: acquiring dates after that desk would invert workers' lock order.
+     * Permanent desk deletion is a separate operation: it removes the entire
+     * reservation row rather than recording a cancellation.
      */
     public function cancel(int $actorId, string $reason, CarbonImmutable $cancelledAt, ?string $note = null): void
     {

@@ -182,7 +182,7 @@ class WorkdayCsvReportTest extends TestCase
     public function test_permanently_deleted_accounts_and_history_are_absent_from_later_exports(): void
     {
         $manager = User::factory()->manager()->create();
-        $deletedWorker = User::factory()->inactive()->create(['first_name' => 'נמחק', 'last_name' => 'לצמיתות']);
+        $deletedWorker = User::factory()->inactive()->create(['first_name' => 'נמחק', 'last_name' => 'בדיקה']);
         $retainedWorker = User::factory()->create();
         $this->createShiftRecord($deletedWorker, '2026-10-20');
         app(AccountDeletionService::class)->delete($manager, $deletedWorker);

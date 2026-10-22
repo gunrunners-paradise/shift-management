@@ -31,14 +31,23 @@ class DeskAvailabilityService
             $desk->setRelation('day_reservations', $dayReservations->get($desk->getKey(), collect()));
         }
 
-        $ownReservations = DeskReservation::with('desk')->where('worker_id', $worker->getKey())
+        $reservationHistory = DeskReservation::with('desk')->where('worker_id', $worker->getKey())
             ->where('reservation_date', $date)->orderByDesc('id')->get();
+        $ownReservations = collect();
         $activeReservation = null;
 
-        foreach ($ownReservations as $reservation) {
-            if ($reservation->cancelled_at === null) {
+        foreach ($reservationHistory as $reservation) {
+            // Eager loading uses a second query. A manager may delete the desk
+            // and its reservations between these reads; omit that stale row
+            // before Blade dereferences its desk or offers booking actions.
+            if ($reservation->desk === null) {
+                continue;
+            }
+
+            $ownReservations->push($reservation);
+
+            if ($activeReservation === null && $reservation->cancelled_at === null) {
                 $activeReservation = $reservation;
-                break;
             }
         }
 

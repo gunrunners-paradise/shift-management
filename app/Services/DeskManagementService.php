@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Desk;
 use App\Models\DeskReservation;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -41,43 +40,25 @@ class DeskManagementService
     }
 
     /**
-     * Deactivate and immediately cancel future and running reservations.
-     * Completed intervals and the stable desk identity remain available.
+     * Permanently delete a desk and every reservation belonging to it.
+     * The approved deletion includes past, completed and canceled history.
+     * Both active and previously deactivated desk identities may be deleted.
      *
-     * The shared manager gate serializes this with closures and account changes.
-     * Every worker mutation locks the desk before touching reservation rows, so
-     * this desk lock also covers bookings on a first-ever date. No date locks
-     * are acquired here: desk -> date would invert workers' date -> desk order,
-     * and gathering known dates first could miss a concurrent first booking.
+     * ManagerTransaction rechecks authority and serializes closures/account
+     * changes. Every worker mutation locks the desk before reservation rows,
+     * so this lock prevents new bookings even on a first-ever date. Do not
+     * acquire date or worker locks afterward: that would reverse booking lock
+     * order. Permanent calendar-date keys and unrelated records remain intact.
      */
-    public function deactivate(User $manager, Desk $desk): void
+    public function delete(User $manager, Desk $desk): void
     {
-        $this->managerTransaction->run($manager, function () use ($manager, $desk): void {
+        $this->managerTransaction->run($manager, function () use ($desk): void {
             $current = Desk::query()->lockForUpdate()->findOrFail($desk->getKey());
 
-            if (! $current->is_active) {
-                return;
-            }
-
-            $today = CarbonImmutable::now(config('app.timezone'))->toDateString();
-            $reservations = DeskReservation::active()->where('desk_id', $current->getKey())
-                ->where('reservation_date', '>=', $today)->orderBy('reservation_date')->orderBy('id')
-                ->lockForUpdate()->get();
-            // Evaluate completion after any reservation-row wait. At exactly
-            // the configured end, the reservation is already completed.
-            $now = CarbonImmutable::now(config('app.timezone'));
-
-            foreach ($reservations as $reservation) {
-                if ($reservation->endsAt()->greaterThan($now)) {
-                    $reservation->cancel($manager->getKey(), 'desk_deactivated', $now);
-                }
-            }
-
-            $current->forceFill([
-                'is_active' => false,
-                'deactivated_at' => $now,
-                'deactivated_by' => $manager->getKey(),
-            ])->save();
+            // Explicit child-first deletion keeps restrictive foreign keys
+            // enabled. Any failure rolls back the desk and its entire history.
+            DeskReservation::query()->where('desk_id', $current->getKey())->delete();
+            $current->delete();
         });
     }
 

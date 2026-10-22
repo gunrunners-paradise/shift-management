@@ -20,8 +20,9 @@ class DateClosureService
     /**
      * Close today or a future date and cancel shifts and desk bookings together.
      * The permanent date key serializes even first-ever selections/bookings.
-     * ManagerTransaction also serializes desk/account deactivation, so closure
-     * needs date and reservation locks without taking worker or desk locks.
+     * ManagerTransaction also serializes desk deletion/account deactivation,
+     * so closure needs date and reservation locks without taking worker or
+     * desk locks.
      */
     public function block(User $manager, string $date, ?string $reason = null): void
     {
