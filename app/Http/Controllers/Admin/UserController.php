@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminDashboardRequest;
 use App\Http\Requests\DeactivateUserRequest;
+use App\Http\Requests\DeleteUserRequest;
+use App\Http\Requests\ReactivateUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\BlockedDate;
 use App\Models\CalendarEvent;
+use App\Models\Desk;
 use App\Models\User;
+use App\Services\AccountDeletionService;
 use App\Services\AccountManagementService;
 use App\Services\MonthlyReceiptService;
 use Carbon\CarbonImmutable;
@@ -20,7 +24,8 @@ class UserController extends Controller
 {
     public function index(AdminDashboardRequest $request, MonthlyReceiptService $receipts): View
     {
-        $today = CarbonImmutable::today(config('app.timezone'));
+        $now = CarbonImmutable::now(config('app.timezone'));
+        $today = $now->startOfDay();
         $reportMonth = $request->validated('receipts_month') ?: $today->format('Y-m');
 
         return view('admin.users.index', [
@@ -30,6 +35,20 @@ class UserController extends Controller
             'calendarEvents' => CalendarEvent::orderBy('date')->orderBy('id')
                 ->paginate(10, ['*'], 'events_page')->withQueryString(),
             'receiptReport' => $receipts->report($reportMonth),
+            'managedDesks' => Desk::query()->withCount([
+                'reservations as upcoming_reservations_count' => function ($query) use ($today, $now): void {
+                    $query->active()->where(function ($dates) use ($today, $now): void {
+                        $dates->where('reservation_date', '>', $today->toDateString())
+                            ->orWhere(function ($currentDay) use ($today, $now): void {
+                                $currentDay->where('reservation_date', $today->toDateString())->where('start_time', '>', $now->format('H:i:s'));
+                            });
+                    });
+                },
+                'reservations as in_progress_reservations_count' => function ($query) use ($today, $now): void {
+                    $query->active()->where('reservation_date', $today->toDateString())
+                        ->where('start_time', '<=', $now->format('H:i:s'))->where('end_time', '>', $now->format('H:i:s'));
+                },
+            ])->orderByDesc('is_active')->orderBy('id')->paginate(12, ['*'], 'desks_page')->withQueryString(),
             'today' => $today,
         ]);
     }
@@ -54,5 +73,21 @@ class UserController extends Controller
         }
 
         return redirect()->route('admin.users.index')->with('status', 'החשבון הושבת.');
+    }
+
+    public function reactivate(ReactivateUserRequest $request, User $user, AccountManagementService $accounts): RedirectResponse
+    {
+        $accounts->reactivate($request->user(), $user);
+
+        return redirect()->to(route('admin.users.index').'#account-list')
+            ->with('status', 'החשבון הופעל מחדש. ניתן להתחבר עם שם המשתמש והסיסמה הקיימים.');
+    }
+
+    public function destroy(DeleteUserRequest $request, User $user, AccountDeletionService $accounts): RedirectResponse
+    {
+        $accounts->delete($request->user(), $user);
+
+        return redirect()->to(route('admin.users.index').'#account-list')
+            ->with('status', 'החשבון, המשמרות, הזמנות העמדות והקבלות שלו נמחקו לצמיתות.');
     }
 }

@@ -65,6 +65,10 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Keep the version that was actually authenticated. A login finishing
+        // after deactivation/reactivation must not revive an older session.
+        $this->session()->put('auth_session_version', $this->user()->session_version);
+
         RateLimiter::clear($accountKey);
     }
 }

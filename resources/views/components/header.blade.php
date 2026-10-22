@@ -12,6 +12,7 @@
                         <a class="dropdown-link {{ request()->routeIs('admin.*') ? 'is-current' : '' }}" href="{{ route('admin.users.index') }}" @if (request()->routeIs('admin.*')) aria-current="page" @endif>ניהול המערכת</a>
                     @else
                         <a class="dropdown-link {{ request()->routeIs('worker.home') ? 'is-current' : '' }}" href="{{ route('worker.home') }}" @if (request()->routeIs('worker.home')) aria-current="page" @endif>לוח משמרות</a>
+                        <a class="dropdown-link {{ request()->routeIs('worker.desks.*') ? 'is-current' : '' }}" href="{{ route('worker.desks.index') }}" @if (request()->routeIs('worker.desks.*')) aria-current="page" @endif>עמדות</a>
                     @endif
                 </nav>
             </x-dropdown>

@@ -230,7 +230,7 @@ class AccountManagementTest extends TestCase
             ->assertSee('id="events"', false)
             ->assertSee('id="blocks"', false)
             ->assertDontSee('id="reports"', false)
-            ->assertDontSee('id="desks"', false)
+            ->assertSee('id="desks"', false)
             ->assertSee('id="receipts"', false)
             ->assertDontSee('worker-profile-prototype.html', false)
             ->assertDontSee('localStorage', false);

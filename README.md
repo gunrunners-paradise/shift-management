@@ -1,6 +1,6 @@
-# מערכת נוכחות — Stage 4
+# מערכת נוכחות — Stage 5
 
-A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, blocked dates and personal profiles. Stage 4 adds manually managed events/holidays and monthly receipts. All supplemental worker information appears below the calendar. Stage 4 is supplied for review; Stage 5–7 remain locked.
+A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events and monthly receipts. Stage 5 adds worker desk reservations and manager desk administration. The calendar keeps its confirmed order: calendar, receipts, then other information. Stage 5 is supplied for review; Stage 6–7 remain locked.
 
 ## Run in this workspace
 
@@ -28,7 +28,32 @@ For a fresh checkout, run `composer install` and provision a MariaDB database an
 
 If login returns HTTP 500 after a reboot and the log reports a missing database socket, start the local database, run `php artisan config:clear`, and refresh. See [workspace troubleshooting](docs/DEPLOYMENT.md#prepared-workspace-database) for details.
 
-## Review Stage 4
+## Review Stage 5
+
+Run `php artisan migrate` when updating another installation. Stage 5 adds `desks` and `desk_reservations`, and creates the nine initial desks once. Existing users, shifts and receipts stay in place.
+
+1. Sign in as a worker and choose `עמדות` in the hamburger menu. Select a Sunday–Thursday date within the next 28 days, then choose a desk and a time interval of at least one hour, aligned to half hours, between 09:00 and 16:30. If today's office hours have ended, use a future working day. A shift is not required.
+2. Save, refresh and check your reservation. Before its start, change the desk or times through the edit form. The previous row appears in canceled history. Expand the cancellation control, confirm and cancel; the slot becomes available for a new reservation. After the start, edit/cancel controls disappear and direct requests are rejected too.
+3. Use two independently signed-in worker windows to request the same desk/time. Exactly one should succeed. Different workers can book adjacent intervals such as 09:00–10:00 and 10:00–11:00. A worker cannot hold two active reservations on one date, even on different desks or at disjoint times.
+4. As manager, use `ניהול עמדות` in the dashboard. Add a desk, rename it and check that its stable ID stays the same. Deactivation shows future/running reservation counts and requires confirmation. It immediately cancels future and running reservations; completed records and cancellation history remain. Refreshing a worker's saved desk link selects another active desk safely.
+5. On a disposable date, create a shift and a desk reservation, then block that date as manager. Both are canceled, and all desk cards become visibly disabled and cannot be selected. Removing the block enables desk choices again but restores neither reservation nor shift; the worker must choose and book again. Deactivating a disposable worker also cancels future/running reservations and ends account access. Account reactivation is available from the inactive account card; desk reactivation remains outside the current workflow.
+6. Check desktop/mobile RTL, keyboard access and the same forms with JavaScript disabled. Busy desk intervals disclose times and an own-booking marker, without coworkers' private identity. Managers have no worker desk link and receive 403 on worker desk endpoints.
+
+The suite simulates booking-start/end boundaries and independent MariaDB races without changing the host clock. See [the Stage 5 report](docs/STAGE5-REPORT.md) for changed files, actual checks and the route/controller/service/view reading guide.
+
+## Reactivate an inactive account
+
+As a manager, open `/admin` and click `הפעלת חשבון מחדש` on the inactive account. No username or password entry is required. The worker or manager can then sign in again with the same credentials. The account keeps its ID, role, profile, receipt records and history; canceled shifts and desk reservations stay canceled and must be booked again. Previously revoked login sessions stay invalid. Permanently deleted accounts cannot be reactivated.
+
+Run `php artisan migrate` when updating another installation. The reactivation migration adds a session version to existing accounts without changing their passwords or active status. See [the reactivation report](docs/ACCOUNT-REACTIVATION-REPORT.md) for the code path, checks and manual review steps.
+
+## Permanently delete an inactive account
+
+As a manager, open account management in `/admin`. For an inactive account, expand `מחיקה לצמיתות`, acknowledge the permanent removal of its history, and submit. No username or password entry is required. Active accounts must first be deactivated. Deactivation preserves history; permanent deletion removes the account, its completed/canceled shifts, desk reservations, monthly receipts, sessions and profile photo. Shared blocked dates, events, desks and other workers' records remain. There is no automatic purge.
+
+Run `php artisan migrate` when updating another installation. The additional migration makes deleted manager identities optional on shared blocks/events; applying it does not delete accounts. See [the account deletion report](docs/ACCOUNT-DELETION-REPORT.md) for verification and safe manual review with a disposable account.
+
+## Existing events and receipts checks
 
 Run `php artisan migrate` when updating another installation; Stage 4 adds `calendar_events` and `monthly_receipts` without replacing existing accounts or shifts.
 
@@ -58,7 +83,7 @@ Uploaded photos live privately under `storage/app/private/avatars/` and are serv
 2. Choose today's or a future available shift, replace its period, then choose `בלי משמרת`. Only one period per date should be purple; its other four choices remain clickable. Repeat with JavaScript disabled to exercise the native forms.
 3. Browse previous/next/current weeks. Past dates and dates beyond today + 28 calendar days are read-only. Today's shifts remain editable for the entire day. Check the calendar and dialog at desktop and mobile widths.
 4. In the manager window, use `חסימת ימי עבודה`, choose today or a future date, enter an optional reason and confirm. Refresh the worker calendar: all five cells for that date should be red and disabled. Confirm removing the block does not restore the canceled shift; choose a new one explicitly.
-5. With a disposable worker, create a future shift and, during office hours, an upcoming or in-progress shift today. Deactivate the worker from the manager window: these shifts are canceled and the worker's open session is rejected. Completed shifts remain in history. Do not deactivate an account you still need; reactivation is outside the implemented workflow.
+5. With a disposable worker, create a future shift and, during office hours, an upcoming or in-progress shift today. Deactivate the worker from the manager window: these shifts are canceled and the worker's open session is rejected. Completed shifts remain in history. Reactivating the account later restores login access, while canceled shifts remain canceled.
 6. Verify role boundaries: `/admin` returns 403 for workers and `/worker` returns 403 for managers. Existing account creation, login/logout, last-manager protection, menus and password visibility remain available.
 
 See [the Stage 2 report](docs/STAGE2-REPORT.md) for cancellation history, locking details, actual verification and the complete file inventory.
@@ -88,6 +113,10 @@ Start in [routes/web.php](routes/web.php). `GET /login` calls `AuthenticatedSess
 
 For account creation, `POST /admin/users` passes through authentication, active-account and manager middleware, then `StoreUserRequest` validates the fields. `Admin/UserController::store()` calls `AccountManagementService::create()`, which acquires a schema-specific MariaDB lock, rechecks the actor and persists a `User` in a transaction. The password is hashed by the model cast. The redirect reaches `index()`, which reads users and renders `admin/users/index.blade.php` through the shared authenticated layout. `public/js/app.js` enhances native dropdowns and password visibility; forms work without JavaScript.
 
+For permanent deletion, `DELETE /admin/users/{user}` → `DeleteUserRequest` → `Admin/UserController::destroy()` → `AccountDeletionService::delete()`. The service rechecks the manager and inactive target under locks, deletes the target's owned records and sessions, clears shared actor references and deletes the `User` in one transaction. `AvatarStorage::delete()` runs after commit. The redirect returns to `admin/users/index.blade.php`; its inline confirmation uses native forms and needs no new JavaScript.
+
+For reactivation, `PATCH /admin/users/{user}/reactivate` → `ReactivateUserRequest` → `Admin/UserController::reactivate()` → `AccountManagementService::reactivate()`. The existing manager transaction locks and rechecks both accounts, activates the target and advances its session version without restoring canceled records. `LoginRequest::authenticate()` stamps the version on a fresh login; `EnsureAccountIsActive::handle()` rejects a stale version. The dashboard renders the native form; no feature JavaScript is needed.
+
 For the calendar, `GET /worker` calls `ShiftCalendarController::index()`, which reads only the authenticated worker's active `Shift` rows and the week's `BlockedDate` records. `worker/home.blade.php` and `components/shift-slot.blade.php` render the complete five-row table. `public/js/calendar.js` adds the selection dialog; native forms still work without it. The period definitions live only in `config/shifts.php`.
 
 `GET /profile` calls `ProfileController::edit()` and renders `profile/edit.blade.php`. Its two forms call `update()` through `UpdateProfileRequest`, or `updatePassword()` through `UpdatePasswordRequest`. `ProfileService` locks the current user's row before saving personal fields or checking and changing the password. `AvatarStorage` writes validated images under random private filenames; `AvatarController::show()` checks access and streams them with an explicit image MIME type. `User::avatarUrl()` supplies the header/profile/team image URL. Shared `app.js` enhances password visibility; profile forms require no feature JavaScript.
@@ -99,8 +128,12 @@ Event forms submit to `admin.events.store`, `admin.events.update` or `admin.even
 
 `PUT /worker/receipts` → `UpdateMonthlyReceiptRequest` → `WorkerReceiptController::update()` → `MonthlyReceiptService::set()` locks the authenticated worker, rechecks the current Israel month and upserts that worker's boolean `MonthlyReceipt`. `worker/receipts.blade.php` renders the saved current-month choice below the grid. For managers, `GET /admin?receipts_month=YYYY-MM` → `AdminDashboardRequest` → `Admin/UserController::index()` → `MonthlyReceiptService::report()` → `admin/receipts/panel.blade.php`. The report treats missing rows as false and keeps each month separate.
 
+`GET /worker/desks` → `DeskPageRequest` → `DeskReservationController::index()` → `DeskAvailabilityService::forDate()` reads active desks, occupied intervals and the authenticated worker's history → `worker/desks.blade.php`. `public/css/desks.css` provides the responsive grid and booking panel. All desk controls use native links, forms and `<details>`; there is no feature JavaScript or client-stored booking state.
+
+The worker's reservation forms call `DeskReservationController::store()`, `update()` or `destroy()` through their Form Requests. `DeskReservationService::book()`, `update()` and `cancel()` lock the worker, permanent date and desk identities, validate current availability/time and save or cancel `DeskReservation` records. Editing replaces the prior interval while retaining its canceled row. The manager's `admin.desks.*` routes call `Admin/DeskController` → `DeskManagementService::create()`, `rename()` or `deactivate()` under `ManagerTransaction`; `admin/desks/panel.blade.php` renders the controls and reservation counts. Read the Stage 5 report for why desk deactivation holds a desk lock without acquiring date locks afterward.
+
 `POST /worker/shifts` and `DELETE /worker/shifts/{date}` pass through their Form Requests, then call `ShiftCalendarController::store()` / `destroy()` and `ShiftSchedulingService::select()` / `clear()`. The service locks the worker and date, checks the current rules and saves or cancels a `Shift`. `POST /admin/blocks` and `DELETE /admin/blocks/{date}` call `Admin/BlockedDateController` and `DateClosureService`, which closes or reopens a date transactionally. `admin/blocks/panel.blade.php` renders that dashboard section.
 
-The migrations create `users`, `sessions`, `calendar_dates`, `blocked_dates`, `shifts`, `calendar_events` and `monthly_receipts`. `calendar_dates` supplies permanent date locks; the generated unique active-slot index allows cancellation history and only one active shift per worker/date. Receipts have a unique worker/month index and MariaDB checks for first-of-month keys and boolean values. `ManagerTransaction` shares the schema-specific account lock across manager writes. Read `AccountManagementService::deactivate()` for shift cancellation, last-manager protection and session revocation, `EnsureAccountIsActive::handle()` for rejecting existing disabled sessions, and `CreateFirstManager::handle()` for secure bootstrap.
+The migrations create `users`, `sessions`, `calendar_dates`, `blocked_dates`, `shifts`, `calendar_events`, `monthly_receipts`, `desks` and `desk_reservations`. `calendar_dates` supplies permanent date locks. Generated active-slot indexes permit canceled history while limiting each worker to one active shift and one independent active desk reservation per date. Desk reservations also have MariaDB office-hour, minimum-duration and half-hour CHECK constraints; transactions protect overlapping intervals. Receipts have a unique worker/month index and checks for canonical months/boolean values. `ManagerTransaction` shares the schema-specific account lock across manager writes. Read `AccountManagementService::deactivate()` for shift/desk cancellation, last-manager protection and session revocation, `EnsureAccountIsActive::handle()` for rejecting existing disabled sessions, and `CreateFirstManager::handle()` for secure bootstrap.
 
 The [Stage 1 delivery report](docs/STAGE1-REPORT.md) records the earlier authentication/account delivery. The five root HTML prototypes and original logo remain read-only references; Apache must serve only Laravel's `public/` directory.

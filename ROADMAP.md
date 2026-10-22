@@ -26,8 +26,8 @@ Stage checkboxes may be marked complete **only after user approval**. The agent 
 | 1 | Laravel foundation, login, accounts and role-specific layouts | [ ] Delivered; progression to Stage 2 authorized on 2026-10-20 |
 | 2 | **Five-period** worker shift calendar and manager blocked dates | [ ] Delivered; progression to Stage 3 authorized on 2026-10-20 |
 | 3 | Personal profiles, birthdays and today's coworkers | [ ] Delivered; progression to Stage 4 authorized on 2026-10-20 |
-| 4 | Calendar events, holidays and monthly receipts | [ ] Delivered for review; user approval pending |
-| 5 | Desk selection, reservations and manager desk administration | [ ] Locked |
+| 4 | Calendar events, holidays and monthly receipts | [ ] Delivered; progression to Stage 5 authorized on 2026-10-22 |
+| 5 | Desk selection, reservations and manager desk administration | [ ] Delivered for review; user approval pending |
 | 6 | On-demand CSV download (scheduled workdays) | [ ] Locked |
 | 7 | End-to-end review, security and Raspberry Pi deployment | [ ] Locked |
 
@@ -116,8 +116,9 @@ At each stage, write straightforward, **human-readable, professionally commented
 - Worker page from `worker-desks-prototype.html`: date navigation, grid of available/partly occupied desks, selected desk/booking panel, busy intervals, worker's own bookings, and cancellation confirmation. Match desktop/mobile RTL layout and existing shared header.
 - Reservations are **independent of shifts**. Sunday–Thursday; dates today through +28 days; office window **09:00–16:30**. Both endpoints `:00`/`:30`, **minimum 60 minutes**, positive same-day interval, no overnight. Today's new reservation must start **strictly in the future**. A worker may have **only one active reservation on any date**. Workers can edit/cancel only **before** the booking starts.
 - Validate no overlap for any same desk/day. Lock consistently in MariaDB transaction to prevent (a) two users racing for same desk/time and (b) one user racing to get two desks. Permit back-to-back times. Distinguish canceled bookings from active.
-- Add manager desk management section and quick action: add and safely **deactivate** desks; warn/confirm and cancel **future** reservations while preserving history. Ask what to do with **in-progress** bookings if a desk is deactivated before writing that path.
+- Add manager desk management section and quick action: add and safely **deactivate** desks; warn/confirm and cancel **future and in-progress** reservations immediately while preserving completed and canceled history. Immediate in-progress cancellation was confirmed on 2026-10-22.
 - Extend manager blocked dates so they cancel/reject desk reservations **as well as shifts**, with one consistent action. Deactivation of a worker now also cancels their future and **in-progress** desk reservations immediately. Unblocking never revives canceled desk bookings.
+- On dates unavailable for booking, desk cards are visibly disabled with explicit text and cannot be selected. Reopening enables desk choices without restoring canceled reservations.
 
 **Acceptance and tests:** office hours and 30-minute grid enforced server-side; 30-minute reservation rejected (minimum one hour); 09:00–10:00/15:30–16:30 accepted as applicable; 16:00–17:00 rejected; new booking starting before current time rejected; disjoint second booking on same date rejected; overlaps rejected; back-to-back different workers accepted; concurrent booking stress against MariaDB, including a block-date race; user cannot cancel after start; closure/deactivation/desk removal preserve history and prevent new reservations; manager cannot book desks.
 
@@ -133,7 +134,7 @@ At each stage, write straightforward, **human-readable, professionally commented
 - **No scheduled or recurring exports, cron tasks, background jobs, emails, automatic generation, or precomputed reports.** Merely opening the admin page never generates a CSV.
 - **Scheduled shifts, not verified attendance**. One day per worker/date, whether their selected period is a **4-hour shift or the 7h30m full shift**; only non-canceled records; chronological date list, comma+space separated within a single quoted cell.
 - Column order/names: `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`. Correct UTF-8 BOM for Excel, cell escaping, spreadsheet formula-injection mitigation for user names, and stable handling of Hebrew/dates.
-- Keep records for deactivated workers available for historical export. Before finalizing, confirm any unresolved inclusion preferences (zero-day workers, future-dated scheduled shifts within the requested range).
+- Keep records for deactivated workers available for historical export unless a manager explicitly permanently deletes the account and its history under the confirmed account-deletion policy. Before finalizing, confirm any unresolved inclusion preferences (zero-day workers, future-dated scheduled shifts within the requested range).
 
 **Acceptance and tests:** a CSV is generated only after an authorized manager explicitly requests it; dashboard visits generate nothing, and there are no automatic/scheduled reports. A full shift and a 09:00–13:00 shift on different dates count two days, not hours; all five categories count one day each; cancellation never counts; range inclusive; dates are sorted; commas in date cell do not create extra columns; Hebrew readable in Excel; unauthorized worker denied CSV access; historical data preserved.
 
@@ -161,7 +162,7 @@ Do **not** let these open topics block Stage 1; do **not** invent answers when i
 - Stage 2: cancellation of an in-progress shift on worker deactivation was confirmed on 2026-10-20. Manager editing an individual worker's shift remains unauthorized.
 - Stage 3: February 29 birthdays use February 28 in non-leap years (confirmed). Manager editing of other users' profiles remains unauthorized.
 - Stage 4: current-month-only worker receipt editing is confirmed. Events remain single-date; multi-day support requires separate approval.
-- Stage 5: already-started desk reservation when a desk itself is deactivated; additional manual manager reservation overrides are not authorized.
+- Stage 5: desk deactivation immediately cancels already-started and future reservations (confirmed on 2026-10-22). Additional manual manager reservation overrides are not authorized.
 - Stage 6: include/exclude zero-day workers and future planned shifts in a selected export range if user expectations require a specific choice.
 - No email/SMS notifications, worker attendance check-in/out, paid-hours computation, automatic national holiday imports, recurring event engine, or other unrequested features.
 
@@ -170,7 +171,22 @@ Do **not** let these open topics block Stage 1; do **not** invent answers when i
 - **Stage 1:** Implemented and verified. On 2026-10-20, the user's explicit request to start Stage 2 authorized progression from Stage 1. The automated authentication/account checks passed; this note does not claim the user independently completed every manual acceptance step.
 - **Stage 2:** Delivered and tested; the user's explicit request to start Stage 3 on 2026-10-20 authorizes progression. See `docs/STAGE2-REPORT.md` for the delivery checks; this note does not claim every manual check was independently completed by the user.
 - **Stage 3:** Delivered and tested; the user's explicit request to start Stage 4 on 2026-10-20 authorizes progression. See `docs/STAGE3-REPORT.md` for the delivery checks; this note does not claim every manual check was independently completed by the user.
-- **Stage 4:** Delivered for review on 2026-10-20; user approval pending. Implemented manager single-date events/manual holidays, actual-today below-grid announcements, current-month-only worker receipts and selectable-month manager yes/no reporting. The local migration is applied; the MariaDB suite passed 227 tests and 1348 assertions with no failures/skips. Desktop/mobile and polling checks passed. See `docs/STAGE4-REPORT.md` for the file inventory, code-reading guide, actual verification and manual review steps. Stage 5 remains locked.
-- **Stage 5–7:** Locked until the preceding stage is explicitly reviewed and the next stage authorized.
+- **Stage 4:** Delivered and tested on 2026-10-20; the user's explicit request to start Stage 5 on 2026-10-22 authorizes progression. Implemented manager single-date events/manual holidays, actual-today below-grid announcements, current-month-only worker receipts and selectable-month manager yes/no reporting. The local migration is applied; the MariaDB suite passed 227 tests and 1348 assertions with no failures/skips. Desktop/mobile and polling checks passed. See `docs/STAGE4-REPORT.md` for details; this note does not claim every manual check was independently completed by the user.
+- **Stage 5:** Delivered for review on 2026-10-22; user approval pending. Added worker desk booking/edit/cancel/history, manager add/rename/deactivate controls and atomic desk cancellation on date closure/account deactivation. Desk deactivation immediately cancels running and future bookings, as confirmed by the user. The migration is applied locally with nine initial desks. Final MariaDB suite: 332 passed, 1892 assertions, no failures/skips; responsive/native-form checks passed. See `docs/STAGE5-REPORT.md` and `README.md` for code flow, actual verification and manual review steps. The calendar → receipts → other information order is preserved. Stage 6 remains locked.
+- **Stage 6–7:** Locked until the preceding stage is explicitly reviewed and the next stage authorized.
+
+### Authorized account-management follow-up — 2026-10-22
+
+The user authorized a permanent-delete option for inactive accounts and immediate removal of all currently inactive local accounts, **including their history**. This is an explicit exception to retention during ordinary deactivation. Manager deletion uses an acknowledgement checkbox and delete button without requiring a typed username or password, as corrected by the user on 2026-10-22; it removes the account's shifts, desk reservations, monthly receipts, sessions and photo, and preserves shared blocks/events/desks and other workers' records by clearing the deleted actor references. Active accounts must be deactivated first; the last active manager remains protected. There is no automatic purge. This follow-up does not authorize Stage 6. Implementation and verification are recorded in `docs/ACCOUNT-DELETION-REPORT.md`.
+
+Delivered for review: migration applied locally; one inactive account deleted, zero remain, and all three active accounts (including the active manager) preserved. Initial delivery MariaDB suite: 358 passed, 2046 assertions, no failures/skips. Stage 5 approval and Stage 6 authorization remain pending.
+
+Confirmation correction (2026-10-22): removed the typed username field and server requirement. Inactive-account deletion now needs only the acknowledgement checkbox and delete button, with no username/password entry. Focused deletion/concurrency/CSRF checks passed: 34 tests, 182 assertions. No migration or live data operation was needed for this correction.
+
+### Authorized account-reactivation follow-up — 2026-10-22
+
+The user authorized adding a manager option to reactivate inactive accounts. Restore access for the same worker or manager with the existing username, password hash, ID, role, profile, receipt records and history. Canceled shifts and desk reservations remain canceled. Use a native button with no typed credentials; only active managers may invoke it. Reactivation invalidates stored/late old sessions using an account session version, and the account signs in again. Repeated reactivation of an active target is a no-op. Permanent deletion remains irreversible. This follow-up does not authorize Stage 6; see `docs/ACCOUNT-REACTIVATION-REPORT.md` for implementation and actual verification.
+
+Delivered for review: the session-version migration is applied locally; no account was automatically reactivated. The complete MariaDB suite passed 376 tests and 2202 assertions with no failures/skips. Native-form, authorization, stale-session replay and concurrent manager-action checks are included. Stage 5 approval and Stage 6 authorization remain pending.
 
 When a stage is approved by the user, record the confirmation date and brief tested deliverables here before starting the next authorized stage. Keep the human-approved stage gates intact.

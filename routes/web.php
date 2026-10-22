@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\BlockedDateController;
 use App\Http\Controllers\Admin\CalendarEventController;
+use App\Http\Controllers\Admin\DeskController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AvatarController;
+use App\Http\Controllers\DeskReservationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShiftCalendarController;
@@ -26,6 +28,10 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
     Route::get('/avatars/{user}', [AvatarController::class, 'show'])->whereNumber('user')->name('avatars.show');
 
     Route::middleware('role:worker')->group(function (): void {
+        Route::get('/worker/desks', [DeskReservationController::class, 'index'])->name('worker.desks.index');
+        Route::post('/worker/desks/reservations', [DeskReservationController::class, 'store'])->name('worker.desks.store');
+        Route::patch('/worker/desks/reservations/{reservation}', [DeskReservationController::class, 'update'])->whereNumber('reservation')->name('worker.desks.update');
+        Route::delete('/worker/desks/reservations/{reservation}', [DeskReservationController::class, 'destroy'])->whereNumber('reservation')->name('worker.desks.destroy');
         Route::get('/worker', [ShiftCalendarController::class, 'index'])->name('worker.home');
         Route::get('/worker/today', TodayInformationController::class)->name('worker.today');
         Route::put('/worker/receipts', [WorkerReceiptController::class, 'update'])->name('worker.receipts.update');
@@ -34,9 +40,14 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
     });
 
     Route::middleware('role:manager')->group(function (): void {
+        Route::post('/admin/desks', [DeskController::class, 'store'])->name('admin.desks.store');
+        Route::patch('/admin/desks/{desk}', [DeskController::class, 'update'])->whereNumber('desk')->name('admin.desks.update');
+        Route::patch('/admin/desks/{desk}/deactivate', [DeskController::class, 'deactivate'])->whereNumber('desk')->name('admin.desks.deactivate');
         Route::get('/admin', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
         Route::patch('/admin/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('admin.users.deactivate');
+        Route::patch('/admin/users/{user}/reactivate', [UserController::class, 'reactivate'])->whereNumber('user')->name('admin.users.reactivate');
+        Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->whereNumber('user')->name('admin.users.destroy');
         Route::post('/admin/blocks', [BlockedDateController::class, 'store'])->name('admin.blocks.store');
         Route::delete('/admin/blocks/{date}', [BlockedDateController::class, 'destroy'])->name('admin.blocks.destroy');
         Route::post('/admin/events', [CalendarEventController::class, 'store'])->name('admin.events.store');

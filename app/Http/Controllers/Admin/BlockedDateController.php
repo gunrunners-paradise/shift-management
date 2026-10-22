@@ -16,7 +16,7 @@ class BlockedDateController extends Controller
         $closures->block($request->user(), $data['shift_date'], $data['reason'] ?? null);
 
         return redirect()->to(route('admin.users.index').'#blocks')
-            ->with('status', 'התאריך נחסם. המשמרות הקיימות בו בוטלו וההיסטוריה נשמרה.');
+            ->with('status', 'התאריך נחסם. המשמרות והזמנות העמדות בו בוטלו וההיסטוריה נשמרה.');
     }
 
     public function destroy(UnblockDateRequest $request, DateClosureService $closures): RedirectResponse
@@ -24,6 +24,6 @@ class BlockedDateController extends Controller
         $closures->unblock($request->user(), $request->validated('shift_date'));
 
         return redirect()->to(route('admin.users.index').'#blocks')
-            ->with('status', 'החסימה הוסרה. משמרות שבוטלו לא שוחזרו; ניתן לבחור מחדש.');
+            ->with('status', 'החסימה הוסרה. משמרות והזמנות שבוטלו לא שוחזרו; ניתן לבחור ולהזמין מחדש.');
     }
 }

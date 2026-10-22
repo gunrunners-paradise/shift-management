@@ -1,7 +1,7 @@
 <x-panel id="receipts" class="receipt-report" title="מעקב קבלות חודשי" heading-id="receipt-report-heading" hint="צפייה במצב הקבלות של כל חשבונות העובדים בחודש שנבחר. חשבון שלא סימן קבלות מופיע כ״אין קבלות״.">
     <form class="receipt-month-filter" method="GET" action="{{ route('admin.users.index') }}#receipts">
         {{-- Changing the report month keeps the other dashboard lists on their current pages. --}}
-        @foreach (request()->only(['page', 'blocks_page', 'events_page']) as $queryName => $queryValue)
+        @foreach (request()->only(['page', 'blocks_page', 'events_page', 'desks_page']) as $queryName => $queryValue)
             @if (is_scalar($queryValue))
                 <input type="hidden" name="{{ $queryName }}" value="{{ $queryValue }}">
             @endif

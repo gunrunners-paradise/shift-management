@@ -11,6 +11,7 @@ class AccountManagementService
     public function __construct(
         private readonly ManagerTransaction $managerTransaction,
         private readonly ShiftSchedulingService $shiftScheduling,
+        private readonly DeskReservationService $deskReservations,
     ) {}
 
     /** Create an account after rechecking the manager inside the account lock. */
@@ -27,7 +28,7 @@ class AccountManagementService
      * Deactivate without deleting the stable user ID, and revoke stored sessions.
      * The account lock prevents concurrent managers from removing the last one.
      * Future and in-progress shifts are canceled; completed history is retained.
-     * Desk cancellation belongs to Stage 5, when desk records exist.
+     * Future and in-progress desk reservations are canceled in this transaction.
      */
     public function deactivate(User $actor, User $target): void
     {
@@ -46,9 +47,37 @@ class AccountManagementService
 
             if ($account->role === 'worker') {
                 $this->shiftScheduling->cancelForDeactivation($account, $actor);
+                $this->deskReservations->cancelForDeactivation($account, $actor);
             }
 
             $account->is_active = false;
+            $account->remember_token = null;
+            $account->save();
+
+            DB::table('sessions')->where('user_id', $account->getKey())->delete();
+        });
+    }
+
+    /**
+     * Restore an inactive account with its existing identity and password hash.
+     * The manager gate and fresh target lock serialize reactivation with account
+     * deletion/deactivation and recheck the actor's authority after any wait.
+     * Canceled shifts and reservations stay canceled; no history is rewritten.
+     * Advancing the session version keeps even late writes of old sessions
+     * revoked. The user signs in again with their existing credentials.
+     */
+    public function reactivate(User $actor, User $target): void
+    {
+        $this->managerTransaction->run($actor, function () use ($target): void {
+            $account = User::query()->lockForUpdate()->findOrFail($target->getKey());
+
+            // Repeated submissions must not revoke a newly established login.
+            if ($account->is_active) {
+                return;
+            }
+
+            $account->is_active = true;
+            $account->session_version = $account->session_version + 1;
             $account->remember_token = null;
             $account->save();
 

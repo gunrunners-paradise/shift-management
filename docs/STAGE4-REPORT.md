@@ -2,6 +2,8 @@
 
 The user explicitly authorized Stage 4 and confirmed that workers may change receipts for the **actual current month only**. The existing instruction to keep all supplemental calendar information below the grid remains in force. These policies are recorded in `AGENTS.md` and `ROADMAP.md`. Stage 4 is supplied for review; Stage 5–7 remain locked and stage approval checkboxes remain unchanged.
 
+Progression note: the user explicitly authorized Stage 5 on 2026-10-22. This report preserves the Stage 4 delivery record; current desk functionality and verification are documented in [the Stage 5 report](STAGE5-REPORT.md). This does not claim the owner independently completed every manual check below.
+
 ## Implemented and deferred scope
 
 - Managers can create, list, edit and remove manually entered events or holidays. Each has a title, one local calendar date, an optional description and an event/holiday label. Removal requires explicit confirmation. Creator and last editor IDs are retained while the announcement exists.

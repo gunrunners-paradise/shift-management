@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Desk;
 use App\Models\User;
 use App\Services\CalendarEventService;
+use App\Services\DeskReservationService;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -67,6 +69,46 @@ class CsrfProtectionTest extends TestCase
 
         $this->assertTrue($worker->fresh()->is_active);
         $this->assertAuthenticatedAs($manager);
+    }
+
+    public function test_permanent_account_deletion_requires_a_valid_csrf_token(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $target = User::factory()->inactive()->create();
+        $input = ['confirm_deletion' => '1'];
+        $this->actingAs($manager)->withSession(['_token' => 'correct-session-token']);
+
+        $this->delete(route('admin.users.destroy', $target), $input)->assertStatus(419);
+        $this->delete(route('admin.users.destroy', $target), array_merge($input, [
+            '_token' => 'incorrect-token',
+        ]))->assertStatus(419);
+
+        $this->assertDatabaseHas('users', ['id' => $target->id, 'is_active' => false]);
+
+        $this->delete(route('admin.users.destroy', $target), array_merge($input, [
+            '_token' => 'correct-session-token',
+        ]))->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    }
+
+    public function test_account_reactivation_requires_a_valid_csrf_token(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $target = User::factory()->inactive()->create();
+        $this->actingAs($manager)->withSession(['_token' => 'correct-session-token']);
+
+        $this->patch(route('admin.users.reactivate', $target))->assertStatus(419);
+        $this->patch(route('admin.users.reactivate', $target), ['_token' => 'incorrect-token'])->assertStatus(419);
+
+        $this->assertFalse($target->fresh()->is_active);
+
+        $this->patch(route('admin.users.reactivate', $target), ['_token' => 'correct-session-token'])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $this->assertTrue($target->fresh()->is_active);
+        $this->assertSame(1, $target->fresh()->session_version);
     }
 
     public function test_shift_selection_and_cancellation_require_a_valid_csrf_token(): void
@@ -158,6 +200,38 @@ class CsrfProtectionTest extends TestCase
             '_token' => 'correct-session-token', 'month' => '2026-10', 'has_receipts' => '1',
         ])->assertSessionHasNoErrors()->assertRedirect();
         $this->assertDatabaseHas('monthly_receipts', ['worker_id' => $worker->id, 'has_receipts' => true]);
+    }
+
+    public function test_desk_booking_edit_and_cancellation_require_csrf_tokens(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-10-20 08:00:00', 'Asia/Jerusalem'));
+        $worker = User::factory()->create();
+        $desk = Desk::query()->firstOrFail();
+        $reservation = app(DeskReservationService::class)->book($worker, $desk->id, '2026-10-21', '09:00', '10:00');
+        $input = ['desk_id' => $desk->id, 'reservation_date' => '2026-10-21', 'start_time' => '12:00', 'end_time' => '13:00'];
+        $this->actingAs($worker)->withSession(['_token' => 'correct-session-token']);
+
+        $this->post(route('worker.desks.store'), $input)->assertStatus(419);
+        $this->patch(route('worker.desks.update', $reservation), $input)->assertStatus(419);
+        $this->delete(route('worker.desks.destroy', $reservation), ['confirm_cancellation' => '1'])->assertStatus(419);
+
+        $this->assertNull($reservation->fresh()->cancelled_at);
+        $this->assertDatabaseCount('desk_reservations', 1);
+    }
+
+    public function test_manager_desk_add_rename_and_deactivation_require_csrf_tokens(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $desk = Desk::query()->firstOrFail();
+        $this->actingAs($manager)->withSession(['_token' => 'correct-session-token']);
+
+        $this->post(route('admin.desks.store'), ['name' => 'עמדה חדשה'])->assertStatus(419);
+        $this->patch(route('admin.desks.update', $desk), ['name' => 'שם חדש'])->assertStatus(419);
+        $this->patch(route('admin.desks.deactivate', $desk), ['confirm_deactivation' => '1'])->assertStatus(419);
+
+        $this->assertTrue($desk->fresh()->is_active);
+        $this->assertSame('עמדה 1', $desk->fresh()->name);
+        $this->assertDatabaseCount('desks', 9);
     }
 }
 

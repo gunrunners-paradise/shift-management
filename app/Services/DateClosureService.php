@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BlockedDate;
+use App\Models\DeskReservation;
 use App\Models\Shift;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -17,9 +18,10 @@ class DateClosureService
     ) {}
 
     /**
-     * Close today or a future date and cancel its selections atomically.
-     * The permanent date key serializes against even a first-ever selection.
-     * The same transaction will be extended to desks only in approved Stage 5.
+     * Close today or a future date and cancel shifts and desk bookings together.
+     * The permanent date key serializes even first-ever selections/bookings.
+     * ManagerTransaction also serializes desk/account deactivation, so closure
+     * needs date and reservation locks without taking worker or desk locks.
      */
     public function block(User $manager, string $date, ?string $reason = null): void
     {
@@ -37,6 +39,13 @@ class DateClosureService
             foreach ($shifts as $shift) {
                 // Keep the reason on the canceled row even after reopening.
                 $shift->cancel($manager->getKey(), 'date_blocked', $now, $reason);
+            }
+
+            $reservations = DeskReservation::active()->where('reservation_date', $date)
+                ->orderBy('id')->lockForUpdate()->get();
+
+            foreach ($reservations as $reservation) {
+                $reservation->cancel($manager->getKey(), 'date_blocked', $now, $reason);
             }
         });
     }

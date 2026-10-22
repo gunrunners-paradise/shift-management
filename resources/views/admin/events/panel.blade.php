@@ -1,4 +1,4 @@
-<x-panel id="events" class="events-panel" title="אירועים וחגים בלוח השנה" heading-id="events-heading" hint="הודעות ליום אחד, המוזנות ידנית. אירוע או חג אינם חוסמים הרשמה למשמרות. לסגירת המשרד יש לחסום את התאריך בנפרד.">
+<x-panel id="events" class="events-panel" title="אירועים וחגים בלוח השנה" heading-id="events-heading" hint="הודעות ליום אחד, המוזנות ידנית. אירוע או חג אינם חוסמים הרשמה למשמרות או הזמנת עמדות. לסגירת המשרד יש לחסום את התאריך בנפרד.">
     <div class="events-layout">
         <div>
             <h3>הוספת אירוע או חג</h3>

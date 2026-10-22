@@ -6,12 +6,13 @@
     <link rel="stylesheet" href="{{ asset('css/blocked-dates.css') }}">
     <link rel="stylesheet" href="{{ asset('css/events.css') }}">
     <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/desks.css') }}">
 @endpush
 
 @section('content')
     <section class="page-title" aria-labelledby="page-heading">
         <h1 id="page-heading">ניהול מערכת הנוכחות</h1>
-        <p>ניהול חשבונות וגישה למערכת, חסימת תאריכים, אירועים וחגים ומעקב קבלות חודשי.</p>
+        <p>ניהול חשבונות וגישה למערכת, חסימת תאריכים, אירועים וחגים, עמדות עבודה ומעקב קבלות חודשי.</p>
     </section>
 
     <div class="quick-actions">
@@ -19,6 +20,7 @@
         <a class="button button--secondary" href="#account-list">רשימת משתמשים</a>
         <a class="button button--danger" href="#blocks">חסימת יום</a>
         <a class="button button--secondary" href="#events">אירועים וחגים</a>
+        <a class="button button--secondary" href="#desks">ניהול עמדות</a>
         <a class="button button--secondary" href="#receipts">מעקב קבלות</a>
     </div>
 
@@ -61,7 +63,7 @@
             </form>
         </x-panel>
 
-        <x-panel id="account-list" title="משתמשי המערכת" heading-id="account-list-heading" hint="השבתת חשבון חוסמת כניסה ומבטלת את החיבורים הפעילים שלו. פרטי החשבון נשמרים.">
+        <x-panel id="account-list" title="משתמשי המערכת" heading-id="account-list-heading" hint="השבתת חשבון חוסמת כניסה ושומרת את פרטיו. חשבון לא פעיל ניתן להפעיל מחדש או למחוק לצמיתות יחד עם ההיסטוריה שלו.">
             <p class="account-summary">{{ $users->total() }} משתמשים · {{ $activeManagerCount }} מנהלים פעילים</p>
 
             <ul class="account-list">
@@ -85,7 +87,7 @@
                                     @csrf
                                     @method('PATCH')
                                     @if (! $account->isManager())
-                                        <p id="deactivate-shift-note-{{ $account->id }}" class="account-protection-note">משמרות עתידיות ומשמרות שכבר התחילו וטרם הסתיימו יבוטלו. משמרות שהסתיימו יישמרו בהיסטוריה.</p>
+                                        <p id="deactivate-shift-note-{{ $account->id }}" class="account-protection-note">משמרות והזמנות עמדה עתידיות או שכבר התחילו וטרם הסתיימו יבוטלו מיד. רשומות שהסתיימו והיסטוריית הביטולים יישמרו.</p>
                                     @endif
                                     <label class="confirmation-label" for="confirm-deactivation-{{ $account->id }}">
                                         <input id="confirm-deactivation-{{ $account->id }}" type="checkbox" name="confirm_deactivation" value="1" required @if (! $account->isManager()) aria-describedby="deactivate-shift-note-{{ $account->id }}" @endif>
@@ -94,6 +96,29 @@
                                     <x-button variant="danger" class="button--small">השבתת חשבון</x-button>
                                 </form>
                             @endif
+                        @else
+                            <form class="account-reactivation-form" method="POST" action="{{ route('admin.users.reactivate', $account) }}">
+                                @csrf
+                                @method('PATCH')
+                                <p id="reactivate-note-{{ $account->id }}" class="account-protection-note">הכניסה תתאפשר עם שם המשתמש והסיסמה הקיימים. משמרות והזמנות עמדה שבוטלו לא ישוחזרו.</p>
+                                <x-button variant="secondary" class="button--small" aria-describedby="reactivate-note-{{ $account->id }}">הפעלת חשבון מחדש <span class="screen-reader-only">של {{ $account->fullName() }}</span></x-button>
+                            </form>
+                            @php
+                                $isFailedDeletionForm = is_scalar(old('deletion_form_id')) && (string) old('deletion_form_id') === (string) $account->id;
+                            @endphp
+                            <details class="account-deletion" @if ($isFailedDeletionForm) open @endif>
+                                <summary>מחיקה לצמיתות <span class="screen-reader-only">של {{ $account->fullName() }}</span></summary>
+                                <form class="account-deletion-form" method="POST" action="{{ route('admin.users.destroy', $account) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <p id="delete-account-warning-{{ $account->id }}" class="account-deletion-warning">הפעולה תמחק לצמיתות את החשבון, תמונת הפרופיל וכל המשמרות, הזמנות העמדות והקבלות שלו, כולל היסטוריה. לא ניתן לבטל פעולה זו.</p>
+                                    <label class="confirmation-label" for="confirm-deletion-{{ $account->id }}">
+                                        <input id="confirm-deletion-{{ $account->id }}" type="checkbox" name="confirm_deletion" value="1" aria-describedby="delete-account-warning-{{ $account->id }}" required>
+                                        <span>אני מאשר/ת את מחיקת החשבון וכל ההיסטוריה שלו לצמיתות.</span>
+                                    </label>
+                                    <x-button variant="danger" class="button--small">מחיקת החשבון לצמיתות</x-button>
+                                </form>
+                            </details>
                         @endif
                     </li>
                 @empty
@@ -121,5 +146,6 @@
 
     @include('admin.blocks.panel')
     @include('admin.events.panel')
+    @include('admin.desks.panel')
     @include('admin.receipts.panel')
 @endsection

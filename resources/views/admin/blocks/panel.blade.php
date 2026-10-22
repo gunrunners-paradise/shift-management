@@ -1,4 +1,4 @@
-<x-panel id="blocks" class="blocked-dates-panel" title="חסימת ימי עבודה" heading-id="blocked-dates-heading" hint="חסימת היום או תאריך עתידי מונעת בחירת משמרות ומבטלת משמרות קיימות באותו תאריך. היסטוריית הביטולים נשמרת.">
+<x-panel id="blocks" class="blocked-dates-panel" title="חסימת ימי עבודה" heading-id="blocked-dates-heading" hint="חסימת היום או תאריך עתידי מונעת בחירת משמרות והזמנת עמדות ומבטלת משמרות והזמנות עמדה קיימות באותו תאריך. היסטוריית הביטולים נשמרת.">
     <div class="blocked-dates-layout">
         <form method="POST" action="{{ route('admin.blocks.store') }}" class="blocked-date-form">
             @csrf
@@ -7,7 +7,7 @@
 
             <label class="confirmation-label" for="confirm-block">
                 <input id="confirm-block" type="checkbox" name="confirm_block" value="1" required @if ($errors->has('confirm_block')) aria-invalid="true" aria-describedby="confirm-block-error" @endif>
-                <span>אני מאשר/ת את חסימת התאריך וביטול כל המשמרות הקיימות בו.</span>
+                <span>אני מאשר/ת את חסימת התאריך וביטול כל המשמרות והזמנות העמדה הקיימות בו.</span>
             </label>
             @error('confirm_block')
                 <p id="confirm-block-error" class="field-error">{{ $message }}</p>
@@ -18,7 +18,7 @@
 
         <div class="blocked-dates-list-column">
             <h3>תאריכים חסומים</h3>
-            <p class="hint">הסרת חסימה מאפשרת הרשמה מחדש. משמרות שבוטלו נשארות מבוטלות.</p>
+            <p class="hint">הסרת חסימה מאפשרת הרשמה מחדש. משמרות והזמנות עמדה שבוטלו נשארות מבוטלות.</p>
             <ul class="blocked-dates-list">
                 @forelse ($blockedDates as $blockedDate)
                     <li class="blocked-date-item">
@@ -34,7 +34,7 @@
                                 @method('DELETE')
                                 <label class="confirmation-label" for="confirm-unblock-{{ $blockedDate->date->toDateString() }}">
                                     <input id="confirm-unblock-{{ $blockedDate->date->toDateString() }}" type="checkbox" name="confirm_unblock" value="1" required>
-                                    <span>אני מאשר/ת את הסרת החסימה. המשמרות שבוטלו לא ישוחזרו.</span>
+                                    <span>אני מאשר/ת את הסרת החסימה. המשמרות והזמנות העמדה שבוטלו לא ישוחזרו.</span>
                                 </label>
                                 <x-button variant="secondary" class="button--small">הסרת חסימה</x-button>
                             </form>

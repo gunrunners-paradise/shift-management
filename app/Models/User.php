@@ -16,7 +16,7 @@ class User extends Authenticatable
         'role', 'is_active', 'password',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'session_version'];
 
     protected function casts(): array
     {
@@ -24,6 +24,7 @@ class User extends Authenticatable
             'birth_date' => 'immutable_date',
             'is_active' => 'boolean',
             'password' => 'hashed',
+            'session_version' => 'integer',
         ];
     }
 

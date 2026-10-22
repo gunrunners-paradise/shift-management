@@ -547,6 +547,37 @@ a:focus-visible,
     font-size: 13px;
 }
 
+.account-reactivation-form {
+    margin-top: 12px;
+}
+
+.account-deletion {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-line);
+}
+
+.account-deletion summary {
+    min-height: 44px;
+    padding: 12px 3px;
+    color: var(--color-danger);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.account-deletion-form {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+}
+
+.account-deletion-warning {
+    margin: 0;
+    color: var(--color-danger);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
 .account-list {
     display: grid;
     gap: 12px;

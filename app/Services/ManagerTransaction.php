@@ -12,7 +12,9 @@ class ManagerTransaction
     /**
      * Serialize manager writes and commit their cross-record changes together.
      * This protects the last manager, first-manager setup, date closures and
-     * authority checks for event maintenance.
+     * authority checks for event and desk maintenance. Serializing manager
+     * cancellations also lets desk deactivation hold desk/reservation locks
+     * without acquiring date locks in reverse order.
      * One shared lock also avoids manager cancellation-actor foreign-key locks
      * racing with account deactivation. Workers never acquire this lock.
      *
