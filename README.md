@@ -2,6 +2,8 @@
 
 A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events, monthly receipts and desk reservations. Stage 6 adds a manager's explicit CSV download of scheduled workdays. The calendar keeps its confirmed order: calendar, receipts, then other information; manager event/block lists show the current month and all future months. Stage 6 is supplied for review; Stage 7 remains locked.
 
+See the [extra features and follow-up report](docs/EXTRA-FEATURES-REPORT.md) for additions and corrections made between stages, with links to existing detailed reports.
+
 ## Run in this workspace
 
 PHP 8.3+, Composer 2, and MariaDB are required. CSS and vanilla JavaScript are served directly from `public/`; no Node build is needed.

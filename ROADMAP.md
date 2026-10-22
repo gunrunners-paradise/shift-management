@@ -200,4 +200,6 @@ Initial delivery: current-month filtering and concise monthly list text were imp
 
 Correction delivered for review: the full MariaDB suite passed **442 tests and 2627 assertions in 68.74 seconds**, with no failures/skips. The initial sandboxed run could not connect to the socket (zero assertions); the rerun with access to the dedicated test database passed. Pint, Blade compilation and `git diff --check` passed, and the five HTML references remain untouched. `README.md` has manual review steps; owner browser acceptance is pending.
 
+The [extra features and follow-up report](docs/EXTRA-FEATURES-REPORT.md) consolidates the additions/corrections outside numbered stage deliveries, links existing detailed reports and covers the session policy and final manager-list visibility rule. This documentation update changes no stage approval.
+
 When a stage is approved by the user, record the confirmation date and brief tested deliverables here before starting the next authorized stage. Keep the human-approved stage gates intact.
