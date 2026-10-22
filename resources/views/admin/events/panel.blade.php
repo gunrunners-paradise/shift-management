@@ -10,8 +10,8 @@
         </div>
 
         <div class="events-list-column">
-            <h3>הודעות בלוח</h3>
-            <p class="hint">{{ $calendarEvents->total() }} הודעות. העובדים רואים רק הודעות לתאריך של היום.</p>
+            <h3>הודעות החודש</h3>
+            <p class="hint">{{ $calendarEvents->total() }} הודעות החודש. העובדים רואים רק הודעות לתאריך של היום.</p>
             <ul class="events-list">
                 @forelse ($calendarEvents as $calendarEvent)
                     <li class="event-card">
@@ -48,7 +48,7 @@
                         </details>
                     </li>
                 @empty
-                    <li class="empty-state">אין אירועים או חגים בלוח.</li>
+                    <li class="empty-state">אין אירועים או חגים בחודש הנוכחי.</li>
                 @endforelse
             </ul>
 

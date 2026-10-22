@@ -17,7 +17,7 @@
         </form>
 
         <div class="blocked-dates-list-column">
-            <h3>תאריכים חסומים</h3>
+            <h3>תאריכים חסומים החודש</h3>
             <p class="hint">הסרת חסימה מאפשרת הרשמה מחדש. משמרות והזמנות עמדה שבוטלו נשארות מבוטלות.</p>
             <ul class="blocked-dates-list">
                 @forelse ($blockedDates as $blockedDate)
@@ -43,7 +43,7 @@
                         @endif
                     </li>
                 @empty
-                    <li class="empty-state">אין תאריכים חסומים.</li>
+                    <li class="empty-state">אין תאריכים חסומים בחודש הנוכחי.</li>
                 @endforelse
             </ul>
 

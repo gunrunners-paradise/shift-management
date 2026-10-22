@@ -189,4 +189,10 @@ The user authorized adding a manager option to reactivate inactive accounts. Res
 
 Delivered for review: the session-version migration is applied locally; no account was automatically reactivated. The complete MariaDB suite passed 376 tests and 2202 assertions with no failures/skips. Native-form, authorization, stale-session replay and concurrent manager-action checks are included. Stage 5 approval and Stage 6 authorization remain pending.
 
+### Authorized manager-list visibility follow-up — 2026-10-22
+
+The user authorized limiting the manager dashboard's events/manual holidays and blocked-date lists to the actual current Israel calendar month, keeping other months' records stored. Counts and pagination use that same range; the receipt-month picker remains independent. A separate archive for both is recorded in `AGENTS.md` as a possible future feature, requiring later authorization. No archive UI or new stage is authorized by this follow-up. The implementation only changes dashboard reads and existing list text; all date-blocking and worker rules remain in force.
+
+Delivered for review: current-month filtering and concise monthly list text are implemented. The full MariaDB suite passed 386 tests and 2330 assertions with no failures/skips, including ten new visibility/boundary scenarios. No migration or data deletion was required. `README.md` contains the request-to-view reading guide and manual review steps. Stage 6 remains locked.
+
 When a stage is approved by the user, record the confirmation date and brief tested deliverables here before starting the next authorized stage. Keep the human-approved stage gates intact.

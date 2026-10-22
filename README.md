@@ -53,6 +53,18 @@ As a manager, open account management in `/admin`. For an inactive account, expa
 
 Run `php artisan migrate` when updating another installation. The additional migration makes deleted manager identities optional on shared blocks/events; applying it does not delete accounts. See [the account deletion report](docs/ACCOUNT-DELETION-REPORT.md) for verification and safe manual review with a disposable account.
 
+## Manager events and blocked dates
+
+The manager dashboard lists only events/manual holidays and blocked dates in the **actual current calendar month in Israel time**, with ten records per page in each list. Earlier dates within that month remain visible. The receipt-report month picker does not change these lists. Each dashboard request uses the current month, so the lists move to the new month on the next load after a month boundary.
+
+Records from earlier or later months stay in the database. Future blocks still prevent shift and desk bookings even while hidden from the manager's current-month list. A separate archive is a possible future feature recorded in `AGENTS.md`; it has no controls in the current interface.
+
+For manual review, create disposable events for this month and next month and confirm that only this month's appears. Check that a future blocked date in the next month remains blocked in the worker calendar and desk page. Pagination and totals should cover only the current month, including when viewing receipts for a different month. Automated tests check month rollover without changing the host clock.
+
+Code path: `GET /admin` → `Admin/UserController::index()` calculates the local month boundaries and filters `BlockedDate` and `CalendarEvent` before pagination → `admin/blocks/panel.blade.php` and `admin/events/panel.blade.php` render the lists and monthly empty messages. This change needs no migration, route, CSS or JavaScript additions and performs no record deletion.
+
+Verified on 2026-10-22: `php artisan test --compact --stop-on-failure` passed **386 tests and 2330 assertions in 62.70 seconds**, with no failures/skips. Ten new scenarios in `tests/Feature/DashboardMonthVisibilityTest.php` cover month/year/leap-year boundaries, retained hidden records, independent pagination, receipt-filter independence and future block enforcement. Pint, Blade compilation, reference checksums and `git diff --check` passed; `/login` returned HTTP 200. Manual browser acceptance remains for owner review.
+
 ## Existing events and receipts checks
 
 Run `php artisan migrate` when updating another installation; Stage 4 adds `calendar_events` and `monthly_receipts` without replacing existing accounts or shifts.

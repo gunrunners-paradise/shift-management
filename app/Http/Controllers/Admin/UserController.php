@@ -28,11 +28,19 @@ class UserController extends Controller
         $today = $now->startOfDay();
         $reportMonth = $request->validated('receipts_month') ?: $today->format('Y-m');
 
+        // These local DATE bounds follow the actual month, independently of
+        // the receipts picker. Filter before pagination so counts stay monthly
+        // too; older and future records remain stored for their original use.
+        $currentMonthStart = $today->startOfMonth()->toDateString();
+        $nextMonthStart = $today->startOfMonth()->addMonth()->toDateString();
+
         return view('admin.users.index', [
             'users' => User::orderByDesc('is_active')->orderBy('id')->paginate(20)->withQueryString(),
             'activeManagerCount' => User::where('role', 'manager')->where('is_active', true)->count(),
-            'blockedDates' => BlockedDate::orderBy('date')->paginate(10, ['*'], 'blocks_page')->withQueryString(),
-            'calendarEvents' => CalendarEvent::orderBy('date')->orderBy('id')
+            'blockedDates' => BlockedDate::where('date', '>=', $currentMonthStart)->where('date', '<', $nextMonthStart)
+                ->orderBy('date')->paginate(10, ['*'], 'blocks_page')->withQueryString(),
+            'calendarEvents' => CalendarEvent::where('date', '>=', $currentMonthStart)->where('date', '<', $nextMonthStart)
+                ->orderBy('date')->orderBy('id')
                 ->paginate(10, ['*'], 'events_page')->withQueryString(),
             'receiptReport' => $receipts->report($reportMonth),
             'managedDesks' => Desk::query()->withCount([
