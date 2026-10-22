@@ -1,6 +1,6 @@
-# מערכת נוכחות — Stage 5
+# מערכת נוכחות — Stage 6
 
-A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events and monthly receipts. Stage 5 adds worker desk reservations and manager desk administration. The calendar keeps its confirmed order: calendar, receipts, then other information. Stage 5 is supplied for review; Stage 6–7 remain locked.
+A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events, monthly receipts and desk reservations. Stage 6 adds a manager's explicit CSV download of scheduled workdays. The calendar keeps its confirmed order: calendar, receipts, then other information; manager event/block lists show the current month and all future months. Stage 6 is supplied for review; Stage 7 remains locked.
 
 ## Run in this workspace
 
@@ -28,7 +28,16 @@ For a fresh checkout, run `composer install` and provision a MariaDB database an
 
 If login returns HTTP 500 after a reboot and the log reports a missing database socket, start the local database, run `php artisan config:clear`, and refresh. See [workspace troubleshooting](docs/DEPLOYMENT.md#prepared-workspace-database) for details.
 
-## Review Stage 5
+## Review Stage 6
+
+1. Sign in as manager, use the `הורדת CSV` quick action, select an inclusive start/end date no later than today, and click the download button. Opening the dashboard or changing dates alone does not generate a report. The default range is the current month through today, but historical ranges are available.
+2. Open the downloaded CSV in your preferred spreadsheet software. Check the Hebrew columns, in order: `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`. Each retained worker appears, including inactive workers and workers with **0** days. Zero-day rows have an empty date cell; managers are excluded.
+3. Compare a known worker's non-canceled shifts with the report. Each selected date counts once for any of the five periods. Dates are chronological `DD/MM/YYYY`, separated by comma and space within one cell. Canceled/replaced history does not add days, and desk reservations do not add workdays. Permanently deleted accounts/history are absent.
+4. Try a reversed range, a missing date and a future date. Hebrew validation should appear without downloading a partial file. Check keyboard access and the native form on mobile and with JavaScript disabled. Workers cannot access the manager download endpoint.
+
+Stage 6 needs no migration, new dependency or scheduled task. Reports are generated only for an explicit manager request and are not saved in application storage, emailed or produced periodically. The download uses UTF-8 BOM and quoted/escaped cells. See [the Stage 6 report](docs/STAGE6-REPORT.md) for changed files, actual checks, formula-prefix handling and the request reading guide. Spreadsheet acceptance remains part of owner review.
+
+## Existing Stage 5 checks
 
 Run `php artisan migrate` when updating another installation. Stage 5 adds `desks` and `desk_reservations`, and creates the nine initial desks once. Existing users, shifts and receipts stay in place.
 
@@ -55,15 +64,15 @@ Run `php artisan migrate` when updating another installation. The additional mig
 
 ## Manager events and blocked dates
 
-The manager dashboard lists only events/manual holidays and blocked dates in the **actual current calendar month in Israel time**, with ten records per page in each list. Earlier dates within that month remain visible. The receipt-report month picker does not change these lists. Each dashboard request uses the current month, so the lists move to the new month on the next load after a month boundary.
+The manager dashboard lists events/manual holidays and blocked dates from the **first day of the actual current calendar month in Israel time onward**, including every future month and year, with ten records per page in each list, ordered by date. Only past months are hidden; earlier dates within the current month remain visible. The receipt-report month picker does not change these lists. The cutoff moves to the new month's first day on the next dashboard load after a month boundary.
 
-Records from earlier or later months stay in the database. Future blocks still prevent shift and desk bookings even while hidden from the manager's current-month list. A separate archive is a possible future feature recorded in `AGENTS.md`; it has no controls in the current interface.
+Records from past months stay in the database. Future blocks appear in the manager's list and continue to prevent shift and desk bookings. A separate archive is a possible future feature recorded in `AGENTS.md`; it has no controls in the current interface.
 
-For manual review, create disposable events for this month and next month and confirm that only this month's appears. Check that a future blocked date in the next month remains blocked in the worker calendar and desk page. Pagination and totals should cover only the current month, including when viewing receipts for a different month. Automated tests check month rollover without changing the host clock.
+For manual review, confirm existing past-month records are hidden and create disposable events for this month, next month and next year: all three should appear, using pagination when needed. Check that a future blocked date in the next month appears and remains blocked in the worker calendar and desk page. Pagination and totals should include the current month and all future dates, including when viewing receipts for a different month. Automated tests check month rollover without changing the host clock.
 
-Code path: `GET /admin` → `Admin/UserController::index()` calculates the local month boundaries and filters `BlockedDate` and `CalendarEvent` before pagination → `admin/blocks/panel.blade.php` and `admin/events/panel.blade.php` render the lists and monthly empty messages. This change needs no migration, route, CSS or JavaScript additions and performs no record deletion.
+Code path: `GET /admin` → `Admin/UserController::index()` calculates the local current month's first day and queries `BlockedDate` and `CalendarEvent` with `date >=` that date before pagination → `admin/blocks/panel.blade.php` and `admin/events/panel.blade.php` render the lists and matching empty messages. This change needs no migration, route, service/model, CSS or JavaScript additions and performs no record deletion.
 
-Verified on 2026-10-22: `php artisan test --compact --stop-on-failure` passed **386 tests and 2330 assertions in 62.70 seconds**, with no failures/skips. Ten new scenarios in `tests/Feature/DashboardMonthVisibilityTest.php` cover month/year/leap-year boundaries, retained hidden records, independent pagination, receipt-filter independence and future block enforcement. Pint, Blade compilation, reference checksums and `git diff --check` passed; `/login` returned HTTP 200. Manual browser acceptance remains for owner review.
+Verified after the future-month correction on 2026-10-22: `php artisan test --compact --stop-on-failure` passed **442 tests and 2627 assertions in 68.74 seconds**, with no failures/skips. The ten updated scenarios in `tests/Feature/DashboardMonthVisibilityTest.php` cover current/future month and year visibility, Israel month/year/leap-year rollover, retained hidden past records, independent pagination, receipt-filter independence and future block enforcement. The first sandboxed attempt could not connect to the MariaDB socket (zero assertions); the successful rerun used the dedicated test database with socket access. Pint, Blade compilation and `git diff --check` passed; all five reference HTML files remain untouched. Manual browser acceptance remains for owner review.
 
 ## Existing events and receipts checks
 
@@ -124,6 +133,8 @@ The race tests need PHP `pcntl` and local socket pairs; missing support is repor
 Start in [routes/web.php](routes/web.php). `GET /login` calls `AuthenticatedSessionController::create()` and renders `auth/login.blade.php`. Its ordinary CSRF-protected form posts to `store()`. `LoginRequest::authenticate()` rate-limits attempts and asks Laravel's session guard to check the active `User` and password hash in MariaDB. The controller rotates the session and redirects to the role's home route.
 
 For account creation, `POST /admin/users` passes through authentication, active-account and manager middleware, then `StoreUserRequest` validates the fields. `Admin/UserController::store()` calls `AccountManagementService::create()`, which acquires a schema-specific MariaDB lock, rechecks the actor and persists a `User` in a transaction. The password is hashed by the model cast. The redirect reaches `index()`, which reads users and renders `admin/users/index.blade.php` through the shared authenticated layout. `public/js/app.js` enhances native dropdowns and password visibility; forms work without JavaScript.
+
+For CSV, `POST /admin/reports/workdays` (`admin.reports.workdays`) → `ExportWorkdaysRequest` → `Admin/WorkdayReportController::__invoke()` → `WorkdayCsvReportService::prepare()`. The service rechecks the manager under a row lock and reads workers with their qualifying shifts in one consistent database query. It returns a temporary CSV stream; the controller streams and closes it after generation has committed. `admin/reports/panel.blade.php` renders the normal form and `public/css/reports.css` scopes its responsive layout. No feature JavaScript or database writes are involved.
 
 For permanent deletion, `DELETE /admin/users/{user}` → `DeleteUserRequest` → `Admin/UserController::destroy()` → `AccountDeletionService::delete()`. The service rechecks the manager and inactive target under locks, deletes the target's owned records and sessions, clears shared actor references and deletes the `User` in one transaction. `AvatarStorage::delete()` runs after commit. The redirect returns to `admin/users/index.blade.php`; its inline confirmation uses native forms and needs no new JavaScript.
 

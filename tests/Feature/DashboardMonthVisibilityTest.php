@@ -26,11 +26,11 @@ class DashboardMonthVisibilityTest extends TestCase
         $this->travelTo(CarbonImmutable::parse('2026-10-20 12:00:00', 'Asia/Jerusalem'));
     }
 
-    public function test_manager_lists_include_the_whole_current_month_and_keep_other_months_stored_but_hidden(): void
+    public function test_manager_lists_include_the_whole_current_month_and_all_future_months_while_preserving_hidden_past_months(): void
     {
         $manager = User::factory()->manager()->create();
-        $visibleDates = ['2026-10-01', '2026-10-19', '2026-10-20', '2026-10-31'];
-        $hiddenDates = ['2025-10-20', '2026-09-30', '2026-11-01', '2027-10-20'];
+        $visibleDates = ['2026-10-01', '2026-10-19', '2026-10-20', '2026-10-31', '2026-11-01', '2027-10-20'];
+        $hiddenDates = ['2025-10-20', '2026-09-30'];
 
         foreach (array_merge($visibleDates, $hiddenDates) as $date) {
             $this->createEvent($manager, $date, $date === '2026-10-31' ? 'holiday' : 'event');
@@ -41,8 +41,8 @@ class DashboardMonthVisibilityTest extends TestCase
 
         $this->assertSame($visibleDates, $this->dates($response->viewData('calendarEvents')));
         $this->assertSame($visibleDates, $this->dates($response->viewData('blockedDates')));
-        $this->assertSame(4, $response->viewData('calendarEvents')->total());
-        $this->assertSame(4, $response->viewData('blockedDates')->total());
+        $this->assertSame(6, $response->viewData('calendarEvents')->total());
+        $this->assertSame(6, $response->viewData('blockedDates')->total());
 
         foreach ($visibleDates as $date) {
             $response->assertSee('Event '.$date)->assertSee('Block '.$date);
@@ -58,19 +58,19 @@ class DashboardMonthVisibilityTest extends TestCase
         $this->assertDatabaseCount('blocked_dates', 8);
     }
 
-    public function test_empty_current_month_lists_do_not_show_records_from_other_months(): void
+    public function test_empty_current_and_future_lists_do_not_show_records_from_past_months(): void
     {
         $manager = User::factory()->manager()->create();
 
-        foreach (['2026-09-30', '2026-11-01'] as $date) {
+        foreach (['2025-10-20', '2026-09-30'] as $date) {
             $this->createEvent($manager, $date);
             $this->createBlockedDate($manager, $date);
         }
 
         $response = $this->actingAs($manager)->get(route('admin.users.index'))->assertOk();
 
-        $response->assertSee('אין אירועים או חגים בחודש הנוכחי.')
-            ->assertSee('אין תאריכים חסומים בחודש הנוכחי.');
+        $response->assertSee('אין אירועים או חגים מהחודש הנוכחי ואילך.')
+            ->assertSee('אין תאריכים חסומים מהחודש הנוכחי ואילך.');
         $this->assertSame(0, $response->viewData('calendarEvents')->total());
         $this->assertSame(0, $response->viewData('blockedDates')->total());
         $this->assertCount(0, $this->document($response->getContent())->query('//*[@id="events" or @id="blocks"]//nav[contains(@class,"pagination")]'));
@@ -78,19 +78,25 @@ class DashboardMonthVisibilityTest extends TestCase
         $this->assertDatabaseCount('blocked_dates', 2);
     }
 
-    public function test_each_monthly_list_paginates_independently_and_counts_only_current_month_records(): void
+    public function test_each_list_paginates_current_and_future_records_independently_in_date_order(): void
     {
         $manager = User::factory()->manager()->create();
-        $currentDates = [];
+        $visibleDates = [];
 
-        for ($day = 1; $day <= 11; $day++) {
+        for ($day = 1; $day <= 9; $day++) {
             $date = sprintf('2026-10-%02d', $day);
-            $currentDates[] = $date;
+            $visibleDates[] = $date;
+        }
+
+        $visibleDates = array_merge($visibleDates, ['2026-11-01', '2027-01-01', '2027-10-20']);
+
+        // Insert out of order to verify sorting across both month and year boundaries.
+        foreach (array_reverse($visibleDates) as $date) {
             $this->createEvent($manager, $date);
             $this->createBlockedDate($manager, $date);
         }
 
-        foreach (['2026-09-30', '2026-11-01'] as $date) {
+        foreach (['2025-10-20', '2026-09-30'] as $date) {
             $this->createEvent($manager, $date);
             $this->createBlockedDate($manager, $date);
         }
@@ -100,10 +106,10 @@ class DashboardMonthVisibilityTest extends TestCase
 
         foreach (['calendarEvents', 'blockedDates'] as $list) {
             $paginator = $firstPage->viewData($list);
-            $this->assertSame(11, $paginator->total());
+            $this->assertSame(12, $paginator->total());
             $this->assertSame(10, $paginator->perPage());
             $this->assertSame(2, $paginator->lastPage());
-            $this->assertSame(array_slice($currentDates, 0, 10), $this->dates($paginator));
+            $this->assertSame(array_slice($visibleDates, 0, 10), $this->dates($paginator));
         }
 
         $links = $this->document($firstPage->getContent());
@@ -118,15 +124,15 @@ class DashboardMonthVisibilityTest extends TestCase
         }
 
         $eventsPage = $this->get(route('admin.users.index', ['events_page' => 2]))->assertOk();
-        $this->assertSame(['2026-10-11'], $this->dates($eventsPage->viewData('calendarEvents')));
-        $this->assertSame(array_slice($currentDates, 0, 10), $this->dates($eventsPage->viewData('blockedDates')));
+        $this->assertSame(array_slice($visibleDates, 10), $this->dates($eventsPage->viewData('calendarEvents')));
+        $this->assertSame(array_slice($visibleDates, 0, 10), $this->dates($eventsPage->viewData('blockedDates')));
 
         $blocksPage = $this->get(route('admin.users.index', ['blocks_page' => 2]))->assertOk();
-        $this->assertSame(['2026-10-11'], $this->dates($blocksPage->viewData('blockedDates')));
-        $this->assertSame(array_slice($currentDates, 0, 10), $this->dates($blocksPage->viewData('calendarEvents')));
+        $this->assertSame(array_slice($visibleDates, 10), $this->dates($blocksPage->viewData('blockedDates')));
+        $this->assertSame(array_slice($visibleDates, 0, 10), $this->dates($blocksPage->viewData('calendarEvents')));
     }
 
-    public function test_receipt_report_month_and_unrecognized_month_filters_do_not_change_the_current_month_lists(): void
+    public function test_receipt_report_month_and_unrecognized_month_filters_do_not_change_current_and_future_lists(): void
     {
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create();
@@ -144,11 +150,12 @@ class DashboardMonthVisibilityTest extends TestCase
             'blocks_month' => '2026-11',
         ]))->assertOk();
 
-        $this->assertSame(['2026-10-01'], $this->dates($response->viewData('calendarEvents')));
-        $this->assertSame(['2026-10-01'], $this->dates($response->viewData('blockedDates')));
+        $this->assertSame(['2026-10-01', '2026-11-01'], $this->dates($response->viewData('calendarEvents')));
+        $this->assertSame(['2026-10-01', '2026-11-01'], $this->dates($response->viewData('blockedDates')));
         $this->assertSame('2026-09', $response->viewData('receiptReport')['month']);
         $this->assertSame(1, $response->viewData('receiptReport')['yes_count']);
-        $response->assertDontSee('Event 2026-09-30')->assertDontSee('Block 2026-11-01');
+        $response->assertDontSee('Event 2026-09-30')->assertDontSee('Block 2026-09-30')
+            ->assertSee('Event 2026-11-01')->assertSee('Block 2026-11-01');
     }
 
     #[DataProvider('monthRollovers')]
@@ -168,8 +175,8 @@ class DashboardMonthVisibilityTest extends TestCase
         // At the first request UTC and Israel still share the previous month.
         $this->travelTo($beforeMidnight->utc());
         $before = $this->actingAs($manager)->get(route('admin.users.index'))->assertOk();
-        $this->assertSame([$previousDate], $this->dates($before->viewData('calendarEvents')));
-        $this->assertSame([$previousDate], $this->dates($before->viewData('blockedDates')));
+        $this->assertSame([$previousDate, $newDate], $this->dates($before->viewData('calendarEvents')));
+        $this->assertSame([$previousDate, $newDate], $this->dates($before->viewData('blockedDates')));
 
         // UTC has not changed months yet, but Israel's dashboard must switch.
         $this->travelTo($afterMidnight->utc());
@@ -191,7 +198,7 @@ class DashboardMonthVisibilityTest extends TestCase
     }
 
     #[DataProvider('futureEventKinds')]
-    public function test_manager_can_create_a_future_month_event_or_holiday_without_showing_it_in_this_months_list(string $kind): void
+    public function test_manager_can_create_a_future_month_event_or_holiday_and_see_it_immediately(string $kind): void
     {
         $manager = User::factory()->manager()->create();
 
@@ -204,8 +211,9 @@ class DashboardMonthVisibilityTest extends TestCase
 
         $dashboard = $this->get(route('admin.users.index'))->assertOk();
 
-        $dashboard->assertDontSee('Future month announcement');
-        $this->assertSame(0, $dashboard->viewData('calendarEvents')->total());
+        $dashboard->assertSee('Future month announcement');
+        $this->assertSame(['2026-11-01'], $this->dates($dashboard->viewData('calendarEvents')));
+        $this->assertSame(1, $dashboard->viewData('calendarEvents')->total());
         $this->assertDatabaseHas('calendar_events', [
             'title' => 'Future month announcement', 'date' => '2026-11-01', 'kind' => $kind,
         ]);
@@ -216,7 +224,7 @@ class DashboardMonthVisibilityTest extends TestCase
         return [['event'], ['holiday']];
     }
 
-    public function test_a_hidden_next_month_block_still_rejects_worker_shifts_and_desk_reservations(): void
+    public function test_a_visible_next_month_block_still_rejects_worker_shifts_and_desk_reservations(): void
     {
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create();
@@ -229,8 +237,9 @@ class DashboardMonthVisibilityTest extends TestCase
         ])->assertSessionHasNoErrors()->assertRedirect();
 
         $dashboard = $this->get(route('admin.users.index'))->assertOk();
-        $dashboard->assertDontSee('Next month closure');
-        $this->assertSame(0, $dashboard->viewData('blockedDates')->total());
+        $dashboard->assertSee('Next month closure');
+        $this->assertSame(['2026-11-01'], $this->dates($dashboard->viewData('blockedDates')));
+        $this->assertSame(1, $dashboard->viewData('blockedDates')->total());
 
         $this->flushSession();
         $this->actingAs($worker)->post(route('worker.shifts.store'), [

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/events.css') }}">
     <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/desks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/reports.css') }}">
 @endpush
 
 @section('content')
@@ -20,6 +21,7 @@
         <a class="button button--secondary" href="#account-list">רשימת משתמשים</a>
         <a class="button button--danger" href="#blocks">חסימת יום</a>
         <a class="button button--secondary" href="#events">אירועים וחגים</a>
+        <a class="button button--secondary" href="#reports">הורדת CSV</a>
         <a class="button button--secondary" href="#desks">ניהול עמדות</a>
         <a class="button button--secondary" href="#receipts">מעקב קבלות</a>
     </div>
@@ -146,6 +148,7 @@
 
     @include('admin.blocks.panel')
     @include('admin.events.panel')
+    @include('admin.reports.panel')
     @include('admin.desks.panel')
     @include('admin.receipts.panel')
 @endsection

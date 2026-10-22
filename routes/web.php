@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BlockedDateController;
 use App\Http\Controllers\Admin\CalendarEventController;
 use App\Http\Controllers\Admin\DeskController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WorkdayReportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DeskReservationController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
     });
 
     Route::middleware('role:manager')->group(function (): void {
+        Route::post('/admin/reports/workdays', WorkdayReportController::class)->name('admin.reports.workdays');
         Route::post('/admin/desks', [DeskController::class, 'store'])->name('admin.desks.store');
         Route::patch('/admin/desks/{desk}', [DeskController::class, 'update'])->whereNumber('desk')->name('admin.desks.update');
         Route::patch('/admin/desks/{desk}/deactivate', [DeskController::class, 'deactivate'])->whereNumber('desk')->name('admin.desks.deactivate');

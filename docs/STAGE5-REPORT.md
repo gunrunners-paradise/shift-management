@@ -1,5 +1,7 @@
 # Stage 5 delivery for review — 2026-10-22
 
+Progression note: the user explicitly authorized Stage 6 on 2026-10-22. This file preserves the Stage 5 delivery record; the current CSV implementation and review steps are documented in [the Stage 6 report](STAGE6-REPORT.md) and `README.md`. This does not claim that the owner independently completed every earlier manual check.
+
 The user explicitly authorized Stage 5 and confirmed that deactivating a desk must immediately cancel an in-progress reservation as well as future reservations. These rules are recorded in `AGENTS.md` and `ROADMAP.md`. Stage 5 is supplied for review; Stage 6–7 remain locked. The calendar still displays the calendar first, receipts directly below it, then announcements, birthdays and coworkers.
 
 ## Implemented and deferred scope

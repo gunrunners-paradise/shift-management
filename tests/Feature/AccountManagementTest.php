@@ -229,7 +229,7 @@ class AccountManagementTest extends TestCase
             ->assertDontSee('<script>alert(1)</script>', false)
             ->assertSee('id="events"', false)
             ->assertSee('id="blocks"', false)
-            ->assertDontSee('id="reports"', false)
+            ->assertSee('id="reports"', false)
             ->assertSee('id="desks"', false)
             ->assertSee('id="receipts"', false)
             ->assertDontSee('worker-profile-prototype.html', false)

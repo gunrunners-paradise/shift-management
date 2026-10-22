@@ -233,6 +233,24 @@ class CsrfProtectionTest extends TestCase
         $this->assertSame('עמדה 1', $desk->fresh()->name);
         $this->assertDatabaseCount('desks', 9);
     }
+
+    public function test_workday_csv_download_requires_a_valid_csrf_token(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-10-22 12:00:00', 'Asia/Jerusalem'));
+        $manager = User::factory()->manager()->create();
+        $input = ['start_date' => '2026-10-18', 'end_date' => '2026-10-22'];
+        $this->actingAs($manager)->withSession(['_token' => 'correct-session-token']);
+
+        $this->post(route('admin.reports.workdays'), $input)->assertStatus(419);
+        $this->post(route('admin.reports.workdays'), array_merge($input, ['_token' => 'incorrect-token']))
+            ->assertStatus(419);
+
+        $response = $this->post(route('admin.reports.workdays'), array_merge($input, [
+            '_token' => 'correct-session-token',
+        ]))->assertOk()->assertDownload();
+
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $response->streamedContent());
+    }
 }
 
 /** Keep the production middleware behavior while enabling it inside PHPUnit. */
