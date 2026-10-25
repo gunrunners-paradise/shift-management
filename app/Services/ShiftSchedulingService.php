@@ -127,7 +127,10 @@ class ShiftSchedulingService
         return DB::transaction(function () use ($worker, $date, $calendarDate, $operation): mixed {
             $currentWorker = User::query()->lockForUpdate()->find($worker->getKey());
 
-            if ($currentWorker === null || ! $currentWorker->is_active || $currentWorker->role !== 'worker') {
+            // An older request must not resume writing after reactivation has
+            // revoked its login, even though this account is active again.
+            if ($currentWorker === null || ! $currentWorker->is_active || $currentWorker->role !== 'worker'
+                || $currentWorker->session_version !== (int) $worker->session_version) {
                 throw new AuthorizationException('רק עובדים פעילים יכולים לשנות משמרות.');
             }
 

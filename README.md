@@ -1,6 +1,8 @@
-# מערכת נוכחות — Stage 6
+# מערכת נוכחות — Stage 7 local review
 
-A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events, monthly receipts and desk reservations. Stage 6 adds a manager's explicit CSV download of scheduled workdays; the approved follow-up adds receipt status for a separately selected month. The calendar keeps its confirmed order: calendar, receipts, then other information; manager event/block lists show the current month and all future months. Stage 6 is supplied for review; Stage 7 remains locked.
+A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, session authentication, manager-controlled accounts, worker scheduling, profiles, events, monthly receipts and desk reservations. CSV downloads include receipt status for a separately selected month. The calendar keeps its confirmed order: calendar, receipts, then other information; manager event/block lists show the current month and all future months. Stage 7 is authorized for local verification; the owner deferred Raspberry Pi checks until the device is available. Office pilot approval remains pending.
+
+See [the Stage 7 report](docs/STAGE7-REPORT.md) for the cross-feature audit, revoked-login correction, actual local tests, browser comparison and isolated synthetic backup/restore rehearsal. [DEPLOYMENT.md](docs/DEPLOYMENT.md) and its [Apache example](docs/deployment/apache-vhost.conf) describe deployment, private-file protection, recovery and the device checks still required.
 
 See the [extra features and follow-up report](docs/EXTRA-FEATURES-REPORT.md) for additions and corrections made between stages, with links to existing detailed reports.
 

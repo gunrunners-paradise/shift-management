@@ -153,7 +153,10 @@ class DeskReservationService
         return DB::transaction(function () use ($worker, $date, $deskIds, $operation): mixed {
             $currentWorker = User::query()->lockForUpdate()->find($worker->getKey());
 
-            if ($currentWorker === null || ! $currentWorker->is_active || $currentWorker->role !== 'worker') {
+            // Reject old in-flight requests after reactivation as well as
+            // accounts that are currently inactive or have a different role.
+            if ($currentWorker === null || ! $currentWorker->is_active || $currentWorker->role !== 'worker'
+                || $currentWorker->session_version !== (int) $worker->session_version) {
                 throw new AuthorizationException('רק עובדים פעילים יכולים להזמין עמדות.');
             }
 

@@ -46,7 +46,11 @@ class ManagerTransaction
                     // snapshot before waiting for a worker being deactivated.
                     $currentActor = User::query()->lockForUpdate()->find($actor->getKey());
 
-                    if ($currentActor === null || ! $currentActor->is_active || ! $currentActor->isManager()) {
+                    // Reactivation requires a fresh login. A request that was
+                    // already waiting before deactivation still has the older
+                    // session version, even if the account is active again.
+                    if ($currentActor === null || ! $currentActor->is_active || ! $currentActor->isManager()
+                        || $currentActor->session_version !== (int) $actor->session_version) {
                         throw new AuthorizationException('אין הרשאה לניהול המערכת.');
                     }
                 }

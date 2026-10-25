@@ -449,6 +449,13 @@
 }
 
 @media (max-width: 370px) {
+    /* Native date controls need room for the complete date and picker icon. */
+    .desk-date-form .field,
+    .desk-date-form > .button {
+        flex-basis: 100%;
+        width: 100%;
+    }
+
     .desk-grid {
         grid-template-columns: 1fr;
     }

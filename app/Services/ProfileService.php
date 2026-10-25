@@ -105,7 +105,10 @@ class ProfileService
     {
         $user = User::query()->lockForUpdate()->find($actor->getKey());
 
-        if ($user === null || ! $user->is_active || ! in_array($user->role, ['worker', 'manager'], true)) {
+        // Check the login version under the same lock as the profile/password
+        // write so a pre-deactivation request cannot resume after reactivation.
+        if ($user === null || ! $user->is_active || ! in_array($user->role, ['worker', 'manager'], true)
+            || $user->session_version !== (int) $actor->session_version) {
             throw new AuthorizationException('אין הרשאה לעדכן את הפרופיל.');
         }
 

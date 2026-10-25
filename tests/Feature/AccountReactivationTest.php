@@ -198,6 +198,8 @@ class AccountReactivationTest extends TestCase
         }
 
         $this->assertDatabaseHas('monthly_receipts', ['worker_id' => $worker->id, 'month' => '2026-10-01', 'has_receipts' => true]);
+        // A new login resolves the current account version after reactivation.
+        $worker->refresh();
         $freshShift = app(ShiftSchedulingService::class)->select($worker, '2026-10-25', '09_13');
         $freshReservation = app(DeskReservationService::class)->book($worker, $desk->id, '2026-10-25', '09:00', '10:00');
 

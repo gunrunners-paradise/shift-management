@@ -27,7 +27,10 @@ class MonthlyReceiptService
         return DB::transaction(function () use ($actor, $monthDate, $hasReceipts): MonthlyReceipt {
             $worker = User::query()->lockForUpdate()->find($actor->getKey());
 
-            if ($worker === null || ! $worker->is_active || $worker->role !== 'worker') {
+            // A request admitted before deactivation may wait for this lock
+            // until after reactivation. Its old login must remain revoked.
+            if ($worker === null || ! $worker->is_active || $worker->role !== 'worker'
+                || $worker->session_version !== (int) $actor->session_version) {
                 throw new AuthorizationException('רק חשבון עובד פעיל יכול לעדכן קבלות.');
             }
 

@@ -2,9 +2,11 @@
 
 Run application commands from the repository root as the deployment account. Replace example hostnames, filesystem paths and password placeholders with values chosen by the operator. Keep credentials in private environment files; never add them to source control.
 
-Stage 6 adds only an explicit manager CSV download and needs no migration, queue, scheduler, storage link or new dependency. Its request-local `php://temp` output stays in memory up to 2 MiB, then PHP uses system temporary storage removed when the stream closes. Keep the PHP temporary directory writable and private to the service account, with ordinary OS cleanup; reports are not retained as application files or backups. Database reads use a single joined snapshot with PDO buffering, so very large historical ranges still consume memory for the selected result. Measure realistic ranges during Stage 7 rather than claiming unlimited export size. See [the Stage 6 report](STAGE6-REPORT.md).
+Stage 7 is authorized for **local verification only** (2026-10-25). The owner will verify the Raspberry Pi later. The [Stage 7 report](STAGE7-REPORT.md) records the actual local checks, recovery rehearsal and remaining device checks; the commands in this guide are operator instructions unless that report explicitly records their execution. A successful local rehearsal does not approve the office pilot.
 
-Stage 5 adds worker desk reservations and manager desk administration. Apply `2026_10_22_000000_create_desk_booking_tables` with `php artisan migrate` locally, or the private migration environment described below on a server. It creates `desks` and `desk_reservations`, including nine initial desks once; existing account, shift, event and receipt rows are preserved. Normal page visits never reseed desks. No queue, scheduled task or new storage link is required. Raspberry Pi installation, HTTPS configuration and a backup/restore rehearsal have **not** been performed on the target device. Record those results during the Stage 7 deployment review before approving an office pilot.
+Stage 6 adds only an explicit manager CSV download and needs no migration, queue, scheduler, storage link or new dependency. Its fourth `קבלות` column reads the manager's selected receipt month independently of the workday range. Its request-local `php://temp` output stays in memory up to 2 MiB, then PHP uses system temporary storage removed when the stream closes. Keep the PHP temporary directory writable and private to the service account, with ordinary OS cleanup; reports are not retained as application files or backups. Database reads use a single joined snapshot with PDO buffering, so very large historical ranges still consume memory for the selected result. Measure realistic ranges before pilot approval rather than claiming unlimited export size. See [the Stage 6 report](STAGE6-REPORT.md).
+
+Stage 5 adds worker desk reservations and manager desk administration. Apply `2026_10_22_000000_create_desk_booking_tables` with `php artisan migrate` locally, or the private migration environment described below on a server. It creates `desks` and `desk_reservations`, including nine initial desks once; existing account, shift, event and receipt rows are preserved. Normal page visits never reseed desks. No queue, scheduled task or new storage link is required. Raspberry Pi installation, HTTPS configuration and a backup/restore rehearsal have **not** been performed on the target device. The later approved desk-deletion action removes a desk and all its reservations; there is no desk-deactivation action. Keep device results pending until the operator performs them.
 
 The authorized account-deletion follow-up adds `2026_10_22_000001_allow_deleted_account_actors`, applied by the same migration command. It makes `blocked_dates.blocked_by` and `calendar_events.created_by`/`updated_by` nullable while retaining restrictive foreign keys. It does not purge data. A manager may then permanently delete an inactive account, its owned history, sessions and photo through the confirmed form. Shared office state remains with absent actor identities. After an actor is removed, rolling back this migration refuses to invent that identity; use an appropriate reviewed backup for recovery. Existing backups are separate copies and are not rewritten by account deletion. See [the account deletion report](ACCOUNT-DELETION-REPORT.md).
 
@@ -205,9 +207,9 @@ vendor/bin/pint --test
 
 Use a portable application directory such as `/srv/shift-management`, owned by the deployment account. Replace that path and `attendance.example.internal` throughout the example. Apache must serve **only `public/`**; repository-root deployment exposes secrets and the read-only HTML references.
 
-Install production dependencies with `composer install --no-dev --optimize-autoloader`, and run `composer check-platform-reqs --no-dev`. Configure PHP through the distribution's supported Apache module or PHP-FPM setup. Match its version/extensions to the checked CLI runtime.
+Install production dependencies from the reviewed lock file with `composer install --no-dev --optimize-autoloader`, and run `composer check-platform-reqs --no-dev`. Run `composer audit --locked --no-dev` when advisory access is available; investigate findings before deployment and record a network failure as an incomplete advisory check. Do not run `composer update` during deployment. Configure PHP through the distribution's supported Apache module or PHP-FPM setup. Match its version/extensions to the checked CLI runtime.
 
-Create a virtual-host configuration using an organization-approved certificate trusted by office browsers. This example uses Apache's PHP module; an FPM installation additionally needs its distribution's PHP handler configuration:
+Copy [the Apache virtual-host example](deployment/apache-vhost.conf) to the distribution's sites directory after replacing its paths and hostname. It uses an organization-approved certificate trusted by office browsers. Configure the distribution's PHP handler separately; an FPM installation needs its supported FPM handler configuration. The key directives are:
 
 ```apache
 <VirtualHost *:80>
@@ -223,10 +225,28 @@ Create a virtual-host configuration using an organization-approved certificate t
     SSLCertificateFile /PATH/TO/CERTIFICATE_CHAIN.pem
     SSLCertificateKeyFile /PATH/TO/PRIVATE_KEY.pem
 
+    <Directory /srv/shift-management>
+        AllowOverride None
+        Require all denied
+    </Directory>
+
     <Directory /srv/shift-management/public>
-        Options -Indexes +FollowSymLinks
+        Options -Indexes -ExecCGI +FollowSymLinks
         AllowOverride All
         Require all granted
+        DirectoryIndex index.php
+
+        <FilesMatch "(?i)\.(php[0-9]*|phtml|phar|phps)$">
+            Require expr "%{REQUEST_FILENAME} == '/srv/shift-management/public/index.php'"
+        </FilesMatch>
+        <FilesMatch "^\.">
+            Require all denied
+        </FilesMatch>
+    </Directory>
+
+    <Directory /srv/shift-management/storage>
+        AllowOverride None
+        Require all denied
     </Directory>
 
     ErrorLog ${APACHE_LOG_DIR}/shift-management-error.log
@@ -234,14 +254,17 @@ Create a virtual-host configuration using an organization-approved certificate t
 </VirtualHost>
 ```
 
-The supplied `public/.htaccess` routes requests to Laravel. Apache's [virtual-host examples](https://httpd.apache.org/docs/2.4/vhosts/examples.html) explain how hostnames select a site. Enable the chosen configuration, then validate it before reloading:
+The supplied `public/.htaccess` routes requests to Laravel. The parent directory denial protects code outside `public/`; the explicit storage denial keeps private uploads unavailable through an accidental filesystem alias. Dotfiles are denied within `public/`. The PHP rule compares the full mapped filename with the exact front-controller path, so a nested `index.php` is denied too. Replace that expression's path whenever changing `DocumentRoot`. Apache documents [directory access](https://httpd.apache.org/docs/2.4/mod/core.html#directory), [expression authorization](https://httpd.apache.org/docs/2.4/mod/mod_authz_core.html#reqexpr) and the [mapped filename variable](https://httpd.apache.org/docs/2.4/expr.html#vars). Enable the chosen configuration, then validate it before reloading:
 
 ```bash
 sudo a2enmod rewrite ssl
 sudo a2ensite shift-management.conf
 sudo apache2ctl configtest
+sudo apache2ctl -S
 sudo systemctl reload apache2
 ```
+
+Restrict the host firewall to the office network and approved administration path; do not forward this office pilot through the public router. Keep MariaDB on the local socket or an explicitly private interface. Verify that DNS resolves the chosen hostname and that the certificate chain and hostname are trusted on an actual office browser. Check expiry/renewal ownership before relying on it. Do not use a browser certificate exception as the HTTPS verification result. If a reverse proxy is introduced later, configure only its known trusted addresses and HTTPS forwarding after reviewing that topology; no wildcard proxy trust is required for the direct Apache setup.
 
 For an explicitly local HTTP development virtual host, use the `DocumentRoot`/`Directory` directives on port 80 without the redirect, and retain `SESSION_SECURE_COOKIE=false`. The production HTTPS environment must use:
 
@@ -272,6 +295,8 @@ chmod 600 .env.migrate
 
 The deployment account must own those files or have the necessary group access. Avoid world-writable permissions. Run Composer/Artisan as that account so later deployments retain consistent ownership.
 
+Keep code and `public/` unwritable by the web process. Review parent-directory traversal permissions as well as individual files. The web group may read the runtime `.env` but must not read `.env.migrate`, the certificate private key, administrative DB option files or backup archives. Laravel's `bootstrap/cache/config.php` contains resolved secrets when configuration is cached: keep `bootstrap/cache/` outside the document root and restricted to the deployment/web accounts, and do not publish or copy that cache between environments.
+
 Profile photos are private files under `storage/app/private/avatars/`, with random server-generated filenames and private visibility. Keep this directory outside Apache's `public/` document root and do not expose it through a symlink or alias. The authenticated avatar controller serves approved image MIME types; uploaded SVGs and arbitrary paths are rejected. No `storage:link` is required for Stage 3. Back up this directory with the database, preserve private permissions after restore, and verify an authenticated photo request as part of recovery. Replaced photos are removed after commit; filesystem cleanup failures produce a path-free warning in Laravel's log.
 
 The application accepts JPG, PNG and WebP files up to 2048KB, with width/height at most 2048 pixels. Configure the web PHP installation with `upload_max_filesize` at least `2M` and `post_max_size` at least `8M`, then reload the applicable PHP/Apache service. Keep the form's documented application limit even if the server allows larger uploads. Monitor private upload storage as part of the Pi's disk checks.
@@ -288,11 +313,18 @@ php artisan view:cache
 php artisan up
 ```
 
-Check Apache and application logs after deployment. The application keeps seven daily log files with the documented settings; also configure the distribution's Apache/MariaDB log rotation. Monitor free space on the Pi's 32 GB storage and keep backup archives off the device. `/up` confirms that Laravel booted; it does not prove database connectivity or a successful login.
+Check Apache and application logs after deployment. `/up` confirms that Laravel booted; it does not prove database connectivity or a successful login. Once the site is up, verify:
+
+- HTTP redirects to the configured HTTPS hostname; HTTPS `/login` succeeds without a certificate exception and sets session cookies with `Secure`, `HttpOnly` and `SameSite=Lax`. The idle lifetime remains 30 days. Logout/deactivation still revoke access immediately.
+- `/.env`, `/.env.migrate`, `/composer.lock`, `/AGENTS.md`, the five reference `.html` filenames and `/storage/app/private/` return 403 or 404 without file content. Temporary harmless non-front-controller `.php` and nested `index.php` probes under `public/` must be denied; remove them after the check. Do not use executable or secret-bearing probes.
+- An unauthenticated avatar request requires login. An authenticated upload of a supported image remains readable after a reload, while its raw storage path stays inaccessible. The front controller, CSS, JavaScript, logo and default avatar load successfully.
+- A manager and worker each reach their own destination, role-exclusive endpoints reject the other role, and the workflow described in the [Stage 7 report](STAGE7-REPORT.md) works with `APP_DEBUG=false`. Check a fresh browser session, native forms and mobile RTL layout before handing over the pilot.
+
+When updating, do not use `migrate:rollback` as an automatic recovery step: deletion and edited business records may make a reverse migration unsafe. Keep the old reviewed source revision and pre-update database/files backup available. If an update fails, keep maintenance mode while diagnosing; an operator chooses a compatible code rollback or a reviewed full restore. Record any data written since the backup before choosing to discard it.
 
 ## Off-device backup and restore rehearsal
 
-Back up the database, the private `.env` containing the original `APP_KEY`, `storage/app/`, and the exact source revision/`composer.lock`. Protect backups as confidential account data and store them on encrypted off-device media or a secured backup server. Copying backups elsewhere on the Pi's own SD card does not protect against device failure.
+Back up the database, the private `.env` containing the original `APP_KEY`, `storage/app/`, and the exact source revision/`composer.lock`. Protect backups as confidential account data and store them on encrypted off-device media or a secured backup server. Copying backups elsewhere on the Pi's own SD card does not protect against device failure. Agree who owns backup execution, its frequency and retention before the pilot; no scheduled backup or report job is installed by this application.
 
 For the current application tables, a dedicated database backup account needs `SELECT` and `SHOW VIEW` on the application schema. Create it in the private administrative SQL session:
 
@@ -301,7 +333,7 @@ CREATE USER 'shift_backup'@'localhost' IDENTIFIED BY 'REPLACE_WITH_PRIVATE_BACKU
 GRANT SELECT, SHOW VIEW ON shift_management.* TO 'shift_backup'@'localhost';
 ```
 
-The following manual procedure writes directly to an already mounted off-device directory. Replace the mount path and dated backup directory before use. Check every command's exit status and stop on failure; do not declare a failed or partial dump usable.
+The following manual procedure writes directly to an already mounted off-device directory. Replace the mount path and dated backup directory before use. Check every command's exit status and stop on failure; do not declare a failed or partial dump usable. Maintenance mode blocks new application requests while the database and files are copied together. Wait for already running writes to finish, and pause other administrative writers and schema deployments during this short backup window.
 
 ```bash
 umask 077
@@ -311,10 +343,18 @@ php artisan down --retry=60
 mariadb-dump --host=localhost --user=shift_backup --password --single-transaction --quick --skip-lock-tables --skip-triggers --result-file=/mnt/office-backups/shift-management-YYYYMMDD-HHMMSS/database.sql shift_management
 tar --create --gzip --file=/mnt/office-backups/shift-management-YYYYMMDD-HHMMSS/private-files.tar.gz -- .env storage/app
 cp composer.lock /mnt/office-backups/shift-management-YYYYMMDD-HHMMSS/composer.lock
-php artisan up
+git rev-parse HEAD > /mnt/office-backups/shift-management-YYYYMMDD-HHMMSS/source-revision.txt
 ```
 
-Record the deployed source revision next to the archive. From the completed backup directory, generate checksums with `sha256sum database.sql private-files.tar.gz composer.lock > SHA256SUMS`. Store the matching source bundle or ensure the recorded revision is recoverable.
+Record any reviewed, uncommitted deployment changes separately; a commit ID alone cannot recover them. From the completed backup directory, generate checksums with `sha256sum database.sql private-files.tar.gz composer.lock source-revision.txt > SHA256SUMS`. Store the matching source bundle or ensure the recorded revision is recoverable. If a command fails, preserve the partial backup for diagnosis, mark it incomplete, and explicitly decide whether to retry or bring the unchanged site back with `php artisan up`; do not leave maintenance mode unnoticed.
+
+While writers are paused, also save a private recovery manifest with exact table counts and a checksum for each avatar. Record `COUNT(*)` for `users`, `shifts`, `desk_reservations`, `monthly_receipts`, `calendar_events`, `blocked_dates`, `desks` and `calendar_dates`, plus canceled-shift and canceled-reservation counts (`WHERE cancelled_at IS NOT NULL`). Use a read-only administrative/backup connection; no personal fields need to be listed. The manifest belongs beside the confidential backup, not in Git. This makes restoration verifiable even if the live office database changes afterward.
+
+Once the dump, files and manifest are complete, resume the original site:
+
+```bash
+php artisan up
+```
 
 `--single-transaction` provides an InnoDB snapshot; avoid schema changes during the dump. The current schema defines no triggers, procedures or database events, so `--skip-triggers` supports the restricted backup account. Keep all tables, stable desk identities, cancellation history and permanent date-lock records. Preserve generated `shifts.active_slot` and `desk_reservations.active_slot` columns, uniqueness and CHECK constraints when restoring. Desk overlap safety also depends on the application transactions, not only schema constraints. Revisit that choice if approved schema changes introduce triggers. Use compatible MariaDB dump/import clients. These details follow the [MariaDB dump documentation](https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump).
 
@@ -325,6 +365,53 @@ Rehearse restoration into a **separate application directory and a new disposabl
 3. Import with `mariadb --host=localhost --user=shift_restore --password shift_management_restore < database.sql`. The dump names no destination database, so the command selects the disposable schema.
 4. Extract `private-files.tar.gz` **inside the new application directory**. Edit the restored `.env` before running Artisan: select the restore schema/account, a distinct test URL, and `SESSION_COOKIE=shift_management_restore_session`. Preserve the backed-up `APP_KEY`; do not run `key:generate` on a restored installation.
 5. Clear restored database sessions with `mariadb --host=localhost --user=shift_restore --password shift_management_restore --execute='DELETE FROM sessions'`. This prevents copied sessions from authenticating users in the rehearsal.
-6. Restore writable-directory permissions, run `php artisan config:clear`, and serve the rehearsal at its separate URL. Use `SESSION_SECURE_COOKIE=false` only if that URL is local HTTP. Verify user counts, manager login, creation of a disposable worker, role isolation and deactivation. Record the results, duration and any recovery issues.
+6. Restore writable-directory permissions and run `php artisan config:clear` before any other Artisan command so an old cached configuration cannot select the live database. Keep `APP_DEBUG=false`. Serve the rehearsal at its separate URL, using `SESSION_SECURE_COOKIE=false` only if that URL is local HTTP.
+7. Compare database table counts against the backup manifest, including active/canceled shifts, desk reservations, receipts, events/blocks and `calendar_dates`. Check `SHOW CREATE TABLE shifts`, `SHOW CREATE TABLE desk_reservations` and `SHOW CREATE TABLE monthly_receipts`: generated active-slot columns, unique indexes, foreign keys and CHECK constraints must still exist. Verify all application tables use InnoDB. Clear only the restored sessions as described above; do not remove date-lock keys or cancellation history.
+8. Compare a checksum of every restored avatar against the source backup, then request one through the authenticated avatar route. Verify manager login with the known existing credentials, creation of a disposable worker, role isolation and account deactivation. Exercise a shift, desk booking, date closure/reopening and a CSV download to show that restored data and permissions support the application. Use only synthetic accounts when rehearsing locally; do not reset a real user's password to make a rehearsal convenient.
+9. Record the source revision, runtime/client versions, start/end times, dump/import exit statuses, row/constraint/file comparisons, sign-in/workflow results, backup location and any recovery issues in a private operator record. Never put the original key, passwords, private backup content or user data into a public report.
 
-Keep the live site available during the isolated rehearsal. A real recovery requires an explicit operator decision to switch the reviewed application/database into service. The same environment-based configuration and database/files backup support migration to the company's central server. Stage 7 must validate this procedure on the intended deployment hardware and record an actual successful restore.
+Keep the live site available during the isolated rehearsal. A real recovery requires an explicit operator decision to switch the reviewed application/database into service. The same environment-based configuration and database/files backup support migration to the company's central server: provision a new schema and accounts, restore the matching source/files/key, change only environment-specific connection/URL/cookie settings, rebuild caches there, and verify it at a separate URL before switching office DNS. Arrange one active writer during cutover so changes are not split between servers. Retire access to the old instance only after the operator accepts the new one.
+
+The Stage 7 local rehearsal uses disposable synthetic data and is recorded in [its report](STAGE7-REPORT.md). A local `/tmp` archive demonstrates recovery mechanics; it is not the office's off-device backup. Pi restore timing, actual backup-media access and the office cutover remain pending.
+
+## Storage, logs and Raspberry Pi resource checks
+
+The 8 GB RAM / 32 GB storage target is a deployment constraint, not a measured result on this development host. Record the following on the actual Pi before approving the pilot:
+
+```bash
+free -h
+df -h /
+df -i /
+du -sh storage/app/private/avatars storage/logs bootstrap/cache vendor
+sudo journalctl --disk-usage
+```
+
+Use the administrator's private DB connection to measure table/index usage without exporting worker data:
+
+```sql
+SELECT TABLE_NAME, ENGINE, TABLE_ROWS,
+       ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) AS size_mib
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = 'shift_management'
+ORDER BY TABLE_NAME;
+```
+
+`TABLE_ROWS` is an estimate for InnoDB; use explicit counts when comparing a backup and restore. Include OS packages, MariaDB's data/log files, PHP temporary files, updates and filesystem overhead in the free-space measurement. Keep backup archives off the SD card. Each retained avatar is limited to 2 MiB, so 1,000 current photos alone can approach 2 GiB before filesystem overhead. Replaced photos are cleaned up after commit, but failed cleanup is logged; investigate it rather than deleting arbitrary application files.
+
+Laravel's `daily` channel retains seven daily files with the supplied environment settings. That limits retained days, not bytes written within one day. Use the distribution's existing Apache and MariaDB rotation policies; check that the `shift-management-*.log` files match the Apache policy and avoid adding a second policy for the same files. On a distribution using logrotate, `sudo logrotate --debug /etc/logrotate.conf` previews its rules without rotating files. Check the actual configured journal retention as well; `journalctl --disk-usage` only measures it. Choose caps appropriate to the measured free space and organization retention needs.
+
+During the pilot, review free space and unexpected log growth daily and after updates; investigate before space falls below the operator's agreed threshold. If disk pressure occurs, preserve diagnostic evidence, move completed backup copies off-device and rotate logs according to the reviewed policy. Do not delete the live MariaDB directory, account history, date-lock rows or application photos as an improvised cleanup. No automatic history purge is installed.
+
+Measure page response time and PHP/MariaDB memory while two workers contend for one desk and while a manager downloads a representative long historical report. Record worker count, date range, returned CSV size, elapsed time and peak PHP memory without retaining account data in the public report. PDO buffers CSV query results, so the 2 MiB output-stream threshold is not a bound on total PHP memory. Set Apache/FPM worker limits from measured per-worker memory and leave room for MariaDB, the OS and maintenance tasks. A local host result cannot establish the Pi's safe concurrency limit; repeat the measurements on the device.
+
+## Device handover evidence still required
+
+The owner deferred these checks until the Raspberry Pi is available:
+
+- Supported Pi OS/PHP/Composer installation, production extensions and InnoDB with schema-scoped runtime/migration/backup users.
+- Real Apache virtual-host selection and permissions, office-trusted HTTPS chain and hostname, HTTP redirect, production session cookies, private upload access and denial of repository files.
+- End-to-end manager/worker checks on the office network, including mobile RTL and a simultaneous desk-booking attempt from two browsers.
+- A successful off-device backup plus isolated restore on the intended equipment, with original key/files, constraints, counts, avatar checksums and sign-in verified.
+- Pi disk/RAM measurements under representative use, effective log rotation, backup ownership/retention, reboot/service recovery and power-loss recovery arrangements.
+
+Keep these items marked **pending** until the operator records evidence and explicitly approves office pilot readiness.

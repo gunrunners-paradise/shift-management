@@ -2,7 +2,7 @@
 
 This report collects the user-approved additions, corrections and local setup work requested between numbered stages. Existing detailed reports are linked below; the session policy and manager-list visibility receive fuller coverage here. The descriptions reflect the latest confirmed behavior.
 
-This report records approved work; creating the report itself changes no application behavior, account, database record or stage approval. The later permanent desk-deletion implementation has its own linked report. Stage 6 remains delivered for review; Stage 7 remains locked. Earlier reports describe their delivery dates, including stage restrictions that were subsequently superseded by explicit authorization recorded in [ROADMAP.md](../ROADMAP.md).
+This report records approved work; creating the report itself changes no application behavior, account, database record or stage approval. The later permanent desk-deletion implementation has its own linked report. Stage 7 local verification was separately authorized on 2026-10-25 and is recorded in [its report](STAGE7-REPORT.md); Raspberry Pi checks remain pending at the owner's request. Earlier reports describe their delivery dates, including stage restrictions subsequently superseded by explicit authorization recorded in [ROADMAP.md](../ROADMAP.md).
 
 ## Coverage and existing reports
 
@@ -91,4 +91,4 @@ A checked record for that worker/month means `יש`; unchecked or missing record
 
 ## Deferred work
 
-A separate archive for past events/holidays and blocked dates remains a possible future feature recorded in `AGENTS.md`. No archive page, route, filter or control has been implemented. Stage 7 and other unapproved features remain outside this report's authorized work.
+A separate archive for past events/holidays and blocked dates remains a possible future feature recorded in `AGENTS.md`. No archive page, route, filter or control has been implemented. The separately authorized Stage 7 audit has its own report; unapproved features remain deferred.

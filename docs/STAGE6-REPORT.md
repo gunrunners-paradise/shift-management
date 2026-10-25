@@ -13,7 +13,7 @@ Each non-canceled shift date counts once, regardless of which of the five approv
 
 The current columns, after the approved 2026-10-25 follow-up below, are `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`, `קבלות`. Dates use chronological `DD/MM/YYYY` values joined by comma and space in one quoted cell. `קבלות` is `יש` or `אין` for the manager's independently selected receipt month; an unchecked or missing receipt record means `אין`. UTF-8 BOM, CRLF, escaped double quotes and consistently quoted cells support spreadsheet import. The original 2026-10-22 delivery had the first three columns; its verification results below remain historical.
 
-Stage 7, archive pages, manager booking overrides and other unapproved features remain deferred. The worker calendar still follows calendar → receipts → other information. All five source HTML references and the original logo remain read-only.
+At the original delivery, Stage 7 and other unapproved features remained deferred. The user subsequently authorized Stage 7 local verification on 2026-10-25; see [its report](STAGE7-REPORT.md). Archive pages and manager booking overrides remain unapproved. The worker calendar still follows calendar → receipts → other information. All five source HTML references and the original logo remain read-only.
 
 ## Changed files and learning path
 
@@ -71,7 +71,7 @@ The first focused run caught a real malformed-sibling-date validation issue: Lar
 4. Submit a reversed, empty or future workday range, or omit the receipt month, and check Hebrew validation. A valid future receipt month is readable and normally has `אין` where no record exists; it does not allow exporting future workdays. Confirm no report is produced merely by opening the dashboard. Repeat the native form with JavaScript disabled and at narrow mobile width.
 5. Verify workers cannot call the manager report endpoint and that existing event/block lists, receipts, desk controls, account reactivation/deletion and the worker calendar layout remain intact.
 
-No real operator credentials or application records are needed for the automated cases. Actual spreadsheet opening, owner browser acceptance and Raspberry Pi deployment remain pending. Stop after Stage 6 for the owner's review; Stage 7 requires explicit authorization.
+No real operator credentials or application records are needed for the automated cases. Actual spreadsheet opening, owner acceptance and Raspberry Pi deployment remain pending. The original Stage 6 stop gate was followed by the user's explicit Stage 7 authorization on 2026-10-25, with device checks deferred until later.
 
 ## Follow-up: receipt status in the CSV — 2026-10-25
 
@@ -93,7 +93,7 @@ For each retained worker, a true `monthly_receipts.has_receipts` value for the s
 
 The existing `POST /admin/reports/workdays` route still calls `ExportWorkdaysRequest` → `WorkdayReportController::__invoke()` → `WorkdayCsvReportService::prepare($actor, $startDate, $endDate, $receiptMonth)`. The service converts the selected month to its first-day database key and reads each worker's receipt boolean alongside qualifying shifts in one InnoDB statement. The unique worker/month constraint prevents the added join from duplicating shift rows. Missing receipts remain a LEFT JOIN result so neither zero-day nor unchecked workers disappear. The existing requesting-manager lock, authority check, CSV quoting/formula-prefix protection and temporary-stream cleanup remain in place.
 
-No database row is changed by downloading. This follow-up requires no migration, new route, model, CSS, JavaScript, dependency or scheduled task. The existing report form styles accommodate the additional field. Spreadsheet and owner desktop/mobile acceptance remain manual checks; Stage 7 remains locked pending explicit approval.
+No database row is changed by downloading. This follow-up requires no migration, new route, model, CSS, JavaScript, dependency or scheduled task. The existing report form styles accommodate the additional field. Spreadsheet and owner acceptance remain manual checks. Stage 7 local verification was separately authorized later on 2026-10-25.
 
 ### Follow-up verification
 
