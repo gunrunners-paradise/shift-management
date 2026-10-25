@@ -247,7 +247,11 @@ class CsrfProtectionTest extends TestCase
     {
         $this->travelTo(CarbonImmutable::parse('2026-10-22 12:00:00', 'Asia/Jerusalem'));
         $manager = User::factory()->manager()->create();
-        $input = ['start_date' => '2026-10-18', 'end_date' => '2026-10-22'];
+        $input = [
+            'start_date' => '2026-10-18',
+            'end_date' => '2026-10-22',
+            'receipt_month' => '2026-10',
+        ];
         $this->actingAs($manager)->withSession(['_token' => 'correct-session-token']);
 
         $this->post(route('admin.reports.workdays'), $input)->assertStatus(419);

@@ -130,13 +130,14 @@ At each stage, write straightforward, **human-readable, professionally commented
 
 **Scope:**
 
-- Admin dashboard report section and quick action. An authorized manager chooses start/end dates and **clicks the Download CSV button**. That action alone triggers the MariaDB-backed query and a safe download/stream (not prototype-localStorage).
+- Admin dashboard report section and quick action. An authorized manager chooses start/end dates and a receipt month, then **clicks the Download CSV button**. That action alone triggers the MariaDB-backed query and a safe download/stream (not prototype-localStorage).
 - **No scheduled or recurring exports, cron tasks, background jobs, emails, automatic generation, or precomputed reports.** Merely opening the admin page never generates a CSV.
 - **Scheduled shifts, not verified attendance**. One day per worker/date, whether their selected period is a **4-hour shift or the 7h30m full shift**; only non-canceled records; chronological date list, comma+space separated within a single quoted cell.
-- Column order/names: `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`. Correct UTF-8 BOM for Excel, cell escaping, spreadsheet formula-injection mitigation for user names, and stable handling of Hebrew/dates.
+- Column order/names: `שם העובד`, `מספר ימי עבודה`, `תאריכי עבודה`, `קבלות`. Correct UTF-8 BOM for Excel, cell escaping, spreadsheet formula-injection mitigation for user names, and stable handling of Hebrew/dates.
+- Confirmed follow-up (2026-10-25): a required `חודש קבלות` selector defaults to the actual current Israel month and is independent of the workday range and the dashboard receipt-list picker. Accept any valid `YYYY-MM` month for reading. The fourth column is `יש` for a checked receipt record in that month, otherwise `אין` for an unchecked/missing record. This includes inactive and zero-day workers and does not change worker current-month-only editing.
 - Include every retained worker account, active or inactive, including **zero-day workers** with count 0 and an empty date cell (confirmed on 2026-10-22). Keep historical work unless the account and its history are permanently deleted. Managers never appear as worker rows. Start/end dates are inclusive and may be **no later than actual Israel today**; reject future values (confirmed on 2026-10-22).
 
-**Acceptance and tests:** a CSV is generated only after an authorized manager explicitly requests it; dashboard visits generate nothing, and there are no automatic/scheduled reports. A full shift and a 09:00–13:00 shift on different dates count two days, not hours; all five categories count one day each; cancellation never counts; range inclusive; dates are sorted; commas in date cell do not create extra columns; Hebrew readable in Excel; unauthorized worker denied CSV access; historical data preserved.
+**Acceptance and tests:** a CSV is generated only after an authorized manager explicitly requests it; dashboard visits generate nothing, and there are no automatic/scheduled reports. A full shift and a 09:00–13:00 shift on different dates count two days, not hours; all five categories count one day each; cancellation never counts; range inclusive; dates are sorted; commas in date cell do not create extra columns; Hebrew readable in Excel; unauthorized worker denied CSV access; historical data preserved. Receipt values match the selected month, missing/false records produce `אין`, true records produce `יש`, and receipt joins do not duplicate workdays. Validate month input and its independence from workday dates and the dashboard receipt-list filter.
 
 **Stop gate:** user downloads and inspects a CSV in preferred spreadsheet software; approves Stage 6.
 
@@ -163,7 +164,7 @@ Do **not** let these open topics block Stage 1; do **not** invent answers when i
 - Stage 3: February 29 birthdays use February 28 in non-leap years (confirmed). Manager editing of other users' profiles remains unauthorized.
 - Stage 4: current-month-only worker receipt editing is confirmed. Events remain single-date; multi-day support requires separate approval.
 - Stage 5 follow-up: permanent desk deletion replaces deactivation and removes every linked reservation/history record (confirmed on 2026-10-22). Additional manual manager reservation overrides are not authorized.
-- Stage 6: include zero-day retained workers; allow report dates only through actual Israel today. Both choices were confirmed on 2026-10-22.
+- Stage 6: include zero-day retained workers; allow report dates only through actual Israel today. Both choices were confirmed on 2026-10-22. The fourth `קבלות` column uses an independently selected receipt month, confirmed on 2026-10-25.
 - No email/SMS notifications, worker attendance check-in/out, paid-hours computation, automatic national holiday imports, recurring event engine, or other unrequested features.
 
 ## Stage completion notes (maintained as development progresses)
@@ -215,3 +216,9 @@ When a stage is approved by the user, record the confirmation date and brief tes
 The user requested simpler Hebrew wording for both desk and account deletion. Labels now use `מחיקה`, `מחיקת החשבון` and `מחיקת העמדה`; descriptions, acknowledgement text, validation and status messages use the same familiar wording. Warnings still explain which records are removed and that deletion cannot be undone. Only text and matching documentation/fixture wording change; authorization, acknowledgement requirements, transactions, data retention/removal and stage approvals remain unchanged. See [the extra features report](docs/EXTRA-FEATURES-REPORT.md) for verification.
 
 Verified: existing focused account/desk deletion and deleted-account CSV checks passed **51 tests and 296 assertions in 14.10 seconds**, with no failures/skips. Pint, Blade compilation and whitespace checks passed. No migration or live data change was needed.
+
+### Authorized CSV receipt-column follow-up — 2026-10-25
+
+The user requested a fourth CSV column, `קבלות`, showing `יש` or `אין`, and confirmed that the manager should select the receipt month. The native download form now requires `חודש קבלות`, defaulting to the actual current Israel month, separately from both workday dates and the dashboard receipt-list filter. The existing export query reads the selected month's boolean with a LEFT JOIN, preserving zero-day/inactive workers and one count per non-canceled shift date. Missing and unchecked records both produce `אין`. The download filename includes the receipt month. No migration or business-data change is needed. See [the Stage 6 report](docs/STAGE6-REPORT.md) for the request flow, verification and manual review steps. Stage 6 remains delivered for review; Stage 7 remains locked.
+
+Verified: the full MariaDB suite passed **482 tests and 2877 assertions in 77.62 seconds**, with no failures/skips. Pint, Blade compilation, route inspection and whitespace checks passed. Initial database-connection attempts completed no assertions; the persistent instance was started safely before the passing run. Spreadsheet and owner browser acceptance remain pending.

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\MonthlyReceipt;
 use App\Models\User;
 use App\Services\AccountDeletionService;
 use App\Services\AccountManagementService;
@@ -31,7 +32,7 @@ class WorkdayCsvReportTest extends TestCase
         $this->travelTo(CarbonImmutable::parse('2026-10-22 12:00:00', 'Asia/Jerusalem'));
     }
 
-    public function test_manager_explicitly_downloads_a_hebrew_csv_with_bom_and_three_ordered_columns(): void
+    public function test_manager_explicitly_downloads_a_hebrew_csv_with_bom_and_four_ordered_columns(): void
     {
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create(['first_name' => 'דנה', 'last_name' => 'כהן']);
@@ -49,10 +50,10 @@ class WorkdayCsvReportTest extends TestCase
         $this->assertSame(1, substr_count($csv, "\xEF\xBB\xBF"));
         $this->assertTrue(mb_check_encoding($csv, 'UTF-8'));
         $this->assertSame([
-            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה'],
-            ['דנה כהן', '1', '20/10/2026'],
+            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות'],
+            ['דנה כהן', '1', '20/10/2026', 'אין'],
         ], $this->csvRows($csv));
-        $this->assertMatchesRegularExpression('/"20\/10\/2026"\r?\n/', $csv);
+        $this->assertMatchesRegularExpression('/"20\/10\/2026","אין"\r?\n/', $csv);
     }
 
     public function test_all_five_shift_categories_each_count_as_one_workday_in_chronological_order(): void
@@ -74,8 +75,8 @@ class WorkdayCsvReportTest extends TestCase
         $csv = $this->download($manager)->streamedContent();
 
         $this->assertSame([
-            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה'],
-            [$worker->fullName(), '5', '18/10/2026, 19/10/2026, 20/10/2026, 21/10/2026, 22/10/2026'],
+            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות'],
+            [$worker->fullName(), '5', '18/10/2026, 19/10/2026, 20/10/2026, 21/10/2026, 22/10/2026', 'אין'],
         ], $this->csvRows($csv));
         $this->assertStringContainsString('"18/10/2026, 19/10/2026, 20/10/2026, 21/10/2026, 22/10/2026"', $csv);
     }
@@ -89,7 +90,7 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '2', '20/10/2026, 21/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '2', '20/10/2026, 21/10/2026', 'אין'], $rows[1]);
     }
 
     public function test_date_range_is_inclusive_and_excludes_records_immediately_outside_it(): void
@@ -103,7 +104,7 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager, '2026-10-19', '2026-10-21')->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '3', '19/10/2026, 20/10/2026, 21/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '3', '19/10/2026, 20/10/2026, 21/10/2026', 'אין'], $rows[1]);
     }
 
     public function test_canceled_records_do_not_count_and_replacement_history_does_not_count_a_date_twice(): void
@@ -118,7 +119,7 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '1', '20/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '1', '20/10/2026', 'אין'], $rows[1]);
         $this->assertDatabaseCount('shifts', 4);
     }
 
@@ -126,13 +127,14 @@ class WorkdayCsvReportTest extends TestCase
     {
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create();
+        $this->createReceiptRecord($worker, '2026-10', true);
         $pastShift = $this->createShiftRecord($worker, '2026-10-20');
         $this->createShiftRecord($worker, '2026-10-25');
         app(AccountManagementService::class)->deactivate($manager, $worker);
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '1', '20/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '1', '20/10/2026', 'יש'], $rows[1]);
         $this->assertFalse($worker->fresh()->is_active);
         $this->assertNull($pastShift->fresh()->cancelled_at);
     }
@@ -153,11 +155,11 @@ class WorkdayCsvReportTest extends TestCase
         $rows = $this->csvRows($csv);
 
         $this->assertCount(5, $rows);
-        $this->assertMatchesRegularExpression('/,""\r?\n/', $csv);
+        $this->assertMatchesRegularExpression('/,"","אין"\r?\n/', $csv);
         $rowsByName = array_column(array_slice($rows, 1), null, 0);
 
         foreach ([$missing, $inactive, $canceled, $outside] as $worker) {
-            $this->assertSame([$worker->fullName(), '0', ''], $rowsByName[$worker->fullName()]);
+            $this->assertSame([$worker->fullName(), '0', '', 'אין'], $rowsByName[$worker->fullName()]);
         }
     }
 
@@ -170,12 +172,14 @@ class WorkdayCsvReportTest extends TestCase
         // Direct fixtures ensure reporting also filters unexpected legacy rows.
         $this->createShiftRecord($manager, '2026-10-20');
         $this->createShiftRecord($inactiveManager, '2026-10-20');
+        $this->createReceiptRecord($manager, '2026-10', true);
+        $this->createReceiptRecord($inactiveManager, '2026-10', true);
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
         $this->assertSame([
-            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה'],
-            [$worker->fullName(), '0', ''],
+            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות'],
+            [$worker->fullName(), '0', '', 'אין'],
         ], $rows);
     }
 
@@ -185,13 +189,14 @@ class WorkdayCsvReportTest extends TestCase
         $deletedWorker = User::factory()->inactive()->create(['first_name' => 'נמחק', 'last_name' => 'בדיקה']);
         $retainedWorker = User::factory()->create();
         $this->createShiftRecord($deletedWorker, '2026-10-20');
+        $this->createReceiptRecord($deletedWorker, '2026-10', true);
         app(AccountDeletionService::class)->delete($manager, $deletedWorker);
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
         $this->assertSame([
-            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה'],
-            [$retainedWorker->fullName(), '0', ''],
+            ['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות'],
+            [$retainedWorker->fullName(), '0', '', 'אין'],
         ], $rows);
         $this->assertDatabaseMissing('shifts', ['worker_id' => $deletedWorker->id]);
     }
@@ -203,12 +208,95 @@ class WorkdayCsvReportTest extends TestCase
         $secondWorker = User::factory()->create(['first_name' => 'דנה', 'last_name' => 'כהן']);
         $this->createShiftRecord($firstWorker, '2026-10-20');
         $this->createShiftRecord($secondWorker, '2026-10-21');
+        $this->createReceiptRecord($firstWorker, '2026-10', true);
+        $this->createReceiptRecord($secondWorker, '2026-10', false);
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
         $this->assertCount(3, $rows);
-        $this->assertSame(['דנה כהן', '1', '20/10/2026'], $rows[1]);
-        $this->assertSame(['דנה כהן', '1', '21/10/2026'], $rows[2]);
+        $this->assertSame(['דנה כהן', '1', '20/10/2026', 'יש'], $rows[1]);
+        $this->assertSame(['דנה כהן', '1', '21/10/2026', 'אין'], $rows[2]);
+    }
+
+    public function test_receipts_column_uses_yes_no_for_checked_unchecked_and_missing_month_records(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $checked = User::factory()->create(['first_name' => 'סימון', 'last_name' => 'קיים']);
+        $unchecked = User::factory()->create(['first_name' => 'סימון', 'last_name' => 'ריק']);
+        $missing = User::factory()->create(['first_name' => 'ללא', 'last_name' => 'רשומה']);
+        $this->createReceiptRecord($checked, '2026-10', true);
+        $this->createReceiptRecord($unchecked, '2026-10', false);
+        // Another month's checkmark must not count as the selected month.
+        $this->createReceiptRecord($missing, '2026-09', true);
+
+        $rows = $this->csvRows($this->download($manager)->streamedContent());
+        $rowsByName = array_column(array_slice($rows, 1), null, 0);
+
+        $this->assertCount(4, $rows);
+        $this->assertSame([$checked->fullName(), '0', '', 'יש'], $rowsByName[$checked->fullName()]);
+        $this->assertSame([$unchecked->fullName(), '0', '', 'אין'], $rowsByName[$unchecked->fullName()]);
+        $this->assertSame([$missing->fullName(), '0', '', 'אין'], $rowsByName[$missing->fullName()]);
+        $this->assertDatabaseCount('monthly_receipts', 3);
+    }
+
+    public function test_inactive_zero_day_workers_keep_their_selected_month_receipts_state(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $worker = User::factory()->inactive()->create();
+        $this->createReceiptRecord($worker, '2026-09', true);
+
+        $rows = $this->csvRows($this->download($manager, '2026-10-18', '2026-10-22', '2026-09')->streamedContent());
+
+        $this->assertSame([$worker->fullName(), '0', '', 'יש'], $rows[1]);
+        $this->assertFalse($worker->fresh()->is_active);
+    }
+
+    public function test_receipt_month_is_independent_of_a_multimonth_work_range_without_multiplying_shift_dates(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $worker = User::factory()->create();
+        $this->createShiftRecord($worker, '2026-08-31');
+        $this->createShiftRecord($worker, '2026-09-30');
+        $this->createShiftRecord($worker, '2026-10-20');
+        $this->createReceiptRecord($worker, '2026-08', true);
+        $this->createReceiptRecord($worker, '2026-09', false);
+        $this->createReceiptRecord($worker, '2026-10', true);
+
+        $september = $this->csvRows($this->download($manager, '2026-08-01', '2026-10-22', '2026-09')->streamedContent());
+        $october = $this->csvRows($this->download($manager, '2026-08-01', '2026-10-22', '2026-10')->streamedContent());
+
+        $this->assertCount(2, $september);
+        $this->assertCount(2, $october);
+        $this->assertSame([$worker->fullName(), '3', '31/08/2026, 30/09/2026, 20/10/2026', 'אין'], $september[1]);
+        $this->assertSame([$worker->fullName(), '3', '31/08/2026, 30/09/2026, 20/10/2026', 'יש'], $october[1]);
+    }
+
+    public function test_csv_receipt_month_is_independent_of_the_dashboard_receipt_report_query(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $worker = User::factory()->create();
+        $this->createReceiptRecord($worker, '2026-09', true);
+        $this->createReceiptRecord($worker, '2026-10', false);
+
+        $response = $this->actingAs($manager)->post(route('admin.reports.workdays', ['receipts_month' => '2026-10']), [
+            'start_date' => '2026-10-18', 'end_date' => '2026-10-22', 'receipt_month' => '2026-09',
+        ]);
+
+        $response->assertOk()->assertDownload('scheduled-workdays-2026-10-18-to-2026-10-22-receipts-2026-09.csv');
+        $this->assertSame([$worker->fullName(), '0', '', 'יש'], $this->csvRows($response->streamedContent())[1]);
+    }
+
+    public function test_managers_may_select_a_future_receipt_month_without_exporting_future_workdays(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $worker = User::factory()->create();
+        $this->createShiftRecord($worker, '2026-10-20');
+        $this->createReceiptRecord($worker, '2027-01', true);
+
+        $response = $this->download($manager, '2026-10-18', '2026-10-22', '2027-01');
+
+        $response->assertOk()->assertDownload();
+        $this->assertSame([$worker->fullName(), '1', '20/10/2026', 'יש'], $this->csvRows($response->streamedContent())[1]);
     }
 
     public function test_a_report_without_any_workers_contains_only_the_hebrew_header(): void
@@ -218,7 +306,7 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
-        $this->assertSame([['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה']], $rows);
+        $this->assertSame([['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות']], $rows);
     }
 
     public function test_long_historical_date_lists_are_not_truncated_by_a_database_concatenation_limit(): void
@@ -243,7 +331,7 @@ class WorkdayCsvReportTest extends TestCase
         $expectedDateCell = implode(', ', $expectedDates);
 
         $this->assertGreaterThan(1024, strlen($expectedDateCell));
-        $this->assertSame([$worker->fullName(), '100', $expectedDateCell], $rows[1]);
+        $this->assertSame([$worker->fullName(), '100', $expectedDateCell, 'אין'], $rows[1]);
     }
 
     public function test_names_with_hebrew_commas_quotes_newlines_and_backslashes_round_trip_as_one_csv_cell(): void
@@ -256,7 +344,7 @@ class WorkdayCsvReportTest extends TestCase
         $rows = $this->csvRows($csv);
 
         $this->assertCount(2, $rows);
-        $this->assertSame([$worker->fullName(), '1', '20/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '1', '20/10/2026', 'אין'], $rows[1]);
         $this->assertStringContainsString('""דני""', $csv);
     }
 
@@ -269,7 +357,7 @@ class WorkdayCsvReportTest extends TestCase
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
         $this->assertSame("'".$worker->fullName(), $rows[1][0]);
-        $this->assertSame(['0', ''], array_slice($rows[1], 1));
+        $this->assertSame(['0', '', 'אין'], array_slice($rows[1], 1));
     }
 
     public static function dangerousNamePrefixes(): array
@@ -314,8 +402,47 @@ class WorkdayCsvReportTest extends TestCase
             $this->assertCount(1, $document->query('.//input[@type="date" and @name="'.$name.'" and @required and @max="2026-10-22"]', $form));
         }
 
+        $receiptInputs = $document->query('.//input[@type="month" and @name="receipt_month" and @required and @value="2026-10"]', $form);
+        $this->assertCount(1, $receiptInputs);
+        $receiptInput = $receiptInputs->item(0);
+        $this->assertFalse($receiptInput->hasAttribute('min'));
+        $this->assertFalse($receiptInput->hasAttribute('max'));
+        $labels = $document->query('.//label[@for="'.$receiptInput->getAttribute('id').'"]', $form);
+        $this->assertCount(1, $labels);
+        $this->assertStringContainsString('חודש קבלות', $labels->item(0)->textContent);
         $this->assertCount(1, $document->query('.//button[@type="submit"]', $form));
         $this->assertCount(0, $document->query('//*[@id="reports"]//table'));
+    }
+
+    public function test_receipt_month_defaults_to_actual_israel_month_independently_of_dashboard_month_selection(): void
+    {
+        // Israel is already in November while UTC still belongs to October.
+        $this->travelTo(CarbonImmutable::parse('2026-10-31 22:30:00', 'UTC'));
+        $manager = User::factory()->manager()->create();
+        $this->mock(WorkdayCsvReportService::class)->shouldNotReceive('prepare');
+
+        $response = $this->actingAs($manager)->get(route('admin.users.index', ['receipts_month' => '2026-09']));
+
+        $response->assertOk();
+        $document = $this->document($response->getContent());
+        $this->assertCount(1, $document->query('//*[@id="reports"]//input[@name="receipt_month" and @value="2026-11"]'));
+        $this->assertCount(1, $document->query('//*[@id="receipts"]//input[@name="receipts_month" and @value="2026-09"]'));
+    }
+
+    public function test_valid_receipt_month_is_redisplayed_when_the_workday_range_is_rejected(): void
+    {
+        $manager = User::factory()->manager()->create();
+        $response = $this->actingAs($manager)->from(route('admin.users.index'))
+            ->post(route('admin.reports.workdays'), [
+                'start_date' => '2026-10-18', 'end_date' => '2026-10-23', 'receipt_month' => '2026-09',
+            ]);
+
+        $response->assertSessionHasErrors('end_date');
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $page = $this->followRedirects($response)->assertOk();
+        $document = $this->document($page->getContent());
+
+        $this->assertCount(1, $document->query('//*[@id="reports"]//input[@name="receipt_month" and @value="2026-09"]'));
     }
 
     public function test_opening_the_download_url_with_get_does_not_generate_a_report(): void
@@ -324,7 +451,7 @@ class WorkdayCsvReportTest extends TestCase
         $this->mock(WorkdayCsvReportService::class)->shouldNotReceive('prepare');
 
         $this->actingAs($manager)->get(route('admin.reports.workdays', [
-            'start_date' => '2026-10-18', 'end_date' => '2026-10-22',
+            'start_date' => '2026-10-18', 'end_date' => '2026-10-22', 'receipt_month' => '2026-10',
         ]))->assertStatus(405);
     }
 
@@ -333,6 +460,9 @@ class WorkdayCsvReportTest extends TestCase
         $manager = User::factory()->manager()->create();
         $worker = User::factory()->create();
         $this->createShiftRecord($worker, '2026-10-20');
+        $this->createReceiptRecord($worker, '2026-10', true);
+        $this->createReceiptRecord($worker, '2026-09', false);
+        User::factory()->create();
         $tables = ['users', 'shifts', 'calendar_dates', 'blocked_dates', 'calendar_events', 'desks', 'desk_reservations', 'monthly_receipts'];
         $before = [];
 
@@ -364,7 +494,7 @@ class WorkdayCsvReportTest extends TestCase
         $this->mock(WorkdayCsvReportService::class)->shouldNotReceive('prepare');
 
         $this->actingAs($manager)->from(route('admin.users.index'))
-            ->post(route('admin.reports.workdays'), $input)
+            ->post(route('admin.reports.workdays'), array_merge(['receipt_month' => '2026-10'], $input))
             ->assertSessionHasErrors($errorField)
             ->assertRedirect();
     }
@@ -394,13 +524,48 @@ class WorkdayCsvReportTest extends TestCase
     {
         $manager = User::factory()->manager()->create();
         $response = $this->actingAs($manager)->from(route('admin.users.index'))
-            ->post(route('admin.reports.workdays'), ['start_date' => ['invalid'], 'end_date' => '2026-10-22']);
+            ->post(route('admin.reports.workdays'), ['start_date' => ['invalid'], 'end_date' => '2026-10-22', 'receipt_month' => '2026-10']);
 
         $response->assertSessionHasErrors('start_date');
         $message = session('errors')->first('start_date');
         $this->assertMatchesRegularExpression('/[\x{0590}-\x{05FF}]/u', $message);
         $this->withCookie(config('session.cookie'), session()->getId());
         $this->followRedirects($response)->assertOk()->assertSee($message);
+    }
+
+    #[DataProvider('invalidReceiptMonths')]
+    public function test_invalid_receipt_months_are_rejected_with_hebrew_feedback_before_streaming(array $monthInput): void
+    {
+        $manager = User::factory()->manager()->create();
+        $this->mock(WorkdayCsvReportService::class)->shouldNotReceive('prepare');
+
+        $response = $this->actingAs($manager)->from(route('admin.users.index'))
+            ->post(route('admin.reports.workdays'), array_merge([
+                'start_date' => '2026-10-18', 'end_date' => '2026-10-22',
+            ], $monthInput));
+
+        $response->assertRedirect(route('admin.users.index'))->assertSessionHasErrors('receipt_month');
+        $message = session('errors')->first('receipt_month');
+        $this->assertStringContainsString('חודש הקבלות', $message);
+        $this->withCookie(config('session.cookie'), session()->getId());
+        $this->followRedirects($response)->assertOk()->assertSee($message);
+    }
+
+    public static function invalidReceiptMonths(): array
+    {
+        return [
+            'missing month' => [[]],
+            'null month' => [['receipt_month' => null]],
+            'empty month' => [['receipt_month' => '']],
+            'array month' => [['receipt_month' => ['2026-10']]],
+            'noncanonical month' => [['receipt_month' => '2026-1']],
+            'day instead of month' => [['receipt_month' => '2026-10-01']],
+            'unrecognized month' => [['receipt_month' => 'not-a-month']],
+            'ambiguous month' => [['receipt_month' => '10/2026']],
+            'zero month' => [['receipt_month' => '2026-00']],
+            'month beyond December' => [['receipt_month' => '2026-13']],
+            'timestamp suffix' => [['receipt_month' => '2026-10T00:00:00Z']],
+        ];
     }
 
     public function test_today_is_based_on_israel_calendar_date_when_utc_is_still_the_previous_day(): void
@@ -412,8 +577,8 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager, '2026-10-22', '2026-10-22')->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '1', '22/10/2026'], $rows[1]);
-        $this->post(route('admin.reports.workdays'), ['start_date' => '2026-10-22', 'end_date' => '2026-10-23'])
+        $this->assertSame([$worker->fullName(), '1', '22/10/2026', 'אין'], $rows[1]);
+        $this->post(route('admin.reports.workdays'), ['start_date' => '2026-10-22', 'end_date' => '2026-10-23', 'receipt_month' => '2026-10'])
             ->assertSessionHasErrors('end_date');
     }
 
@@ -426,7 +591,7 @@ class WorkdayCsvReportTest extends TestCase
 
         $rows = $this->csvRows($this->download($manager)->streamedContent());
 
-        $this->assertSame([$worker->fullName(), '1', '22/10/2026'], $rows[1]);
+        $this->assertSame([$worker->fullName(), '1', '22/10/2026', 'אין'], $rows[1]);
         $this->assertDatabaseHas('shifts', ['worker_id' => $worker->id, 'shift_date' => '2026-10-25', 'cancelled_at' => null]);
     }
 
@@ -434,7 +599,7 @@ class WorkdayCsvReportTest extends TestCase
     {
         $this->mock(WorkdayCsvReportService::class)->shouldNotReceive('prepare');
 
-        $this->post(route('admin.reports.workdays'), ['start_date' => '2026-10-18', 'end_date' => '2026-10-22'])
+        $this->post(route('admin.reports.workdays'), ['start_date' => '2026-10-18', 'end_date' => '2026-10-22', 'receipt_month' => '2026-10'])
             ->assertRedirect(route('login'));
     }
 
@@ -465,7 +630,7 @@ class WorkdayCsvReportTest extends TestCase
         ob_start();
 
         try {
-            app(WorkdayCsvReportService::class)->prepare($manager, '2026-10-18', '2026-10-22');
+            app(WorkdayCsvReportService::class)->prepare($manager, '2026-10-18', '2026-10-22', '2026-10');
         } catch (AuthorizationException) {
             $denied = true;
         } finally {
@@ -486,10 +651,10 @@ class WorkdayCsvReportTest extends TestCase
     }
 
     /** Every request represents an explicit manager click, not a dashboard read. */
-    private function download(User $actor, string $start = '2026-10-18', string $end = '2026-10-22'): TestResponse
+    private function download(User $actor, string $start = '2026-10-18', string $end = '2026-10-22', string $receiptMonth = '2026-10'): TestResponse
     {
         return $this->actingAs($actor)->post(route('admin.reports.workdays'), [
-            'start_date' => $start, 'end_date' => $end,
+            'start_date' => $start, 'end_date' => $end, 'receipt_month' => $receiptMonth,
         ]);
     }
 
@@ -503,13 +668,23 @@ class WorkdayCsvReportTest extends TestCase
         $rows = [];
 
         while (($row = fgetcsv($stream, null, ',', '"', '')) !== false) {
-            $this->assertCount(3, $row, 'Every record must have exactly three cells.');
+            $this->assertCount(4, $row, 'Every record must have exactly four cells.');
             $rows[] = $row;
         }
 
         fclose($stream);
 
         return $rows;
+    }
+
+    /** Store the same first-of-month key used by the worker's receipt checkbox. */
+    private function createReceiptRecord(User $worker, string $month, bool $hasReceipts): MonthlyReceipt
+    {
+        return MonthlyReceipt::create([
+            'worker_id' => $worker->id,
+            'month' => $month.'-01',
+            'has_receipts' => $hasReceipts,
+        ]);
     }
 
     private function document(string $html): DOMXPath

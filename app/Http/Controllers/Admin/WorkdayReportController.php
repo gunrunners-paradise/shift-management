@@ -14,10 +14,11 @@ class WorkdayReportController extends Controller
     {
         $startDate = $request->validated('start_date');
         $endDate = $request->validated('end_date');
+        $receiptMonth = $request->validated('receipt_month');
 
         // Prepare before response headers: a stale manager must receive a real
         // authorization error, never a partly downloaded CSV with a 200 status.
-        $csv = $reports->prepare($request->user(), $startDate, $endDate);
+        $csv = $reports->prepare($request->user(), $startDate, $endDate, $receiptMonth);
 
         return response()->streamDownload(function () use ($csv): void {
             try {
@@ -25,7 +26,7 @@ class WorkdayReportController extends Controller
             } finally {
                 fclose($csv);
             }
-        }, 'scheduled-workdays-'.$startDate.'-to-'.$endDate.'.csv', [
+        }, 'scheduled-workdays-'.$startDate.'-to-'.$endDate.'-receipts-'.$receiptMonth.'.csv', [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }

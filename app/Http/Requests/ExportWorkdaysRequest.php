@@ -28,11 +28,18 @@ class ExportWorkdaysRequest extends FormRequest
         return [
             'start_date' => ['bail', 'required', 'date_format:Y-m-d', 'before_or_equal:'.$today],
             'end_date' => $endDateRules,
+            // Managers may inspect any receipt month independently of the
+            // workday range, including months with no recorded receipts yet.
+            'receipt_month' => ['bail', 'required', 'date_format:Y-m'],
         ];
     }
 
     public function attributes(): array
     {
-        return ['start_date' => 'תאריך ההתחלה', 'end_date' => 'תאריך הסיום'];
+        return [
+            'start_date' => 'תאריך ההתחלה',
+            'end_date' => 'תאריך הסיום',
+            'receipt_month' => 'חודש הקבלות',
+        ];
     }
 }

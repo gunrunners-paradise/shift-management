@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\MonthlyReceipt;
 use App\Models\User;
 use App\Services\AccountManagementService;
 use App\Services\WorkdayCsvReportService;
@@ -39,8 +40,11 @@ class WorkdayCsvConcurrencyTest extends TestCase
         $otherManager = User::factory()->manager()->create();
         $worker = User::factory()->create();
         $shift = $this->createShiftRecord($worker, '2026-10-20');
+        $receipt = MonthlyReceipt::create(['worker_id' => $worker->id, 'month' => '2026-09-01', 'has_receipts' => true]);
+        MonthlyReceipt::create(['worker_id' => $worker->id, 'month' => '2026-10-01', 'has_receipts' => false]);
         $originalWorker = $worker->fresh()->getRawOriginal();
         $originalShift = $shift->fresh()->getRawOriginal();
+        $originalReceipt = $receipt->fresh()->getRawOriginal();
         $operations = [
             'report' => function () use ($reportingManager): string {
                 $paused = false;
@@ -61,7 +65,7 @@ class WorkdayCsvConcurrencyTest extends TestCase
                 ob_start();
 
                 try {
-                    $stream = app(WorkdayCsvReportService::class)->prepare($reportingManager, '2026-10-20', '2026-10-22');
+                    $stream = app(WorkdayCsvReportService::class)->prepare($reportingManager, '2026-10-20', '2026-10-22', '2026-09');
                     $result = 'prepared:'.base64_encode(stream_get_contents($stream));
                 } catch (AuthorizationException) {
                     // Deactivation won the row lock; no CSV may escape.
@@ -102,8 +106,8 @@ class WorkdayCsvConcurrencyTest extends TestCase
             $stream = fopen('php://temp', 'w+');
             fwrite($stream, substr($csv, 3));
             rewind($stream);
-            $this->assertSame(['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה'], fgetcsv($stream, null, ',', '"', ''));
-            $this->assertSame([$worker->fullName(), '1', '20/10/2026'], fgetcsv($stream, null, ',', '"', ''));
+            $this->assertSame(['שם העובד', 'מספר ימי עבודה', 'תאריכי עבודה', 'קבלות'], fgetcsv($stream, null, ',', '"', ''));
+            $this->assertSame([$worker->fullName(), '1', '20/10/2026', 'יש'], fgetcsv($stream, null, ',', '"', ''));
             $this->assertFalse(fgetcsv($stream, null, ',', '"', ''));
             fclose($stream);
         }
@@ -112,8 +116,10 @@ class WorkdayCsvConcurrencyTest extends TestCase
         $this->assertTrue($otherManager->fresh()->is_active);
         $this->assertSame($originalWorker, $worker->fresh()->getRawOriginal());
         $this->assertSame($originalShift, $shift->fresh()->getRawOriginal());
+        $this->assertSame($originalReceipt, $receipt->fresh()->getRawOriginal());
         $this->assertDatabaseCount('users', 3);
         $this->assertDatabaseCount('shifts', 1);
+        $this->assertDatabaseCount('monthly_receipts', 2);
     }
 
     public static function operationOrders(): array
