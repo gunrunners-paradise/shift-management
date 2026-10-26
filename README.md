@@ -4,6 +4,8 @@ A Laravel MVC application with a Hebrew RTL interface, MariaDB persistence, sess
 
 See [the Stage 7 report](docs/STAGE7-REPORT.md) for the cross-feature audit, revoked-login correction, actual local tests, browser comparison and isolated synthetic backup/restore rehearsal. [DEPLOYMENT.md](docs/DEPLOYMENT.md) and its [Apache example](docs/deployment/apache-vhost.conf) describe deployment, private-file protection, recovery and the device checks still required.
 
+For the simple Raspberry Pi installation with direct Wi-Fi access on **port 8000**, use [the Pi installation guide](docs/PI-INSTALLATION.md).
+
 See the [extra features and follow-up report](docs/EXTRA-FEATURES-REPORT.md) for additions and corrections made between stages, with links to existing detailed reports.
 
 ## Run in this workspace
