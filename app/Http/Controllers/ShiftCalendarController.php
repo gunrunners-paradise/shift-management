@@ -6,6 +6,7 @@ use App\Http\Requests\CalendarWeekRequest;
 use App\Http\Requests\ClearShiftRequest;
 use App\Http\Requests\StoreShiftRequest;
 use App\Models\BlockedDate;
+use App\Models\CalendarEvent;
 use App\Models\MonthlyReceipt;
 use App\Models\Shift;
 use App\Services\ShiftSchedulingService;
@@ -18,7 +19,7 @@ use Illuminate\View\View;
 class ShiftCalendarController extends Controller
 {
     /**
-     * Render five local workdays and only the signed-in worker's active choices.
+     * Render the viewed workweek, its event labels and the worker's own choices.
      * Browsing another week never changes the real date or the editable horizon.
      * Blade builds the complete grid, so reading and changing it also works without JS.
      */
@@ -46,6 +47,16 @@ class ShiftCalendarController extends Controller
             $blocks[$blockedDate->date->toDateString()] = $blockedDate;
         }
 
+        // Date-header notices follow the browsed week, including dates beyond
+        // the booking horizon. Full announcements below still describe today.
+        $eventsByDate = [];
+        $calendarEvents = CalendarEvent::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->orderBy('date')->orderBy('id')->get(['id', 'date', 'title', 'kind']);
+
+        foreach ($calendarEvents as $calendarEvent) {
+            $eventsByDate[$calendarEvent->date->toDateString()][] = $calendarEvent;
+        }
+
         $days = [];
         $weekdays = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי'];
 
@@ -62,6 +73,7 @@ class ShiftCalendarController extends Controller
                 'blocked' => $block !== null,
                 'block_reason' => $block?->reason,
                 'selected_period' => $selections[$dateKey] ?? null,
+                'events' => $eventsByDate[$dateKey] ?? [],
             ];
         }
 

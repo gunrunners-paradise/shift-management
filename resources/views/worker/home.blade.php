@@ -61,6 +61,16 @@
                                 <span class="calendar-today-label">היום</span>
                             @endif
                             <time datetime="{{ $day['date_key'] }}">{{ $day['date']->format('d/m') }}</time>
+                            @if ($day['events'] !== [])
+                                <ul class="calendar-date-events" role="list" aria-label="אירועים ליום זה">
+                                    @foreach ($day['events'] as $event)
+                                        <li class="calendar-date-event">
+                                            <span class="calendar-date-event-kind">{{ $event->kindLabel() }}</span>
+                                            <bdi>{{ $event->title }}</bdi>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
                         </th>
                     @endforeach
                 </tr>

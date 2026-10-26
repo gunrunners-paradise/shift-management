@@ -138,6 +138,11 @@
     font-size: 15px;
 }
 
+.calendar-dates .calendar-date {
+    /* Different notice counts must not move dates down within the same row. */
+    vertical-align: top;
+}
+
 .calendar-dates .calendar-date--today {
     background: #fff8cb;
 }
@@ -146,6 +151,35 @@
     display: block;
     font-weight: 500;
     direction: ltr;
+}
+
+/* Titles wrap within their date column, keeping long notices readable on
+   narrow screens without widening the calendar or changing booking controls. */
+.calendar-date-events {
+    display: grid;
+    gap: 5px;
+    margin: 7px 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.calendar-date-event {
+    padding: 5px 6px;
+    color: #384aa7;
+    border: 1px solid var(--color-line);
+    border-radius: 6px;
+    background: #f0f3ff;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.calendar-date-event-kind {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
 }
 
 .calendar-today-label {
@@ -411,6 +445,11 @@
 
     .calendar-dates > th:first-child {
         font-size: 12px;
+    }
+
+    .calendar-date-event {
+        padding: 4px 2px;
+        font-size: 11px;
     }
 
     .calendar-today-label {
