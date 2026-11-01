@@ -41,6 +41,8 @@ A Hebrew, right-to-left application for planning office shifts, reserving desks 
 
 Dates follow `Asia/Jerusalem`. CSV workday reports describe scheduled shifts, rather than verified attendance or paid hours. There is no public registration or default password.
 
+The manager's user list shows **10 accounts per page**, with previous/next navigation below the list.
+
 ## Requirements
 
 - **PHP 8.3+**, Composer 2 and the extensions listed in [runtime requirements](docs/DEPLOYMENT.md#runtime-requirements).

@@ -35,7 +35,7 @@ class UserController extends Controller
         $currentMonthStart = $today->startOfMonth()->toDateString();
 
         return view('admin.users.index', [
-            'users' => User::orderByDesc('is_active')->orderBy('id')->paginate(20)->withQueryString(),
+            'users' => User::orderByDesc('is_active')->orderBy('id')->paginate(10)->withQueryString(),
             'activeManagerCount' => User::where('role', 'manager')->where('is_active', true)->count(),
             'blockedDates' => BlockedDate::where('date', '>=', $currentMonthStart)
                 ->orderBy('date')->paginate(10, ['*'], 'blocks_page')->withQueryString(),

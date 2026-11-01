@@ -84,6 +84,7 @@ The project owner will **study the generated source code**. Write it to producti
 
 ## 4. Users and role authority — confirmed
 
+- Confirmed account-list pagination (2026-11-01): the manager dashboard shows **10 user accounts per page**, retaining active-first ordering and the existing previous/next controls.
 - Two roles: `worker` and `manager`. No worker self-registration. A **manager may create workers AND other managers** and deactivate accounts. Managers **do not have worker shift/desk/receipts privileges**, even when they guess endpoints. Managers can access the admin dashboard and, from Stage 3, their own profile. Protect against accidentally deactivating the last active manager.
 - Account fields: stable ID, unique username, first/last name, gender choice, birth date, photo path, role, active flag, password hash, timestamps. Never cascade-delete historical work records when deactivating an account.
 - Confirmed reactivation policy (2026-10-22): an active manager may reactivate an inactive worker or manager using a normal button, without entering any username or password. Preserve the same account ID, role, profile, password hash, receipts and history. Canceled shifts and desk reservations remain canceled. Require a fresh login using existing credentials: advance the account's session version on reactivation, clear stored sessions and reject stale session versions even if an old request writes its session afterward. A repeated request for an already active account is a no-op. Permanently deleted accounts cannot be reactivated.

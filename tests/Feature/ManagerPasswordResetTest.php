@@ -553,7 +553,7 @@ class ManagerPasswordResetTest extends TestCase
     public function test_validation_and_success_return_to_the_accounts_own_list_page_without_following_an_external_referer(): void
     {
         $manager = User::factory()->manager()->create(['password' => self::OLD_PASSWORD]);
-        User::factory()->count(19)->create();
+        User::factory()->count(9)->create();
         $target = User::factory()->create();
         $action = route('admin.users.password.update', ['user' => $target, 'page' => 2]);
         $returnUrl = route('admin.users.index', ['page' => 2]).'#account-list';
