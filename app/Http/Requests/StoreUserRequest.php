@@ -22,7 +22,7 @@ class StoreUserRequest extends FormRequest
         }
     }
 
-    /** These rules also validate the interactive first-manager setup. */
+    /** Shared with first-manager setup and the CLI worker CSV validator. */
     public function rules(): array
     {
         return [

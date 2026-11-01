@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AccountManagementService
@@ -21,6 +22,43 @@ class AccountManagementService
             $this->ensureUsernameIsAvailable($attributes['username']);
 
             return User::create($this->accountAttributes($attributes));
+        });
+    }
+
+    /**
+     * Import an entirely validated CLI batch; never update an existing account.
+     * The shared account gate serializes imports with manager account creation
+     * and deletion. Recheck each username under that gate, and commit the batch
+     * together so any unexpected failure rolls back all of its new accounts.
+     * This trusted CLI entry point does not relax create()'s manager checks.
+     *
+     * @param  list<array<string, mixed>>  $workers
+     * @return array{created: int, skipped: list<string>}
+     */
+    public function importWorkers(array $workers): array
+    {
+        return $this->managerTransaction->run(null, function () use ($workers): array {
+            $created = 0;
+            $skipped = [];
+
+            foreach ($workers as $attributes) {
+                if (User::where('username', $attributes['username'])->exists()) {
+                    $skipped[] = $attributes['username'];
+
+                    continue;
+                }
+
+                $attributes['role'] = 'worker';
+
+                // CSV passwords are literal plaintext, even if their bytes
+                // resemble an existing hash. Hash once; User's hashed cast
+                // recognizes this generated hash and does not hash it again.
+                $attributes['password'] = Hash::make($attributes['password']);
+                User::create($this->accountAttributes($attributes));
+                $created++;
+            }
+
+            return ['created' => $created, 'skipped' => $skipped];
         });
     }
 
