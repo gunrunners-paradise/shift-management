@@ -80,6 +80,10 @@
                         </div>
                         <p class="account-role">{{ $account->roleLabel() }}</p>
 
+                        @if (! $account->is(auth()->user()))
+                            @include('admin.users.password-reset', ['account' => $account])
+                        @endif
+
                         @if ($account->is_active)
                             @if ($account->isManager() && $activeManagerCount === 1)
                                 <p class="account-protection-note">זהו המנהל הפעיל האחרון. לא ניתן להשבית את החשבון.</p>

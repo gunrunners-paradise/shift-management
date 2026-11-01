@@ -2,7 +2,7 @@
 
 This guide preserves the detailed workspace instructions, feature acceptance checks and request-to-code reading paths previously kept in the README. For first-time setup, start with [the project README](../README.md); use [DEPLOYMENT.md](DEPLOYMENT.md) for fresh MariaDB/environment configuration or Apache/HTTPS deployment, and [PI-INSTALLATION.md](PI-INSTALLATION.md) for the separate port-8000 Pi testing setup.
 
-The checks below are instructions for owner review, not claims that every manual step has already been performed. Use disposable accounts/dates for destructive scenarios. Historical test totals remain attached to their delivery dates; current importer verification is recorded in [WORKER-IMPORTER.md](WORKER-IMPORTER.md#verification-record). Stage 7 device verification and final office-pilot acceptance remain pending.
+The checks below are instructions for owner review, not claims that every manual step has already been performed. Use disposable accounts/dates for destructive scenarios. Historical test totals remain attached to their delivery dates; importer verification is recorded in [WORKER-IMPORTER.md](WORKER-IMPORTER.md#verification-record), and the manager password-reset follow-up has [its own verification record](MANAGER-PASSWORD-RESET.md#verification-record). Stage 7 device verification and final office-pilot acceptance remain pending.
 
 ## Contents
 
@@ -12,6 +12,7 @@ The checks below are instructions for owner review, not claims that every manual
 - [Desk deletion](#permanently-delete-a-desk)
 - [Account reactivation](#reactivate-an-inactive-account)
 - [Account deletion](#permanently-delete-an-inactive-account)
+- [Manager password reset](#change-another-accounts-password)
 - [Calendar event labels](#worker-calendar-event-labels)
 - [Manager event/block lists](#manager-events-and-blocked-dates)
 - [Events and receipts](#existing-events-and-receipts-checks)
@@ -86,6 +87,17 @@ Run `php artisan migrate` when updating another installation. The reactivation m
 As a manager, open account management in `/admin`. For an inactive account, expand `מחיקה`, acknowledge the permanent removal of its history, and submit. No username or password entry is required. Active accounts must first be deactivated. Deactivation preserves history; permanent deletion removes the account, its completed/canceled shifts, desk reservations, monthly receipts, sessions and profile photo. Shared blocked dates, events, desks and other workers' records remain. There is no automatic purge.
 
 Run `php artisan migrate` when updating another installation. The additional migration makes deleted manager identities optional on shared blocks/events; applying it does not delete accounts. See [the account deletion report](ACCOUNT-DELETION-REPORT.md) for verification and safe manual review with a disposable account.
+
+## Change another account's password
+
+1. In a disposable review installation, sign in as a manager and open **רשימת משתמשים**. On another active worker's card, expand **שינוי סיסמה**, enter **סיסמה חדשה** and **אימות סיסמה**, and choose **שמירת סיסמה**. The target identity stays visible and the fields are closed by default. Neither the worker's forgotten password nor your current password is required.
+2. Confirm the success message and that your manager browser remains signed in. An independently signed-in target browser must return to login on its next application request. The old password must no longer work; signing in with the new one should reach the normal worker calendar without a forced password-change step. Use separate browser profiles/private sessions, since ordinary windows share cookies.
+3. Repeat for another active manager. Their new login should reach the manager dashboard, with their role and profile unchanged. Your own card has no administrative reset control; use the existing profile password form with current-password verification for your own password.
+4. Reset a disposable inactive worker or manager. The card must remain **לא פעיל**, and both old/new password login attempts must remain unavailable while suspended. Separately reactivate the account to verify the new password works afterward and previously canceled bookings stay canceled.
+5. Try fewer than 12 characters and mismatched confirmation. Hebrew validation should identify the correct account form, leave both password fields empty and leave credentials unchanged. The backend also rejects values over 72 UTF-8 bytes; Hebrew letters use multiple bytes. Account creation and other cards must not inherit the reset errors.
+6. Check the same control with keyboard navigation, at narrow/mobile and desktop widths, and with JavaScript disabled. Opening or closing the control alone must change nothing. The named form submits through the existing dashboard, with no new page or section. Check that profile, activation, shifts, desk reservations, receipts and historical records remain unchanged.
+
+This follow-up needs no migration or dependency. Password resets advance the target's existing `session_version`, clear its remember token and remove stored sessions in the same transaction as the hash change. A target browser learns about revocation on its next request; a previously started request cannot make an old session valid by writing it afterward. See [the password-reset report](MANAGER-PASSWORD-RESET.md) for the full policy, transaction/rollback/concurrency coverage, changed files and actual results. The steps above are for owner review, not authorization for the agent to reset real accounts.
 
 ## Worker calendar event labels
 
@@ -172,6 +184,8 @@ For CSV, `POST /admin/reports/workdays` (`admin.reports.workdays`) → `ExportWo
 For permanent deletion, `DELETE /admin/users/{user}` → `DeleteUserRequest` → `Admin/UserController::destroy()` → `AccountDeletionService::delete()`. The service rechecks the manager and inactive target under locks, deletes the target's owned records and sessions, clears shared actor references and deletes the `User` in one transaction. `AvatarStorage::delete()` runs after commit. The redirect returns to `admin/users/index.blade.php`; its inline confirmation uses native forms and needs no new JavaScript.
 
 For reactivation, `PATCH /admin/users/{user}/reactivate` → `ReactivateUserRequest` → `Admin/UserController::reactivate()` → `AccountManagementService::reactivate()`. The existing manager transaction locks and rechecks both accounts, activates the target and advances its session version without restoring canceled records. `LoginRequest::authenticate()` stamps the version on a fresh login; `EnsureAccountIsActive::handle()` rejects a stale version. The dashboard renders the native form; no feature JavaScript is needed.
+
+For a manager password reset, `PATCH /admin/users/{user}/password` (`admin.users.password.update`) → `ManagerPasswordResetRequest` checks manager/other-account authority and validates the two new-password inputs → `Admin/UserController::updatePassword()` → `AccountManagementService::resetPassword()`. `ManagerTransaction::run()` rechecks the actor's active role and login version under the account gate; the service locks the current target row and atomically saves the secure hash, clears the remember token, advances `session_version` and deletes the target's `sessions`. The ordinary redirect returns to the account list's current page in `admin/users/index.blade.php`. `failedValidation()` explicitly flashes only the route-selected form ID and fixes errors to the `passwordReset` bag, so client input cannot reopen another account or mark account creation invalid; JSON errors remain standard 422. The reset partial uses a native `<details>` and shared password fields; scoped CSS keeps it compact, and existing `public/js/app.js` only enhances password visibility. `EnsureAccountIsActive::handle()` rejects old session versions, including late session writes. No new JavaScript or migration is involved; [the focused report](MANAGER-PASSWORD-RESET.md#request-to-code-reading-guide) traces each file and contrasts the existing own-profile flow.
 
 For the calendar, `GET /worker` calls `ShiftCalendarController::index()`, which reads only the authenticated worker's active `Shift` rows, the week's `BlockedDate` records and event/holiday titles from `CalendarEvent` for the viewed Sunday–Thursday dates. `worker/home.blade.php` renders the date-header event lists and uses `components/shift-slot.blade.php` for the complete five-row table. `public/css/calendar.css` styles the labels; `public/js/calendar.js` adds the selection dialog but does not generate event labels. Native rendering/forms work without JavaScript. The period definitions live only in `config/shifts.php`.
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminDashboardRequest;
 use App\Http\Requests\DeactivateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
+use App\Http\Requests\ManagerPasswordResetRequest;
 use App\Http\Requests\ReactivateUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\BlockedDate;
@@ -65,6 +66,14 @@ class UserController extends Controller
         $accounts->create($request->user(), $request->validated());
 
         return redirect()->route('admin.users.index')->with('status', 'החשבון נוצר בהצלחה.');
+    }
+
+    public function updatePassword(ManagerPasswordResetRequest $request, User $user, AccountManagementService $accounts): RedirectResponse
+    {
+        $accounts->resetPassword($request->user(), $user, $request->validated('password'));
+
+        return redirect()->to($request->dashboardRedirectUrl())
+            ->with('status', 'הסיסמה עודכנה. יש למסור אותה לבעל/ת החשבון באופן פרטי. ההתחברות הבאה תהיה עם הסיסמה החדשה.');
     }
 
     public function deactivate(DeactivateUserRequest $request, User $user, AccountManagementService $accounts): RedirectResponse

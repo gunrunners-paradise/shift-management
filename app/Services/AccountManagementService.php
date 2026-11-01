@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -22,6 +23,36 @@ class AccountManagementService
             $this->ensureUsernameIsAvailable($attributes['username']);
 
             return User::create($this->accountAttributes($attributes));
+        });
+    }
+
+    /**
+     * Replace another worker's or manager's password from validated manager input.
+     * The manager gate rechecks the actor after waiting, then the target row
+     * lock serializes this write with self-service changes and account removal.
+     * A password reset never activates an inactive account or changes its history.
+     *
+     * Advancing the session version rejects even a late old request that writes
+     * its session after deletion. Version, hash and session removal commit together.
+     * The acting manager's own password and sessions are left intact.
+     */
+    public function resetPassword(User $actor, User $target, string $newPassword): void
+    {
+        $this->managerTransaction->run($actor, function () use ($actor, $target, $newPassword): void {
+            $account = User::query()->lockForUpdate()->findOrFail($target->getKey());
+
+            if ($account->is($actor) || ! in_array($account->role, ['worker', 'manager'], true)) {
+                throw new AuthorizationException('אין הרשאה לשנות את הסיסמה של חשבון זה. לשינוי הסיסמה שלך יש להשתמש בפרופיל.');
+            }
+
+            // Treat even hash-looking text as the literal chosen password.
+            // The model's hashed cast accepts this generated hash unchanged.
+            $account->password = Hash::make($newPassword);
+            $account->remember_token = null;
+            $account->session_version = $account->session_version + 1;
+            $account->save();
+
+            DB::table('sessions')->where('user_id', $account->getKey())->delete();
         });
     }
 

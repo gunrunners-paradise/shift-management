@@ -6,6 +6,7 @@
     'hint' => null,
     'required' => false,
     'showErrors' => true,
+    'errorBag' => 'default',
 ])
 
 @php
@@ -22,7 +23,8 @@
         $descriptionIds[] = $fieldId.'-hint';
     }
 
-    $hasError = $showErrors && $errors->has($name);
+    $fieldErrors = $errors->getBag($errorBag);
+    $hasError = $showErrors && $fieldErrors->has($name);
 
     if ($hasError) {
         $descriptionIds[] = $fieldId.'-error';
@@ -56,6 +58,6 @@
         <span id="{{ $fieldId }}-hint" class="field-hint">{{ $hint }}</span>
     @endif
     @if ($hasError)
-        <span id="{{ $fieldId }}-error" class="field-error">{{ $errors->first($name) }}</span>
+        <span id="{{ $fieldId }}-error" class="field-error">{{ $fieldErrors->first($name) }}</span>
     @endif
 </div>

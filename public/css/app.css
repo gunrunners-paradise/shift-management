@@ -551,6 +551,33 @@ a:focus-visible,
     margin-top: 12px;
 }
 
+/* Password fields stay out of the account list until its native control opens. */
+.account-password-reset {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-line);
+}
+
+.account-password-reset > summary {
+    min-height: 44px;
+    padding: 12px 3px;
+    color: #3647a1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.account-password-reset-form {
+    padding-top: 4px;
+}
+
+.account-password-reset-note {
+    margin: 0 0 13px;
+    color: var(--color-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
 .account-deletion {
     margin-top: 12px;
     padding-top: 8px;

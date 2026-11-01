@@ -47,6 +47,7 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
         Route::delete('/admin/desks/{desk}', [DeskController::class, 'destroy'])->whereNumber('desk')->name('admin.desks.destroy');
         Route::get('/admin', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
+        Route::patch('/admin/users/{user}/password', [UserController::class, 'updatePassword'])->whereNumber('user')->name('admin.users.password.update');
         Route::patch('/admin/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('admin.users.deactivate');
         Route::patch('/admin/users/{user}/reactivate', [UserController::class, 'reactivate'])->whereNumber('user')->name('admin.users.reactivate');
         Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->whereNumber('user')->name('admin.users.destroy');

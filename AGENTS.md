@@ -73,7 +73,7 @@ The project owner will **study the generated source code**. Write it to producti
 - Host target: Raspberry Pi 4 **8 GB RAM, 32 GB storage**, Linux/Apache/PHP/MariaDB on office LAN, later migratable to company central server. Do not hardcode IPs, filesystem paths, credentials or Pi-specific assumptions. Apache document root points to Laravel **`public/`** (never repository root). Avoid Docker, Redis, WebSockets, queue workers, JS frameworks or other infrastructure unless separately approved.
 - `Asia/Jerusalem` business timezone, Hebrew interface, dates formatted for Hebrew UI while saved in unambiguous DB types. Strict separation of local calendar **dates** and timestamp comparisons.
 - Prefer conventional session-based Laravel authentication over JWT or localStorage sessions. Use CSRF, server validation, escaped Blade output, authorization, login rate limits and safe errors. No client-stored authoritative booking/profile data.
-- Confirmed session policy: **30 days of inactivity** (`SESSION_LIFETIME=43200` minutes), renewed by application requests. Explicit logout or account deactivation still ends authenticated access immediately. Keep the session configuration default and `.env.example` consistent with this policy.
+- Confirmed session policy: **30 days of inactivity** (`SESSION_LIFETIME=43200` minutes), renewed by application requests. Explicit logout, account deactivation or a manager password reset still ends the affected authenticated access immediately. Keep the session configuration default and `.env.example` consistent with this policy.
 
 ### `.env`, and password handling
 
@@ -92,6 +92,16 @@ The project owner will **study the generated source code**. Write it to producti
 - Manager role display for selected gender: male `מנהל`, female `מנהלת`; unspecified/other gender must not be guessed and should use neutral `מנהל/ת` wording.
 - On **worker deactivation**, cancel their **future shift selections**, **today's upcoming or in-progress shift**, and **future desk bookings**, preserving cancellation history, and **immediately cancel any desk booking already in progress**. Preserve completed shifts (including today's shift once its configured end time is reached) and earlier dates. Disable future booking actions and reject/revoke their existing authenticated sessions, not just their next login. Cancellation of an in-progress shift was confirmed by the user on 2026-10-20.
 - Photo uploads must be validated (file type/size), stored safely as files, not SQL base64; have non-executable storage, safe URL and default avatar. Actual image upload functionality is Stage 3.
+
+### Manager password-reset decisions — confirmed 2026-11-01
+
+- An **active manager** may set a new password for **another worker or manager**, whether the target account is active or inactive. The manager's own password change remains in the existing profile form and requires the current password. Do not expose or accept self-reset through the administrative endpoint.
+- The manager enters the new password twice, without either person's current password. Apply the existing password rules: at least **12 characters**, at most **72 UTF-8 bytes**, and matching confirmation. Preserve the submitted password literally, including whitespace; hash it securely once using Laravel. Never display, flash, log, email or persist the plaintext password after submission.
+- Revoke **all target sessions**, clear the target's remember token and advance its existing session version in the same transaction as the password hash. A late request that recreates an old session must still fail its version check. Recheck the acting manager's active role and session version under the existing manager gate, and lock the current target row so password changes serialize with profile/account operations.
+- Preserve the target's account ID, username, role, profile, active/inactive status, shifts, desk reservations, receipts and history. Resetting an inactive account never reactivates it. The acting manager stays signed in unless that manager is independently revoked, including by another manager resetting their password concurrently.
+- Users may change the provided password later through their own profile; **no mandatory change at next login** is required. No new database flag, migration, email/reset-token workflow, notification, page, dashboard section or password-reset CLI command is authorized by this follow-up.
+- Keep the UI compact: a closed native **`שינוי סיסמה`** control on each other account's existing manager card expands to new-password, confirmation and save fields. Show the target identity clearly and explain that the target must sign in again; inactive-account text must not imply reactivation. Native forms, CSRF, Hebrew feedback, keyboard/mobile access and JavaScript-disabled operation are required.
+- The user explicitly authorized implementation with the usual documentation, automated tests and review gate on 2026-11-01. [docs/MANAGER-PASSWORD-RESET.md](docs/MANAGER-PASSWORD-RESET.md) records the agreed scope, request path, verification and manual review. This authorization permits synthetic test resets, not changing real account passwords during development.
 
 ### CSV worker-import decisions — confirmed 2026-11-01
 
@@ -176,7 +186,7 @@ If real tables or worker records already contain `morning`, `afternoon` or an ea
 ## 11. Open policies — defer to the relevant stage, don't invent
 
 - Stage 2: managers editing an individual worker's shift remains unauthorized. Worker deactivation cancels an in-progress shift too, as confirmed on 2026-10-20.
-- Stage 3: February 29 birthdays use February 28 in non-leap years, as confirmed by the user. Manager editing of other users' profile fields beyond account creation remains unauthorized.
+- Stage 3: February 29 birthdays use February 28 in non-leap years, as confirmed by the user. Manager editing of other users' profile fields beyond account creation remains unauthorized, except the explicitly approved manager password-reset action above.
 - Stage 4: workers edit **the current month's receipts only** (confirmed); past/future months are read-only. Events remain single-date; multi-day events require separate approval. Holidays are **manual**, not imported automatically.
 - Stage 5 follow-up: permanent desk deletion replaces deactivation and removes all associated reservations/history (confirmed on 2026-10-22). Extra manager booking overrides remain unauthorized.
 - Stage 6: include retained active/inactive workers with zero scheduled days; date ranges end no later than actual Israel today (both confirmed on 2026-10-22). Future planned dates are not exportable.
