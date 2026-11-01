@@ -1,6 +1,6 @@
 # מערכת נוכחות
 
-A Hebrew, right-to-left application for planning office shifts, reserving desks and managing worker accounts. Built with Laravel, Blade, ordinary CSS, vanilla JavaScript and MariaDB for a Raspberry Pi or another Linux server.
+A Hebrew, right-to-left application for planning office shifts, reserving desks and managing worker accounts. Built using the assistance of Codex with Laravel, Blade, ordinary CSS, vanilla JavaScript and MariaDB for a Raspberry Pi or another Linux server.
 
 ## Contents
 
