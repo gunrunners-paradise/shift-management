@@ -1,0 +1,209 @@
+/* Signup reuses the guest card and shared form tokens without the login logo. */
+.signup-card {
+    max-width: 520px;
+}
+
+.signup-card .login-subtitle {
+    margin-bottom: 24px;
+}
+
+.signup-management-panel {
+    margin-top: 22px;
+}
+
+.signup-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+    margin-bottom: 12px;
+}
+
+.signup-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: #f8faff;
+}
+
+.signup-setting h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+}
+
+.signup-setting-description {
+    min-width: 0;
+}
+
+.signup-setting-note {
+    margin-bottom: 20px;
+}
+
+.signup-bulk-actions,
+.signup-request-actions,
+.signup-confirm-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.signup-bulk-actions {
+    margin-bottom: 11px;
+}
+
+.signup-bulk-actions .button:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.signup-request-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.signup-request-list > .empty-state {
+    grid-column: 1 / -1;
+}
+
+.signup-request-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: 11px;
+}
+
+.signup-request-heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.signup-role-chip {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    color: #3d4db0;
+    border-radius: 999px;
+    background: #edf1fe;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.signup-role-chip--manager {
+    color: #752a79;
+    background: #f2e6f6;
+}
+
+.signup-request-date {
+    margin: 10px 0 13px;
+    color: var(--color-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.signup-review-error {
+    margin: 0 0 13px;
+    color: var(--color-danger);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.signup-request-details {
+    margin-top: 12px;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.signup-request-details > summary {
+    min-height: 44px;
+    padding: 12px 3px;
+}
+
+.signup-request-details dl {
+    margin: 0;
+}
+
+.signup-request-details dl > div,
+.signup-confirm-counts > div {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-block: 7px;
+}
+
+.signup-request-details dd,
+.signup-confirm-counts dd {
+    margin: 0;
+    color: #262c3b;
+}
+
+.signup-confirm-panel {
+    max-width: 700px;
+    margin-inline: auto;
+}
+
+.signup-confirm-identity {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.signup-confirm-intro {
+    margin-top: 20px;
+    line-height: 1.6;
+}
+
+.signup-confirm-counts {
+    padding: 12px 15px;
+    margin: 0 0 19px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: #f8faff;
+    font-size: 14px;
+}
+
+.signup-confirm-counts dd {
+    font-weight: 700;
+}
+
+.signup-permissions-warning {
+    padding: 13px 15px;
+    margin: 0 0 19px;
+    border: 1px solid #eab2c6;
+    border-radius: var(--radius-control);
+    color: var(--color-danger);
+    background: #fff1f5;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+@media (max-width: 700px) {
+    .signup-settings,
+    .signup-request-list {
+        grid-template-columns: 1fr;
+    }
+
+    .signup-bulk-actions > form,
+    .signup-confirm-actions > form,
+    .signup-confirm-actions > a {
+        flex: 1 1 100%;
+    }
+
+    .signup-bulk-actions .button,
+    .signup-confirm-actions .button {
+        width: 100%;
+    }
+}

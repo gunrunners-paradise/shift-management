@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/receipts.css') }}">
     <link rel="stylesheet" href="{{ asset('css/desks.css') }}">
     <link rel="stylesheet" href="{{ asset('css/reports.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/signup.css') }}">
 @endpush
 
 @section('content')
@@ -19,6 +20,7 @@
     <div class="quick-actions">
         <a class="button button--primary" href="#users">＋ משתמש חדש</a>
         <a class="button button--secondary" href="#account-list">רשימת משתמשים</a>
+        <a class="button button--secondary" href="#signup-requests">בקשות הצטרפות</a>
         <a class="button button--danger" href="#blocks">חסימת יום</a>
         <a class="button button--secondary" href="#events">אירועים וחגים</a>
         <a class="button button--secondary" href="#reports">הורדת CSV</a>
@@ -150,6 +152,7 @@
         </x-panel>
     </div>
 
+    @include('admin.signups.panel')
     @include('admin.blocks.panel')
     @include('admin.events.panel')
     @include('admin.reports.panel')

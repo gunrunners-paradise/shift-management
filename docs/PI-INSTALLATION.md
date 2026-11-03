@@ -174,6 +174,8 @@ php artisan app:create-manager
 
 Migrations should finish with `DONE`. The manager command uses normal `.env` runtime credentials. Choose a username, name, gender and a hidden, confirmed password. The password must have at least 12 characters and at most 72 UTF-8 bytes. The command prints the username and login URL, never the password. Repeating it preserves an existing manager.
 
+The signup migration creates separate pending-request/settings tables, with worker and manager signup both **closed by default**. It creates no user. After first-manager login, use **בקשות הצטרפות** to open the appropriate page and review requests when wanted. The application deliberately provides no signup hyperlinks. See [the signup guide](ACCOUNT-SIGNUP.md) for the two paths, approval/deletion instructions and existing-installation update commands; signup does not replace first-manager CLI setup.
+
 ## 6. Run the site as a service
 
 Stop any manually running Artisan server with **Ctrl+C** first.

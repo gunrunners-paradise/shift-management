@@ -18,8 +18,11 @@ class ManagerTransaction
      * One shared lock also avoids manager cancellation-actor foreign-key locks
      * racing with account deactivation. Workers never acquire this lock.
      *
-     * A null actor is reserved for trusted CLI first-manager setup and worker
-     * import. HTTP account creation always supplies its authenticated manager.
+     * A null actor is reserved for trusted CLI setup/import and the narrowly
+     * scoped guest signup submission, which creates only a pending request.
+     * Creating a real account through HTTP always requires a current manager.
+     * Signup submissions also use this gate so their switches, username checks
+     * and confirmation cohorts serialize with every administrative account write.
      * The lock name includes the schema so test and local databases are separate.
      *
      * @template T

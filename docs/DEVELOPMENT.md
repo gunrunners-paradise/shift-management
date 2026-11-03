@@ -13,6 +13,7 @@ The checks below are instructions for owner review, not claims that every manual
 - [Account reactivation](#reactivate-an-inactive-account)
 - [Account deletion](#permanently-delete-an-inactive-account)
 - [Manager password reset](#change-another-accounts-password)
+- [Account signup and approval](#account-signup-and-approval)
 - [Calendar event labels](#worker-calendar-event-labels)
 - [Manager event/block lists](#manager-events-and-blocked-dates)
 - [Events and receipts](#existing-events-and-receipts-checks)
@@ -38,7 +39,7 @@ php artisan app:create-manager
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-Run the manager command in your own private interactive terminal. Choose a username and a password of at least 12 characters and no more than 72 UTF-8 bytes. Password and confirmation are hidden; the command prints only the username, manager role, login URL, and sign-in instructions. Open **http://127.0.0.1:8000/login** and use the credentials you chose. Repeating setup preserves the existing manager and password. There are no default credentials or public registration route.
+Run the manager command in your own private interactive terminal. Choose a username and a password of at least 12 characters and no more than 72 UTF-8 bytes. Password and confirmation are hidden; the command prints only the username, manager role, login URL, and sign-in instructions. Open **http://127.0.0.1:8000/login** and use the credentials you chose. Repeating setup preserves the existing manager and password. There are no default credentials. The separately approved signup pages start closed and create only pending requests until a manager approves them.
 
 Login sessions expire after **30 days of inactivity** (`SESSION_LIFETIME=43200` minutes). Application requests renew the timeout; explicit logout or account deactivation ends access immediately.
 
@@ -98,6 +99,20 @@ Run `php artisan migrate` when updating another installation. The additional mig
 6. Check the same control with keyboard navigation, at narrow/mobile and desktop widths, and with JavaScript disabled. Opening or closing the control alone must change nothing. The named form submits through the existing dashboard, with no new page or section. Check that profile, activation, shifts, desk reservations, receipts and historical records remain unchanged.
 
 This follow-up needs no migration or dependency. Password resets advance the target's existing `session_version`, clear its remember token and remove stored sessions in the same transaction as the hash change. A target browser learns about revocation on its next request; a previously started request cannot make an old session valid by writing it afterward. See [the password-reset report](MANAGER-PASSWORD-RESET.md) for the full policy, transaction/rollback/concurrency coverage, changed files and actual results. The steps above are for owner review, not authorization for the agent to reset real accounts.
+
+## Account signup and approval
+
+Use a disposable review installation, keep real registration closed, and follow [the signup guide](ACCOUNT-SIGNUP.md#manual-acceptance) for the complete acceptance checklist.
+
+1. Apply the signup migration with the installation's normal deployment procedure. Open each signup path directly in a guest browser: `/signup/worker` and `/signup/manager`. Both should show **ההרשמה סגורה כעת** initially. Neither application page, menu nor dashboard should contain a hyperlink to either form.
+2. In **בקשות הצטרפות**, open worker signup only. Its form should use the login styling without the SVG, require username/name/gender/password/confirmation, label birthday optional, and visibly state the 12-character password minimum. Manager signup must remain closed. Closing worker signup before submitting an already opened form must refuse that submission too.
+3. Submit a synthetic worker request. Check the separate waiting page and its instruction to contact management. Pending applicants cannot log in and must not appear in account lists, worker calendars, receipts, birthdays, coworkers or CSV reports. Repeat using manager signup; its request must show the fixed manager role. Matching full names with different usernames are allowed; a reused normalized username across either page or an existing active/inactive account is rejected without overwriting anything.
+4. Review both roles together in the manager section, oldest first and ten per page. Open an individual decision and verify the target/role. Above the list, choose **אישור כל הבקשות**: its one confirmation must show separate worker/manager counts across every page and explain manager permissions without an extra acknowledgement checkbox. A later submission must remain pending after that confirmed action. Approved users sign in with their original chosen passwords and correct role; no password-change step is required.
+5. With disposable data, create a username conflict after submission using existing manager account creation. Bulk approval must create other valid accounts, keep the conflicted request with an explanation and preserve the existing account. Repeated/stale confirmations must not recreate removed requests; an expired confirmation requires fresh review. Another manager cannot reuse your confirmation, and a reset/deactivated session cannot execute it.
+6. Check individual and bulk deletion: the one confirmation shows affected counts, deletion is irreversible and existing accounts/history remain intact. New arrivals are excluded from an earlier confirmation. A deleted request's username may be submitted again while its signup page is open. Closing either page leaves pending decisions available. No requests expire automatically.
+7. Repeat at desktop/mobile widths, with keyboard navigation and with JavaScript disabled. Worker/guest calls to manager decisions must be denied. The shared IP submission limiter should return Hebrew feedback after 20 POST attempts within one minute across both pages; do not run abuse probes against real office users.
+
+Read `SignupController` and `SignupRequest` for guest validation/confirmation, `EnsureSignupIsOpen` for closed-page handling, and `SignupService` for serialized submission/approval/deletion/settings. Manager routes call `Admin/SignupRequestController`; the shared `ManagerTransaction` gate rechecks active manager authority and login version. [The feature guide](ACCOUNT-SIGNUP.md#request-to-code-reading-guide) records exact routes, views, migration and current verification. No queue, email or external package is involved.
 
 ## Worker calendar event labels
 

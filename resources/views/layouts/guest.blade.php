@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'התחברות') | מערכת נוכחות</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @stack('styles')
     <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body class="guest-page">

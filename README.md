@@ -10,6 +10,7 @@ A Hebrew, right-to-left application for planning office shifts, reserving desks 
 - [Installation](#installation)
 - [Import worker accounts](#import-worker-accounts)
 - [Reset a forgotten password](#reset-a-forgotten-password)
+- [Review signup requests](#review-signup-requests)
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Project status](#project-status)
@@ -23,6 +24,7 @@ A Hebrew, right-to-left application for planning office shifts, reserving desks 
 | Run the already prepared local development workspace | [Workspace instructions](docs/DEVELOPMENT.md#run-in-this-workspace) |
 | Import employee accounts from a private CSV | [Worker importer](docs/WORKER-IMPORTER.md) |
 | Change a worker's or another manager's forgotten password | [Manager password reset](docs/MANAGER-PASSWORD-RESET.md) |
+| Open registration and approve worker/manager requests | [Account signup and approval](docs/ACCOUNT-SIGNUP.md) |
 | Review features or follow the source code | [Development and manual review](docs/DEVELOPMENT.md) |
 
 ## Features and roles
@@ -30,7 +32,7 @@ A Hebrew, right-to-left application for planning office shifts, reserving desks 
 | Role | Available actions |
 |---|---|
 | Worker | Choose shifts, reserve a desk, maintain a personal profile and mark the current month's receipts. |
-| Manager | Create/manage accounts, reset another account's password, manage events, holidays, blocked dates and desks; view monthly receipts and download workday CSV reports. Managers do not book shifts/desks or submit worker receipts. |
+| Manager | Create/manage accounts, open/close worker and manager signup, approve/delete pending requests, reset another account's password, manage events, holidays, blocked dates and desks; view monthly receipts and download workday CSV reports. Managers do not book shifts/desks or submit worker receipts. |
 
 - Sunday–Thursday weekly calendar with five shift choices: **09:00–13:00**, **10:00–14:00**, **11:00–15:00**, **12:00–16:00**, or **09:00–16:30**. Workers select one period per date, from today through the next 28 calendar days.
 - Desk reservations independent of shifts, with overlap protection and server-side time/date validation. Blocking a workday cancels and prevents both shift selections and desk reservations.
@@ -39,7 +41,7 @@ A Hebrew, right-to-left application for planning office shifts, reserving desks 
 - Personal profiles, private avatars, password changes, account suspension/reactivation and explicit account/desk deletion.
 - Username/password login with **30 days of inactivity** per session. Application requests renew that period; logout, account deactivation and manager password resets revoke the affected access.
 
-Dates follow `Asia/Jerusalem`. CSV workday reports describe scheduled shifts, rather than verified attendance or paid hours. There is no public registration or default password.
+Dates follow `Asia/Jerusalem`. CSV workday reports describe scheduled shifts, rather than verified attendance or paid hours. Signup requires manager approval and starts closed for both roles. There is no default password.
 
 The manager's user list shows **10 accounts per page**, with previous/next navigation below the list.
 
@@ -101,6 +103,16 @@ This works for other workers and managers, including inactive accounts. Their ex
 
 [The password-reset guide](docs/MANAGER-PASSWORD-RESET.md) covers the policy, manual review and implementation checks. Updating an existing installation for this feature needs no database migration or new dependency.
 
+## Review signup requests
+
+In the manager dashboard's **בקשות הצטרפות** section, open or close worker and manager registration independently. **Both start closed.** Applicants enter the correct address directly: `/signup/worker` or `/signup/manager`, relative to your installation's base address. The application contains no hyperlinks to either page. A closed page says **ההרשמה סגורה כעת** and refuses submissions.
+
+The two forms collect the same personal/login details, with an optional birthday and a password of at least **12 characters**. The page fixes the requested role. Submission stores a pending request; the person waits for approval and cannot log in yet. Managers tell approved applicants directly, and applicants then use their chosen username/password on the normal login page.
+
+Review the combined list, ten requests per page. The **אישור כל הבקשות** and **מחיקת כל הבקשות** controls are above it and apply across all pages after one confirmation showing worker/manager counts. Individual actions are also available. Approval grants the displayed role; **מנהל/ת** receives the full existing manager permissions. Valid requests are approved while username conflicts stay pending with explanations. Closing registration leaves existing requests available for review.
+
+Updating an existing installation requires the new signup migration; follow [the feature guide](docs/ACCOUNT-SIGNUP.md#install-or-update) and your normal deployment procedure. [That guide](docs/ACCOUNT-SIGNUP.md) includes applicant/manager instructions, confirmed rules, code paths and verification.
+
 ## Testing
 
 Configure a **separate MariaDB database ending in `_test`** using [the test setup guide](docs/DEPLOYMENT.md#mariadb-test-environment). Tests erase that schema; never point them at development or production data. The test harness checks the testing environment, database suffix and MariaDB server before migrations.
@@ -126,6 +138,7 @@ Race tests use independent MariaDB connections and require PHP `pcntl` and local
 | [Development and manual review](docs/DEVELOPMENT.md) | Prepared-workspace commands, existing feature acceptance checks and route/controller/service/model/view reading guide. |
 | [Worker importer](docs/WORKER-IMPORTER.md) | Complete importer specification, CSV examples, Pi commands, implementation and test results. |
 | [Manager password reset](docs/MANAGER-PASSWORD-RESET.md) | Account-card instructions, session revocation, agreed policy, implementation and verification. |
+| [Account signup and approval](docs/ACCOUNT-SIGNUP.md) | Separate unlinked signup pages, independent registration switches, combined pending list and approval/deletion instructions. |
 | [Roadmap](ROADMAP.md) | Stage scopes, authorizations, delivery history and review gates. |
 | [Agent instructions](AGENTS.md) | Confirmed business rules, design priorities and code standards. |
 | [Extra features](docs/EXTRA-FEATURES-REPORT.md) | Additions and corrections outside numbered stage deliveries, with detailed report links. |
@@ -135,6 +148,6 @@ Earlier delivery reports are [Stage 1](docs/STAGE1-REPORT.md), [Stage 2](docs/ST
 
 ## Project status
 
-Stages 1–6 have been delivered and Stage 7's local audit/rehearsal is complete. The importer and manager password reset are authorized follow-ups. Raspberry Pi verification and final office-pilot approval remain pending; local test success does not replace those checks.
+Stages 1–6 have been delivered and Stage 7's local audit/rehearsal is complete. The importer, manager password reset and account signup/approval workflow are authorized follow-ups. Raspberry Pi verification and final office-pilot approval remain pending; local test success does not replace those checks.
 
 The five HTML files in the repository root are read-only design references. Production serves the Laravel application through `public/`.

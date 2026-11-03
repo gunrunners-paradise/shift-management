@@ -3,9 +3,11 @@
 use App\Http\Controllers\Admin\BlockedDateController;
 use App\Http\Controllers\Admin\CalendarEventController;
 use App\Http\Controllers\Admin\DeskController;
+use App\Http\Controllers\Admin\SignupRequestController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WorkdayReportController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\DeskReservationController;
 use App\Http\Controllers\HomeController;
@@ -13,11 +15,22 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShiftCalendarController;
 use App\Http\Controllers\TodayInformationController;
 use App\Http\Controllers\WorkerReceiptController;
+use App\Http\Middleware\EnsureSignupIsOpen;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+    Route::get('/signup/submitted', [SignupController::class, 'submitted'])->name('signup.submitted');
+
+    // These routes intentionally have no navigation links. The constrained URL,
+    // never a hidden input, fixes the requested role. Both pages start closed.
+    Route::middleware(EnsureSignupIsOpen::class)->group(function (): void {
+        Route::get('/signup/{signupRole}', [SignupController::class, 'create'])
+            ->whereIn('signupRole', ['worker', 'manager'])->name('signup.create');
+        Route::post('/signup/{signupRole}', [SignupController::class, 'store'])
+            ->whereIn('signupRole', ['worker', 'manager'])->middleware('throttle:signup')->name('signup.store');
+    });
 });
 
 Route::middleware(['auth', 'auth.session'])->group(function (): void {
@@ -41,6 +54,10 @@ Route::middleware(['auth', 'auth.session'])->group(function (): void {
     });
 
     Route::middleware('role:manager')->group(function (): void {
+        Route::patch('/admin/signup-settings/{signupRole}', [SignupRequestController::class, 'updateSetting'])
+            ->whereIn('signupRole', ['worker', 'manager'])->name('admin.signups.settings.update');
+        Route::post('/admin/signup-requests/review', [SignupRequestController::class, 'review'])->name('admin.signups.review');
+        Route::post('/admin/signup-requests/process', [SignupRequestController::class, 'process'])->name('admin.signups.process');
         Route::post('/admin/reports/workdays', WorkdayReportController::class)->name('admin.reports.workdays');
         Route::post('/admin/desks', [DeskController::class, 'store'])->name('admin.desks.store');
         Route::patch('/admin/desks/{desk}', [DeskController::class, 'update'])->whereNumber('desk')->name('admin.desks.update');

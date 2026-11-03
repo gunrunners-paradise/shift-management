@@ -12,6 +12,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\BlockedDate;
 use App\Models\CalendarEvent;
 use App\Models\Desk;
+use App\Models\PendingSignupRequest;
+use App\Models\SignupSetting;
 use App\Models\User;
 use App\Services\AccountDeletionService;
 use App\Services\AccountManagementService;
@@ -37,6 +39,11 @@ class UserController extends Controller
         return view('admin.users.index', [
             'users' => User::orderByDesc('is_active')->orderBy('id')->paginate(10)->withQueryString(),
             'activeManagerCount' => User::where('role', 'manager')->where('is_active', true)->count(),
+            'signupSettings' => SignupSetting::query()->get()->keyBy('role'),
+            'signupRequests' => PendingSignupRequest::query()->orderBy('id')
+                ->paginate(10, ['*'], 'signup_page')->withQueryString(),
+            'signupCounts' => PendingSignupRequest::query()->select('role')
+                ->selectRaw('COUNT(*) as total')->groupBy('role')->pluck('total', 'role'),
             'blockedDates' => BlockedDate::where('date', '>=', $currentMonthStart)
                 ->orderBy('date')->paginate(10, ['*'], 'blocks_page')->withQueryString(),
             'calendarEvents' => CalendarEvent::where('date', '>=', $currentMonthStart)
