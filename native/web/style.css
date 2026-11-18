@@ -1,0 +1,217 @@
+/* Additions use the original application's colors, controls and calendar. */
+.content-shell {
+    max-width: 1200px;
+    margin: 28px auto;
+    padding: 0 20px 100px;
+}
+.header-link {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 12px;
+    font-weight: bold;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    align-items: end;
+    margin-block: 20px;
+}
+.form-grid .field {
+    margin: 0;
+}
+.form-grid button {
+    min-height: 46px;
+}
+.panel > summary {
+    font-size: 19px;
+    font-weight: bold;
+    padding: 8px;
+    cursor: pointer;
+}
+.panel > details {
+    margin-block: 18px;
+}
+#message {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 90vw;
+    background: #fff;
+    border: 2px solid #4563d8;
+    padding: 15px 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-panel);
+    z-index: 1000;
+}
+#message.error {
+    border-color: var(--color-danger);
+}
+.data-list {
+    display: grid;
+    gap: 10px;
+    margin: 18px 0;
+}
+.data-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: 10px;
+    overflow-wrap: anywhere;
+}
+.data-row > span {
+    flex: 1;
+    min-width: 100px;
+}
+.row-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.week-person {
+    display: block;
+    background: #e6c7e9;
+    border-radius: 7px;
+    padding: 7px;
+    margin: 4px 0;
+    color: #642174;
+    overflow-wrap: anywhere;
+}
+.manager-calendar {
+    min-width: 760px;
+}
+.manager-calendar td {
+    vertical-align: top;
+}
+.empty {
+    color: var(--color-muted);
+    padding: 16px;
+    text-align: center;
+}
+.itzik-toggle {
+    position: fixed;
+    bottom: 22px;
+    left: 22px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border: 0;
+    border-radius: 40px;
+    padding: 6px 15px 6px 6px;
+    color: #fff;
+    background: var(--gradient-header);
+    box-shadow: 0 5px 25px #202c5a40;
+    font-weight: bold;
+    z-index: 20;
+}
+.itzik-toggle img,
+.itzik-chat img {
+    border-radius: 50%;
+    background: white;
+    object-fit: contain;
+}
+.itzik-chat {
+    position: fixed;
+    bottom: 100px;
+    left: 22px;
+    width: min(400px, calc(100vw - 32px));
+    height: min(550px, calc(100dvh - 125px));
+    background: #fff;
+    border: 1px solid var(--color-line);
+    border-radius: 20px;
+    box-shadow: 0 15px 60px #202c5a40;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.itzik-chat header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    color: #fff;
+    background: var(--gradient-header);
+}
+.itzik-chat header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+}
+.itzik-chat header button {
+    margin-inline-start: auto;
+    background: transparent;
+    border: 0;
+    color: white;
+    font-size: 28px;
+}
+#itzik-messages {
+    flex: 1;
+    overflow: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.bubble {
+    padding: 12px;
+    border-radius: 12px;
+    background: #f0f3ff;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+.bubble.mine {
+    background: #e6c7e9;
+    margin-inline-start: 35px;
+}
+.bubble button {
+    margin-top: 8px;
+}
+.itzik-chat form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--color-line);
+}
+.itzik-chat input {
+    min-width: 0;
+}
+#dialog-body form {
+    display: grid;
+    gap: 12px;
+}
+#dialog-close {
+    margin-top: 15px;
+}
+.shift-cell ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+@media (max-width: 600px) {
+    .content-shell {
+        padding: 0 12px 100px;
+        margin-top: 18px;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .itzik-chat {
+        left: 16px;
+    }
+    .header-link {
+        padding: 8px;
+        font-size: 12px;
+    }
+    .data-row {
+        align-items: flex-start;
+    }
+    .manager-calendar {
+        min-width: 660px;
+    }
+}

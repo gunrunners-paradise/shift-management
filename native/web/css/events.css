@@ -1,0 +1,123 @@
+.events-panel {
+    margin-top: 22px;
+}
+
+.events-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 28px;
+}
+
+.events-layout h3 {
+    margin: 0 0 16px;
+    font-size: 17px;
+}
+
+.events-list-column {
+    min-width: 0;
+}
+
+.events-panel textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.events-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.event-card {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: 11px;
+}
+
+.event-card-heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.event-card-heading strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    line-height: 1.5;
+}
+
+.event-kind {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    color: #3d4db0;
+    border-radius: 999px;
+    background: #edf1fe;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.event-kind--holiday {
+    color: #71388d;
+    background: #f3eafa;
+}
+
+.event-date {
+    margin: 7px 0 0;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.event-date time {
+    display: inline-block;
+    direction: ltr;
+}
+
+.event-description {
+    margin: 10px 0 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Native details keeps editing and explicit deletion available without JavaScript. */
+.event-action {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-line);
+}
+
+.event-action summary {
+    min-height: 44px;
+    padding: 12px 3px;
+    color: #3647a1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.event-action--danger summary {
+    color: var(--color-danger);
+}
+
+.event-action > form {
+    margin-top: 10px;
+}
+
+.event-delete-form {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+}
+
+@media (max-width: 700px) {
+    .events-layout {
+        grid-template-columns: 1fr;
+        gap: 26px;
+    }
+}

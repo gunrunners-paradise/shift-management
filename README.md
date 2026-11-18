@@ -1,3 +1,8 @@
+> **2026-11-17 integration:** the C/SQLite runtime with PHP build-time templates,
+> the manager’s shared week and Itzik is in [`native/`](native/README.md).
+> The Laravel instructions below describe the retained original application.
+> Demonstration questions: [`QUESTIONS_FOR_REUT.md`](QUESTIONS_FOR_REUT.md).
+
 # מערכת נוכחות
 
 A Hebrew, right-to-left application for planning office shifts, reserving desks and managing worker accounts. Built using the assistance of Codex with Laravel, Blade, ordinary CSS, vanilla JavaScript and MariaDB for a Raspberry Pi or another Linux server.

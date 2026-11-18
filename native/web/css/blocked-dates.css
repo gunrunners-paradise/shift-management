@@ -1,0 +1,79 @@
+.blocked-dates-panel {
+    margin-top: 22px;
+}
+
+.blocked-dates-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 28px;
+}
+
+.blocked-date-submit {
+    margin-top: 17px;
+}
+
+.blocked-dates-list-column {
+    min-width: 0;
+}
+
+.blocked-dates-list-column h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+}
+
+.blocked-dates-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.blocked-date-item {
+    padding: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: 11px;
+}
+
+.blocked-date-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.blocked-date-heading time {
+    display: inline-block;
+    direction: ltr;
+}
+
+.blocked-date-reason {
+    margin: 11px 0 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.unblock-date-form {
+    display: grid;
+    justify-items: start;
+    gap: 12px;
+    padding-top: 13px;
+    margin-top: 13px;
+    border-top: 1px solid var(--color-line);
+}
+
+.blocked-date-history-note {
+    margin: 12px 0 0;
+    color: var(--color-muted);
+    font-size: 12px;
+}
+
+@media (max-width: 700px) {
+    .blocked-dates-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}

@@ -16,3 +16,9 @@
 *.bak
 /backups/
 /.local/
+
+/native/build/
+/native/data/
+/native/tests/__pycache__/
+
+/native/scripts/__pycache__/

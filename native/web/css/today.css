@@ -1,0 +1,267 @@
+/* These panels follow the complete calendar and never change its grid layout. */
+.today-information {
+    display: grid;
+    gap: 22px;
+    margin-top: 22px;
+}
+
+.today-announcements {
+    padding: 20px 24px;
+    color: #293f8e;
+    border: 1px solid #bfcef3;
+    border-radius: var(--radius-panel);
+    background: linear-gradient(115deg, #eef4ff, #f0ecff);
+    box-shadow: var(--shadow-panel);
+}
+
+.today-announcements h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.today-announcements-date {
+    margin: 0 0 16px;
+    color: #546385;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.today-announcements-list {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.today-announcement {
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid #d2dbf3;
+    border-radius: 12px;
+    background: #ffffffd9;
+    overflow-wrap: anywhere;
+}
+
+.today-announcement-heading {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.today-announcement h3 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.today-announcement-kind {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    color: #51428a;
+    border-radius: 999px;
+    background: #efebfa;
+    font-size: 12px;
+}
+
+.today-announcement p {
+    margin: 9px 0 0;
+    color: #546385;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.today-announcements-note {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    color: #3d5285;
+    border-radius: 10px;
+    background: #ffffffb3;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.today-birthdays {
+    padding: 22px 24px;
+    color: #6c295f;
+    border: 1px solid #efbfd8;
+    border-radius: var(--radius-panel);
+    background: linear-gradient(115deg, #fff2f8, #f2edff);
+    box-shadow: var(--shadow-panel);
+}
+
+.today-birthdays h2 {
+    margin: 0 0 10px;
+    color: #752a79;
+    font-size: 22px;
+}
+
+.today-birthday-description {
+    margin: 0 0 16px;
+    color: #815278;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.today-birthday-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.today-birthday-person {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 210px;
+    max-width: 100%;
+    padding: 11px 16px;
+    border: 1px solid #efd0e6;
+    border-radius: 13px;
+    background: #ffffffde;
+}
+
+.today-person-avatar {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #e0e6fa;
+}
+
+.today-birthday-person .today-person-avatar {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #dba6de;
+    background: #efd5f3;
+}
+
+.today-person-details {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.today-person-details strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+.today-person-details > span {
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.today-birthday-person .today-person-details > span {
+    color: #98658a;
+}
+
+.today-coworkers-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.today-coworkers-heading p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.today-coworkers-count {
+    padding: 8px 13px;
+    color: #3c49aa;
+    border-radius: 999px;
+    background: #f0f3ff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.today-coworkers-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.today-coworker {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: #fafbff;
+}
+
+.today-person-period {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.today-person-period bdi {
+    white-space: nowrap;
+}
+
+.today-coworkers-empty {
+    grid-column: 1 / -1;
+    padding: 18px;
+    color: var(--color-muted);
+    border-radius: 12px;
+    background: #f8faff;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.today-refresh-status {
+    margin: 15px 0 0;
+    color: #94254f;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+    .today-announcements {
+        padding: 17px 15px;
+    }
+
+    .today-announcements h2 {
+        font-size: 19px;
+    }
+
+    .today-birthdays {
+        padding: 17px 15px;
+    }
+
+    .today-birthdays h2 {
+        font-size: 19px;
+    }
+
+    .today-birthday-list,
+    .today-coworkers-list {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .today-birthday-person {
+        min-width: 0;
+    }
+}

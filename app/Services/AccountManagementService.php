@@ -21,6 +21,8 @@ class AccountManagementService
     {
         return $this->managerTransaction->run($actor, function () use ($attributes): User {
             $this->ensureUsernameIsAvailable($attributes['username']);
+            // User input is a literal password, even when it resembles a hash.
+            $attributes['password'] = Hash::make($attributes['password']);
 
             return User::create($this->accountAttributes($attributes));
         });
@@ -167,6 +169,7 @@ class AccountManagementService
 
             $this->ensureUsernameIsAvailable($attributes['username']);
             $attributes['role'] = 'manager';
+            $attributes['password'] = Hash::make($attributes['password']);
 
             return User::create($this->accountAttributes($attributes));
         });

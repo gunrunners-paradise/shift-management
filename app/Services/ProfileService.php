@@ -86,8 +86,8 @@ class ProfileService
                 ]);
             }
 
-            // The model's hashed cast hashes plaintext exactly once.
-            $user->password = $newPassword;
+            // Hash literal input explicitly; the cast preserves generated hashes.
+            $user->password = Hash::make($newPassword);
             $user->remember_token = Str::random(60);
             $user->save();
 

@@ -1,0 +1,329 @@
+{"text": "תראה לי את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "תראי לי את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "הצג את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "מי מגיע ללימודים", "tool": "show_schedule", "arguments": {}}
+{"text": "מי מגיע השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "מי איתי במשמרת", "tool": "show_schedule", "arguments": {}}
+{"text": "אפשר לראות את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "מה לוח המשמרות השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "הצגת לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "תראה מי מגיע השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "תראה לי את המשמרות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "תראי לי את המשמרות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "הצג את ההרשמות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "מתי אני רשום", "tool": "show_my_bookings", "arguments": {}}
+{"text": "מתי אני רשומה", "tool": "show_my_bookings", "arguments": {}}
+{"text": "לאילו משמרות נרשמתי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "אפשר לראות את ההרשמות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "מה המשמרות שלי השבוע", "tool": "show_my_bookings", "arguments": {}}
+{"text": "ההרשמות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "תראה לי מתי נרשמתי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "שלום", "tool": null, "arguments": {}}
+{"text": "תודה", "tool": null, "arguments": {}}
+{"text": "מה נשמע", "tool": null, "arguments": {}}
+{"text": "איך מזג האוויר", "tool": null, "arguments": {}}
+{"text": "תנגן מוזיקה", "tool": null, "arguments": {}}
+{"text": "אני אוהב ללמוד בבית", "tool": null, "arguments": {}}
+{"text": "יש לי פגישה ביום שלישי", "tool": null, "arguments": {}}
+{"text": "אולי אלמד מחר", "tool": null, "arguments": {}}
+{"text": "חשבתי להגיע למרכז", "tool": null, "arguments": {}}
+{"text": "בדרך כלל אני לומד ביום שלישי בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "אל תרשום אותי ביום שלישי בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "אל תרשמי אותי מחר בצהריים במרכז", "tool": null, "arguments": {}}
+{"text": "לא רוצה להירשם ביום ראשון בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "אני לא רוצה להירשם ביום שני לכל היום במרכז", "tool": null, "arguments": {}}
+{"text": "לא לרשום אותי ביום רביעי בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "אל תשבצו אותי ביום חמישי בצהריים במרכז", "tool": null, "arguments": {}}
+{"text": "אני לא מגיע היום בבוקר למרכז", "tool": null, "arguments": {}}
+{"text": "לא תרשום אותי ביום שלישי בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "אין צורך לרשום אותי מחר לכל היום מהבית", "tool": null, "arguments": {}}
+{"text": "תבטל לי את המשמרת", "tool": null, "arguments": {}}
+{"text": "מחק את כל ההרשמות", "tool": null, "arguments": {}}
+{"text": "תוסיף מנהל חדש", "tool": null, "arguments": {}}
+{"text": "אל תראה לי את לוח המשמרות", "tool": null, "arguments": {}}
+{"text": "אל תראי לי את המשמרות שלי", "tool": null, "arguments": {}}
+{"text": "אני לא רוצה לראות את ההרשמות שלי", "tool": null, "arguments": {}}
+{"text": "אני כבר רשום ביום שלישי בבוקר מהבית", "tool": null, "arguments": {}}
+{"text": "הוא נרשם ביום שני בצהריים במרכז", "tool": null, "arguments": {}}
+{"text": "אתמול נרשמתי לבוקר במרכז", "tool": null, "arguments": {}}
+{"text": "אני לומד מהבית ביום רביעי בבוקר", "tool": null, "arguments": {}}
+{"text": "בדרך כלל אני במרכז ביום חמישי", "tool": null, "arguments": {}}
+{"text": "תציגי את המשמרות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "תציג את ההרשמות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "אני רוצה לראות את המשמרות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "אפשר לראות מתי אני רשום", "tool": "show_my_bookings", "arguments": {}}
+{"text": "תראה את השיבוצים שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "מתי נרשמתי למשמרת", "tool": "show_my_bookings", "arguments": {}}
+{"text": "תציג את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "תציגי מי מגיע ללימודים", "tool": "show_schedule", "arguments": {}}
+{"text": "אני רוצה לראות מי מגיע ללימודים", "tool": "show_schedule", "arguments": {}}
+{"text": "תראה את מערכת השעות", "tool": "show_schedule", "arguments": {}}
+{"text": "אפשר לראות את המשמרות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "בבקשה הציגו את ההרשמות שלי", "tool": "show_my_bookings", "arguments": {}}
+{"text": "אל תקבע לי שלישי בוקר בחממה", "tool": null, "arguments": {}}
+{"text": "לא לקבוע לי חמישי צהרים בית", "tool": null, "arguments": {}}
+{"text": "אני לא מגיע ברביעי בבוקר לחממה", "tool": null, "arguments": {}}
+{"text": "אתמול הייתי בחממה בבוקר", "tool": null, "arguments": {}}
+{"text": "אולי שלישי חממה צהרים", "tool": null, "arguments": {}}
+{"text": "הוא לומד בשלישי בחממה בבוקר", "tool": null, "arguments": {}}
+{"text": "אני בדרך כלל בשלישי חממה צהרים", "tool": null, "arguments": {}}
+{"text": "תרשום אותי ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אני רוצה להגיע ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אפשר להירשם ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "איציק תרשום אותי ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אני מגיע ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "תרשום אותי ביום ראשון מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "10_14"}}
+{"text": "אני רוצה להגיע ביום ראשון מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "10_14"}}
+{"text": "אפשר להירשם ביום ראשון מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "10_14"}}
+{"text": "איציק תרשום אותי ביום ראשון מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "10_14"}}
+{"text": "אני מגיע ביום ראשון מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "10_14"}}
+{"text": "תרשום אותי ביום ראשון מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "11_15"}}
+{"text": "אני רוצה להגיע ביום ראשון מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "11_15"}}
+{"text": "אפשר להירשם ביום ראשון מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "11_15"}}
+{"text": "איציק תרשום אותי ביום ראשון מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "11_15"}}
+{"text": "אני מגיע ביום ראשון מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "11_15"}}
+{"text": "תרשום אותי ביום ראשון מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "12_16"}}
+{"text": "אני רוצה להגיע ביום ראשון מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "12_16"}}
+{"text": "אפשר להירשם ביום ראשון מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "12_16"}}
+{"text": "איציק תרשום אותי ביום ראשון מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "12_16"}}
+{"text": "אני מגיע ביום ראשון מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "12_16"}}
+{"text": "תרשום אותי ביום ראשון יום מלא", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "full"}}
+{"text": "אני רוצה להגיע ביום ראשון יום מלא", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "full"}}
+{"text": "אפשר להירשם ביום ראשון יום מלא", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "full"}}
+{"text": "איציק תרשום אותי ביום ראשון יום מלא", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "full"}}
+{"text": "אני מגיע ביום ראשון יום מלא", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "full"}}
+{"text": "תרשום אותי ביום ראשון", "tool": "propose_booking", "arguments": {"day": "sunday"}}
+{"text": "אני רוצה להגיע ביום ראשון", "tool": "propose_booking", "arguments": {"day": "sunday"}}
+{"text": "תרשום אותי ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "אני רוצה להגיע ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "אפשר להירשם ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "איציק תרשום אותי ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "אני מגיע ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "תרשום אותי ביום שני מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "אני רוצה להגיע ביום שני מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "אפשר להירשם ביום שני מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "איציק תרשום אותי ביום שני מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "אני מגיע ביום שני מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "תרשום אותי ביום שני מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "monday", "period": "11_15"}}
+{"text": "אני רוצה להגיע ביום שני מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "monday", "period": "11_15"}}
+{"text": "אפשר להירשם ביום שני מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "monday", "period": "11_15"}}
+{"text": "איציק תרשום אותי ביום שני מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "monday", "period": "11_15"}}
+{"text": "אני מגיע ביום שני מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "monday", "period": "11_15"}}
+{"text": "תרשום אותי ביום שני מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "monday", "period": "12_16"}}
+{"text": "אני רוצה להגיע ביום שני מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "monday", "period": "12_16"}}
+{"text": "אפשר להירשם ביום שני מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "monday", "period": "12_16"}}
+{"text": "איציק תרשום אותי ביום שני מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "monday", "period": "12_16"}}
+{"text": "אני מגיע ביום שני מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "monday", "period": "12_16"}}
+{"text": "תרשום אותי ביום שני יום מלא", "tool": "propose_booking", "arguments": {"day": "monday", "period": "full"}}
+{"text": "אני רוצה להגיע ביום שני יום מלא", "tool": "propose_booking", "arguments": {"day": "monday", "period": "full"}}
+{"text": "אפשר להירשם ביום שני יום מלא", "tool": "propose_booking", "arguments": {"day": "monday", "period": "full"}}
+{"text": "איציק תרשום אותי ביום שני יום מלא", "tool": "propose_booking", "arguments": {"day": "monday", "period": "full"}}
+{"text": "אני מגיע ביום שני יום מלא", "tool": "propose_booking", "arguments": {"day": "monday", "period": "full"}}
+{"text": "תרשום אותי ביום שני", "tool": "propose_booking", "arguments": {"day": "monday"}}
+{"text": "אני רוצה להגיע ביום שני", "tool": "propose_booking", "arguments": {"day": "monday"}}
+{"text": "תרשום אותי ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "אני רוצה להגיע ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "אפשר להירשם ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "איציק תרשום אותי ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "אני מגיע ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "תרשום אותי ביום שלישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "10_14"}}
+{"text": "אני רוצה להגיע ביום שלישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "10_14"}}
+{"text": "אפשר להירשם ביום שלישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "10_14"}}
+{"text": "איציק תרשום אותי ביום שלישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "10_14"}}
+{"text": "אני מגיע ביום שלישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "10_14"}}
+{"text": "תרשום אותי ביום שלישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "אני רוצה להגיע ביום שלישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "אפשר להירשם ביום שלישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "איציק תרשום אותי ביום שלישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "אני מגיע ביום שלישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "תרשום אותי ביום שלישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "12_16"}}
+{"text": "אני רוצה להגיע ביום שלישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "12_16"}}
+{"text": "אפשר להירשם ביום שלישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "12_16"}}
+{"text": "איציק תרשום אותי ביום שלישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "12_16"}}
+{"text": "אני מגיע ביום שלישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "12_16"}}
+{"text": "תרשום אותי ביום שלישי יום מלא", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "full"}}
+{"text": "אני רוצה להגיע ביום שלישי יום מלא", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "full"}}
+{"text": "אפשר להירשם ביום שלישי יום מלא", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "full"}}
+{"text": "איציק תרשום אותי ביום שלישי יום מלא", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "full"}}
+{"text": "אני מגיע ביום שלישי יום מלא", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "full"}}
+{"text": "תרשום אותי ביום שלישי", "tool": "propose_booking", "arguments": {"day": "tuesday"}}
+{"text": "אני רוצה להגיע ביום שלישי", "tool": "propose_booking", "arguments": {"day": "tuesday"}}
+{"text": "תרשום אותי ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "אני רוצה להגיע ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "אפשר להירשם ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "איציק תרשום אותי ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "אני מגיע ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "תרשום אותי ביום רביעי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "10_14"}}
+{"text": "אני רוצה להגיע ביום רביעי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "10_14"}}
+{"text": "אפשר להירשם ביום רביעי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "10_14"}}
+{"text": "איציק תרשום אותי ביום רביעי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "10_14"}}
+{"text": "אני מגיע ביום רביעי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "10_14"}}
+{"text": "תרשום אותי ביום רביעי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "11_15"}}
+{"text": "אני רוצה להגיע ביום רביעי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "11_15"}}
+{"text": "אפשר להירשם ביום רביעי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "11_15"}}
+{"text": "איציק תרשום אותי ביום רביעי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "11_15"}}
+{"text": "אני מגיע ביום רביעי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "11_15"}}
+{"text": "תרשום אותי ביום רביעי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "אני רוצה להגיע ביום רביעי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "אפשר להירשם ביום רביעי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "איציק תרשום אותי ביום רביעי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "אני מגיע ביום רביעי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "תרשום אותי ביום רביעי יום מלא", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "full"}}
+{"text": "אני רוצה להגיע ביום רביעי יום מלא", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "full"}}
+{"text": "אפשר להירשם ביום רביעי יום מלא", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "full"}}
+{"text": "איציק תרשום אותי ביום רביעי יום מלא", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "full"}}
+{"text": "אני מגיע ביום רביעי יום מלא", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "full"}}
+{"text": "תרשום אותי ביום רביעי", "tool": "propose_booking", "arguments": {"day": "wednesday"}}
+{"text": "אני רוצה להגיע ביום רביעי", "tool": "propose_booking", "arguments": {"day": "wednesday"}}
+{"text": "תרשום אותי ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "אני רוצה להגיע ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "אפשר להירשם ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "איציק תרשום אותי ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "אני מגיע ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "תרשום אותי ביום חמישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "10_14"}}
+{"text": "אני רוצה להגיע ביום חמישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "10_14"}}
+{"text": "אפשר להירשם ביום חמישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "10_14"}}
+{"text": "איציק תרשום אותי ביום חמישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "10_14"}}
+{"text": "אני מגיע ביום חמישי מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "10_14"}}
+{"text": "תרשום אותי ביום חמישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "11_15"}}
+{"text": "אני רוצה להגיע ביום חמישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "11_15"}}
+{"text": "אפשר להירשם ביום חמישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "11_15"}}
+{"text": "איציק תרשום אותי ביום חמישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "11_15"}}
+{"text": "אני מגיע ביום חמישי מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "11_15"}}
+{"text": "תרשום אותי ביום חמישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "12_16"}}
+{"text": "אני רוצה להגיע ביום חמישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "12_16"}}
+{"text": "אפשר להירשם ביום חמישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "12_16"}}
+{"text": "איציק תרשום אותי ביום חמישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "12_16"}}
+{"text": "אני מגיע ביום חמישי מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "12_16"}}
+{"text": "תרשום אותי ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "אני רוצה להגיע ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "אפשר להירשם ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "איציק תרשום אותי ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "אני מגיע ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "תרשום אותי ביום חמישי", "tool": "propose_booking", "arguments": {"day": "thursday"}}
+{"text": "אני רוצה להגיע ביום חמישי", "tool": "propose_booking", "arguments": {"day": "thursday"}}
+{"text": "תרשום אותי היום מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "today", "period": "09_13"}}
+{"text": "אני רוצה להגיע היום מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "today", "period": "09_13"}}
+{"text": "אפשר להירשם היום מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "today", "period": "09_13"}}
+{"text": "איציק תרשום אותי היום מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "today", "period": "09_13"}}
+{"text": "אני מגיע היום מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "today", "period": "09_13"}}
+{"text": "תרשום אותי היום מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "today", "period": "10_14"}}
+{"text": "אני רוצה להגיע היום מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "today", "period": "10_14"}}
+{"text": "אפשר להירשם היום מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "today", "period": "10_14"}}
+{"text": "איציק תרשום אותי היום מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "today", "period": "10_14"}}
+{"text": "אני מגיע היום מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "today", "period": "10_14"}}
+{"text": "תרשום אותי היום מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "today", "period": "11_15"}}
+{"text": "אני רוצה להגיע היום מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "today", "period": "11_15"}}
+{"text": "אפשר להירשם היום מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "today", "period": "11_15"}}
+{"text": "איציק תרשום אותי היום מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "today", "period": "11_15"}}
+{"text": "אני מגיע היום מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "today", "period": "11_15"}}
+{"text": "תרשום אותי היום מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "today", "period": "12_16"}}
+{"text": "אני רוצה להגיע היום מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "today", "period": "12_16"}}
+{"text": "אפשר להירשם היום מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "today", "period": "12_16"}}
+{"text": "איציק תרשום אותי היום מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "today", "period": "12_16"}}
+{"text": "אני מגיע היום מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "today", "period": "12_16"}}
+{"text": "תרשום אותי היום יום מלא", "tool": "propose_booking", "arguments": {"day": "today", "period": "full"}}
+{"text": "אני רוצה להגיע היום יום מלא", "tool": "propose_booking", "arguments": {"day": "today", "period": "full"}}
+{"text": "אפשר להירשם היום יום מלא", "tool": "propose_booking", "arguments": {"day": "today", "period": "full"}}
+{"text": "איציק תרשום אותי היום יום מלא", "tool": "propose_booking", "arguments": {"day": "today", "period": "full"}}
+{"text": "אני מגיע היום יום מלא", "tool": "propose_booking", "arguments": {"day": "today", "period": "full"}}
+{"text": "תרשום אותי היום", "tool": "propose_booking", "arguments": {"day": "today"}}
+{"text": "אני רוצה להגיע היום", "tool": "propose_booking", "arguments": {"day": "today"}}
+{"text": "תרשום אותי מחר מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "09_13"}}
+{"text": "אני רוצה להגיע מחר מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "09_13"}}
+{"text": "אפשר להירשם מחר מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "09_13"}}
+{"text": "איציק תרשום אותי מחר מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "09_13"}}
+{"text": "אני מגיע מחר מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "09_13"}}
+{"text": "תרשום אותי מחר מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "10_14"}}
+{"text": "אני רוצה להגיע מחר מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "10_14"}}
+{"text": "אפשר להירשם מחר מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "10_14"}}
+{"text": "איציק תרשום אותי מחר מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "10_14"}}
+{"text": "אני מגיע מחר מ-10 עד 14", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "10_14"}}
+{"text": "תרשום אותי מחר מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "11_15"}}
+{"text": "אני רוצה להגיע מחר מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "11_15"}}
+{"text": "אפשר להירשם מחר מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "11_15"}}
+{"text": "איציק תרשום אותי מחר מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "11_15"}}
+{"text": "אני מגיע מחר מ-11 עד 15", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "11_15"}}
+{"text": "תרשום אותי מחר מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "12_16"}}
+{"text": "אני רוצה להגיע מחר מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "12_16"}}
+{"text": "אפשר להירשם מחר מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "12_16"}}
+{"text": "איציק תרשום אותי מחר מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "12_16"}}
+{"text": "אני מגיע מחר מ-12 עד 16", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "12_16"}}
+{"text": "תרשום אותי מחר יום מלא", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "full"}}
+{"text": "אני רוצה להגיע מחר יום מלא", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "full"}}
+{"text": "אפשר להירשם מחר יום מלא", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "full"}}
+{"text": "איציק תרשום אותי מחר יום מלא", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "full"}}
+{"text": "אני מגיע מחר יום מלא", "tool": "propose_booking", "arguments": {"day": "tomorrow", "period": "full"}}
+{"text": "תרשום אותי מחר", "tool": "propose_booking", "arguments": {"day": "tomorrow"}}
+{"text": "אני רוצה להגיע מחר", "tool": "propose_booking", "arguments": {"day": "tomorrow"}}
+{"text": "תראה לי את השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "מי מגיע השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "איציק אפשר לראות את הלוז", "tool": "show_schedule", "arguments": {}}
+{"text": "לוח שבועי בבקשה", "tool": "show_schedule", "arguments": {}}
+{"text": "מה הלוז השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "הצג את לוח המשמרות", "tool": "show_schedule", "arguments": {}}
+{"text": "קבע לי ביום ראשון בבוקר", "tool": "propose_booking", "arguments": {"day": "sunday"}}
+{"text": "קבע לי ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "תקבע לי בחממה ביום ראשון בבוקר", "tool": "propose_booking", "arguments": {"day": "sunday"}}
+{"text": "תקבע לי בחממה ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אפשר לקבוע לי ביום ראשון בבוקר", "tool": "propose_booking", "arguments": {"day": "sunday"}}
+{"text": "אפשר לקבוע לי ביום ראשון מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אל תקבע לי ביום ראשון בבוקר", "tool": null, "arguments": {}}
+{"text": "אל תקבע לי ביום ראשון מ-9 עד 13", "tool": null, "arguments": {}}
+{"text": "קבע לי ביום שני בבוקר", "tool": "propose_booking", "arguments": {"day": "monday"}}
+{"text": "קבע לי ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "תקבע לי בחממה ביום שני בבוקר", "tool": "propose_booking", "arguments": {"day": "monday"}}
+{"text": "תקבע לי בחממה ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "אפשר לקבוע לי ביום שני בבוקר", "tool": "propose_booking", "arguments": {"day": "monday"}}
+{"text": "אפשר לקבוע לי ביום שני מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "monday", "period": "09_13"}}
+{"text": "אל תקבע לי ביום שני בבוקר", "tool": null, "arguments": {}}
+{"text": "אל תקבע לי ביום שני מ-9 עד 13", "tool": null, "arguments": {}}
+{"text": "קבע לי ביום שלישי בבוקר", "tool": "propose_booking", "arguments": {"day": "tuesday"}}
+{"text": "קבע לי ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "תקבע לי בחממה ביום שלישי בבוקר", "tool": "propose_booking", "arguments": {"day": "tuesday"}}
+{"text": "תקבע לי בחממה ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "אפשר לקבוע לי ביום שלישי בבוקר", "tool": "propose_booking", "arguments": {"day": "tuesday"}}
+{"text": "אפשר לקבוע לי ביום שלישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "09_13"}}
+{"text": "אל תקבע לי ביום שלישי בבוקר", "tool": null, "arguments": {}}
+{"text": "אל תקבע לי ביום שלישי מ-9 עד 13", "tool": null, "arguments": {}}
+{"text": "קבע לי ביום רביעי בבוקר", "tool": "propose_booking", "arguments": {"day": "wednesday"}}
+{"text": "קבע לי ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "תקבע לי בחממה ביום רביעי בבוקר", "tool": "propose_booking", "arguments": {"day": "wednesday"}}
+{"text": "תקבע לי בחממה ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "אפשר לקבוע לי ביום רביעי בבוקר", "tool": "propose_booking", "arguments": {"day": "wednesday"}}
+{"text": "אפשר לקבוע לי ביום רביעי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "09_13"}}
+{"text": "אל תקבע לי ביום רביעי בבוקר", "tool": null, "arguments": {}}
+{"text": "אל תקבע לי ביום רביעי מ-9 עד 13", "tool": null, "arguments": {}}
+{"text": "קבע לי ביום חמישי בבוקר", "tool": "propose_booking", "arguments": {"day": "thursday"}}
+{"text": "קבע לי ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "תקבע לי בחממה ביום חמישי בבוקר", "tool": "propose_booking", "arguments": {"day": "thursday"}}
+{"text": "תקבע לי בחממה ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "אפשר לקבוע לי ביום חמישי בבוקר", "tool": "propose_booking", "arguments": {"day": "thursday"}}
+{"text": "אפשר לקבוע לי ביום חמישי מ-9 עד 13", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "09_13"}}
+{"text": "אל תקבע לי ביום חמישי בבוקר", "tool": null, "arguments": {}}
+{"text": "אל תקבע לי ביום חמישי מ-9 עד 13", "tool": null, "arguments": {}}
+{"text": "אפשר לראות את המערכת השבועית", "tool": "show_schedule", "arguments": {}}
+{"text": "תוכל להראות לי את הלוח השבועי", "tool": "show_schedule", "arguments": {}}
+{"text": "איציק תראה לי מי מגיע השבוע", "tool": "show_schedule", "arguments": {}}
+{"text": "מה מתוכנן השבוע במרכז", "tool": "show_schedule", "arguments": {}}
+{"text": "תציג לי את השבוע בבקשה", "tool": "show_schedule", "arguments": {}}
+{"text": "תשבץ אותי ביום ראשון 9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "תוכל לרשום אותי ביום ראשון 9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אני רוצה משמרת ביום ראשון 9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "אפשר להגיע ביום ראשון 9 עד 13", "tool": "propose_booking", "arguments": {"day": "sunday", "period": "09_13"}}
+{"text": "תשבץ אותי ביום שני 10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "תוכל לרשום אותי ביום שני 10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "אני רוצה משמרת ביום שני 10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "אפשר להגיע ביום שני 10 עד 14", "tool": "propose_booking", "arguments": {"day": "monday", "period": "10_14"}}
+{"text": "תשבץ אותי ביום שלישי 11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "תוכל לרשום אותי ביום שלישי 11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "אני רוצה משמרת ביום שלישי 11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "אפשר להגיע ביום שלישי 11 עד 15", "tool": "propose_booking", "arguments": {"day": "tuesday", "period": "11_15"}}
+{"text": "תשבץ אותי ביום רביעי 12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "תוכל לרשום אותי ביום רביעי 12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "אני רוצה משמרת ביום רביעי 12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "אפשר להגיע ביום רביעי 12 עד 16", "tool": "propose_booking", "arguments": {"day": "wednesday", "period": "12_16"}}
+{"text": "תשבץ אותי ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "תוכל לרשום אותי ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "אני רוצה משמרת ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}
+{"text": "אפשר להגיע ביום חמישי יום מלא", "tool": "propose_booking", "arguments": {"day": "thursday", "period": "full"}}

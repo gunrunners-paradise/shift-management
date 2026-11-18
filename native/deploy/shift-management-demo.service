@@ -1,0 +1,13 @@
+[Unit]
+Description=Shift Management C SQLite demo for Reut
+After=network-online.target
+[Service]
+Type=simple
+WorkingDirectory=/home/ataeff/shift-management-native
+ExecStart=/home/ataeff/shift-management-native/build/mishmeret --db /home/ataeff/shift-management-demo-data/shift.db --web /home/ataeff/shift-management-native/web --port 8086 --origin https://polygon.tail42b836.ts.net:8443 --trust-tailscale-proxy
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+[Install]
+WantedBy=default.target

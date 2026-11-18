@@ -282,3 +282,13 @@ Scope includes the additive `2026_11_03_000000_create_signup_tables` migration, 
 Delivered for review: the complete dedicated MariaDB suite passed **720 tests / 5262 assertions in 115.22 seconds**, with zero failures/skips. The focused signup run passed **86 tests / 574 assertions in 17.72 seconds**, including 72 feature cases and 14 independent-process races. Chromium passed **453/453 checks**, zero failures, across twelve synthetic real-Blade snapshots at 320/375/700/1440 px and without JavaScript. Its SQL guard ensured snapshot rendering made no database queries; live HTTP/database actions are covered by the main suite. Global Pint, Blade compilation, route-guard inspection, strict Composer validation, all 241 local documentation links/anchors and whitespace checks passed. The additive migration is applied locally; a final read-only check confirmed both signup switches remain false and there are zero pending requests. No real registration was enabled or real account created.
 
 An initial focused attempt completed zero assertions because the local database was stopped; the existing persistent data directory was restarted without a reset. Two fixture corrections aligned fresh database snapshots and isolated synthetic manager-browser sessions; no signup production defect was found. A later normal local database shutdown occurred **after** the passing full suite and interrupted a read-only state check; a foreground restart of the same data allowed that check to pass. No automated test failure remains unresolved. Independent backend review and visual inspection found no blocker. Owner acceptance, Raspberry Pi verification and final office-pilot approval remain pending; no stage checkbox is changed.
+
+
+## Fork integration — 2026-11-17
+
+Oleg approved a C/SQLite runtime based on Mishmoret, PHP-generated HTML, the
+existing visual design and business rules, Itzik with his original portrait,
+and the shared manager week. Implementation and operator instructions are in
+`native/README.md`. The original Laravel milestones above remain the historical
+record. Upstream PR is deferred until Reut's demonstration/review. The real
+learner database has not been supplied; Polygon uses separate fictional data.

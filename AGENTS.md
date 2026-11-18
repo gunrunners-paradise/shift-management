@@ -211,3 +211,24 @@ If real tables or worker records already contain `morning`, `afternoon` or an ea
 ## 12. Final stage reporting
 
 Every completed stage must include: changed files, implemented versus deferred scope, migrations/commands, actual tests and failures, manual acceptance steps, and remaining issues. **Wait for explicit approval** before unlocking the next stage in `ROADMAP.md`. The HTML reference files are **read-only** and should never be rewritten to make an implementation appear closer to the prototypes.
+
+
+## Fork integration authorized by Oleg — 2026-11-17
+
+Oleg authorized work in `ariannamethod/shift-management`, preserving the existing
+visual design and confirmed business policies while moving the server to C and
+SQLite using Mishmoret's substrate. PHP remains a build-time template language;
+the deployed application serves generated HTML/CSS/JS and a C JSON API, without
+Laravel or MariaDB. Existing Laravel source remains available during migration;
+repair its demonstrated literal-password defect too.
+
+Add a manager's shared weekly schedule and Itzik, preserving the exact existing
+Mishmoret portrait. Keep five hourly periods, independent desk bookings, same-day
+shift editing and non-restoring reopening. Preserve users and history in any
+future data transfer. No real learner database has been supplied for migration.
+
+Oleg authorized committing/pushing completed work and a separate Polygon demo
+alongside the original Mishmoret, with a work-questions file. Defer the upstream
+pull request until after Reut's demonstration/review. The current instruction
+supersedes historical Laravel-only architecture and stage restrictions for this
+integration; existing product policies remain authoritative.
